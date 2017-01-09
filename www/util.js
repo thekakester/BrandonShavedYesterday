@@ -89,6 +89,6 @@ PreloadImage.wait = function(callback) {
 	if (PreloadImage.__remaining == 0) {
 		callback();
 	} else {
-		setTimeout(30,function() {console.log("waiting for images to load");PreloadImage.wait(callback)});
+		setTimeout(function() {PreloadImage.wait(callback)},30);
 	}
 }
