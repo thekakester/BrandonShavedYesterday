@@ -3,7 +3,7 @@ var game = {};  //The main game object!
 
 var images = {}
 var entities = [];
-
+var sprites = {};
 var keyboard = [];
 
 function begin() {
@@ -21,11 +21,29 @@ function begin() {
 	images.tiles = PreloadImage("assets/tiles.png");
 	images.characters = PreloadImage("assets/characters.png");
 	PreloadImage.wait(function() {
-		begin_loadMap();	//Wait for images to load, then move to the next step
+		begin_loadSprites();	//Wait for images to load, then move to the next step
 	});
 	
     
 	
+}
+
+function begin_loadSprites() {
+	sprites.tiles = [];
+	sprites.tiles[0] = new Sprite(images.tiles,32,32);
+	sprites.tiles[0].addFrame(new Frame(0,0,1));
+	
+	sprites.tiles[1] = new Sprite(images.tiles,32,32);
+	sprites.tiles[1].addFrame(new Frame(64,320,15));
+	sprites.tiles[1].addFrame(new Frame(96,320,15));
+	sprites.tiles[1].addFrame(new Frame(128,320,15));
+	sprites.tiles[1].addFrame(new Frame(160,320,15));
+	
+	sprites.tiles[2] = new Sprite(images.tiles,32,32);
+	sprites.tiles[2].addFrame(new Frame(96,32,1));
+	
+	
+	begin_loadMap();
 }
 
 function begin_loadMap() {
@@ -92,7 +110,14 @@ function communicationLooper() {
 
 function renderLooper() {
 	render();
+	updateSprites();
 	setTimeout(function() {renderLooper()},30);
+}
+
+function updateSprites() {
+	for (var key in sprites.tiles) {
+		sprites.tiles[key].nextFrame();
+	}
 }
 
 function render() {
@@ -108,14 +133,16 @@ function render() {
 	
 	//Offset everything by the player's position
 	var player = entities[game.pid];
-	var offsetX = tween(player.oldX,player.x,player.tween) - 7;
-	var offsetY = tween(player.oldY,player.y,player.tween) - 7;
+	var offsetX = Math.floor((tween(player.oldX,player.x,player.tween) - 7) * 32);
+	var offsetY = Math.floor((tween(player.oldY,player.y,player.tween) - 7) * 32);
 	
 	
 	context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
-			context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
+			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
+			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
+			sprites.tiles[game.map.tile[r][c]].draw(context,(32 * c) - offsetX,(32 * r)-offsetY);
 		}
 	}
 	
@@ -131,7 +158,7 @@ function render() {
 		var srcY = Math.floor(character / 4);
 		srcY *= (32 * 4);
 		
-		context.drawImage(images.characters, srcX,srcY,32,32,32 * (x-offsetX), 32 * (y-offsetY),32,32);	
+		context.drawImage(images.characters, srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
