@@ -8,13 +8,16 @@ function begin() {
 	var canvas = document.getElementById("game-canvas");
 	game.width = canvas.width;
 	game.height = canvas.height;
+	context = canvas.getContext('2d');
 	
 	images.tiles = PreloadImage("assets/tiles.png");
 	images.characters = PreloadImage("assets/characters.png");
-	PreloadImage.wait();	//Wait for all images to load
+	PreloadImage.wait(function() {
+		begin_loadMap();	//Wait for images to load, then move to the next step
+	});
 	
-    context = canvas.getContext('2d');
-	begin_loadMap();	//Next step
+    
+	
 }
 
 function begin_loadMap() {
@@ -108,14 +111,13 @@ window.onkeydown = function(e) {
 }
 
 
-
-
-
 //GAME STUFF
 Entity.prototype = {
 	x: 0,
 	y: 0,
 	name: "unnamed",
+	delta: [],
+	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
 
 function Entity(x,y) {
