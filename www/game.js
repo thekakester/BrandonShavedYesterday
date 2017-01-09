@@ -114,12 +114,19 @@ function render() {
 		}
 	}
 	
-	for (var e in entities) {
-		e = entities[e];
+	for (var id in entities) {
+		var e = entities[id];
 		var x = tween(e.oldX,e.x,e.tween);
 		var y = tween(e.oldY,e.y,e.tween);
 		
-		context.drawImage(images.characters, 0,0,32,32,32 * x, 32 * y,32,32);	
+		var character = id % 8;
+		var srcX = character % 4;
+		srcX *= (32*3);
+		srcX += 32;
+		var srcY = Math.floor(character / 4);
+		srcY *= (32 * 4);
+		
+		context.drawImage(images.characters, srcX,srcY,32,32,32 * x, 32 * y,32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
