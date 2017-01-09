@@ -7,6 +7,7 @@ function begin() {
 	game.height = canvas.height;
 	
 	PreloadImage("assets/tiles.png");
+	PreloadImage.wait();	//Wait for all images to load
 	
     context = canvas.getContext('2d');
 	begin_loadMap();	//Next step

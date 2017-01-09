@@ -71,11 +71,11 @@ ByteBuffer.prototype = {
 * Usage:
 * var image1 = PreloadImage("assets/myImage.png");
 * var image2 = PreloadImage("assets/myOtherImage.png");
-* PreloadImage.wait();	//Wait until both images above load
+* PreloadImage.wait(function() { alert('done!'); });	//Wait until both images above load
 *
 ******************************************************/
 PreloadImage.__remaining = 0;
-PreloadImage = function(path) {
+function PreloadImage(path) {
 	PreloadImage.__remaining++;
 	var img = document.createElement("img");
 	img.setAttribute("src",path);
@@ -84,6 +84,10 @@ PreloadImage = function(path) {
 	document.body.appendChild(img);
 }
 
-PreloadImage.wait = function() {
-	
+PreloadImage.wait = function(callback) {
+	if (PreloadImage.__remaining == 0) {
+		callback();
+	} else {
+		setTimeout(30,function() {PreloadImage.wait(callback)});
+	}
 }
