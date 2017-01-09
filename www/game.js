@@ -74,6 +74,43 @@ function render() {
 	
 }
 
+//INPUT STUFF
+
+/* e.code = 
+ * 	ArrowUp
+ *  Numpad0
+ *  KeyA
+ *  Digit1
+ *  ShiftRight
+ *  Space
+ *  CapsLock
+ *  MetalLeft (Windows key)
+ *  ContextMenu (square key with lines in it?)
+ */
+window.onkeydown = function(e) {
+	switch (e.code) {
+		case "ArrowUp":
+			//DoStuff
+			break;
+		case "ArrowDown":
+			//DoStuff
+			break;
+		case "ArrowLeft":
+			//DoStuff
+			break;
+		case "ArrowRight":
+			//DoStuff
+			break;
+		default:
+			alert("Much Wow. Such.")
+		
+	}
+}
+
+
+
+
+
 //GAME STUFF
 Entity.prototype = {
 	x: 0,
