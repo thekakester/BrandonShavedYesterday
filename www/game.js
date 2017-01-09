@@ -98,10 +98,10 @@ window.onkeydown = function(e) {
 			entities[game.pid].set("y",entities[game.pid].y +1);
 			break;
 		case "ArrowLeft":
-			entities[game.pid].set("y",entities[game.pid].x -1);
+			entities[game.pid].set("x",entities[game.pid].x -1);
 			break;
 		case "ArrowRight":
-			entities[game.pid].set("y",entities[game.pid].x +1);
+			entities[game.pid].set("x",entities[game.pid].x +1);
 			break;
 		default:
 			alert("Much Wow. Such.")
