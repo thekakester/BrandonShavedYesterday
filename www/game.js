@@ -9,6 +9,7 @@ function begin() {
 	game.height = canvas.height;
 	
 	images.tiles = PreloadImage("assets/tiles.png");
+	images.tiles = PreloadImage("assets/characters.png");
 	PreloadImage.wait();	//Wait for all images to load
 	
     context = canvas.getContext('2d');
@@ -56,12 +57,7 @@ function render() {
 	context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
-			if (game.map.tile[r][c] == 1) {
-				context.drawImage(images.tiles, 0,0,32,32,32 * c, 32 * r,32,32);
-			} else {
-				context.drawImage(images.tiles, 0,32,32,32,32 * c, 32 * r,32,32);
-			}
-			
+			context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * c, 32 * r,32,32);		
 		}
 	}
 }
