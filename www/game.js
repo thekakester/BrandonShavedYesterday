@@ -31,7 +31,8 @@ function begin() {
 function begin_loadSprites() {
 	sprites.tiles = [];
 	sprites.tiles[0] = new Sprite(images.tiles,32,32);
-	sprites.tiles[0].addFrame(new Frame(0,0,1));
+	sprites.tiles[0].addFrame(new Frame(160,96,15));
+	sprites.tiles[0].addFrame(new Frame(160,128,15));
 	
 	sprites.tiles[1] = new Sprite(images.tiles,32,32);
 	sprites.tiles[1].addFrame(new Frame(64,320,15));
