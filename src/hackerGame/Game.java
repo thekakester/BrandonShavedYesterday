@@ -1,5 +1,6 @@
 package hackerGame;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public class Game {
@@ -25,8 +26,28 @@ public class Game {
 		while (entities.containsKey(id)) {
 			id++;
 		}
-		entities.put(id, null);	//Add something so we don't lose this ID to a race condition
+		entities.put(id, new Entity(id));	//Add something so we don't lose this ID to a race condition
 		lastAddedEntityID = id;
 		return id;
+	}
+
+	public void updateEntity(int eid, int x, int y) {
+		if (entities.containsKey(eid)) {
+			Entity e = entities.get(eid);
+			e.x = x;
+			e.y = y;
+			System.out.println("Updated: " + e);
+		}
+	}
+
+	public byte[] serializeEntities() {
+		ByteBuffer bb = ByteBuffer.allocate(((entities.size() * 3) + 1) * 4);
+		bb.putInt(entities.size());
+		for (Entity e : entities.values()) {
+			bb.putInt(e.id);
+			bb.putInt(e.x);
+			bb.putInt(e.y);
+		}
+		return bb.array();
 	}
 }

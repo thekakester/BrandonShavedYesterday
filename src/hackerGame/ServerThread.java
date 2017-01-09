@@ -69,7 +69,7 @@ public class ServerThread extends Thread {
 		}
 		System.out.println(address + " Connection closed");
 	}
-	
+
 	private void sendResponse(byte[] responseBody) {
 		sendResponse(responseBody, "application/octet-stream");
 	}
@@ -90,7 +90,7 @@ public class ServerThread extends Thread {
 			} catch (Exception e) {e.printStackTrace();}
 		}
 	}
-	
+
 	private byte[] intToBytes(int x) {
 		ByteBuffer bb = ByteBuffer.allocate(4);
 		bb.putInt(x);
@@ -104,6 +104,8 @@ public class ServerThread extends Thread {
 			init();
 		} else if (query.equals("getpid")) {
 			getPid();
+		} else if (query.equals("update")) {
+			update(args);
 		}
 	}
 
@@ -113,8 +115,13 @@ public class ServerThread extends Thread {
 	private void init() {
 		sendResponse(game.map.serialize());
 	}
-	
+
 	private void getPid() {
 		sendResponse(intToBytes(game.getNewEntityId()));
+	}
+	
+	private void update(String[] args) {
+		game.updateEntity(Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+		sendResponse(game.serializeEntities());
 	}
 }

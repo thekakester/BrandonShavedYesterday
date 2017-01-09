@@ -22,8 +22,7 @@ function begin() {
 
 function begin_loadMap() {
 	//Async Load map
-	query("init",function(x) {
-		var buffer = ByteBuffer.wrap(x);
+	query("init",function(buffer) {
 		game.map = {}
 		game.map.rows = buffer.getInt();
 		game.map.cols = buffer.getInt();
@@ -41,8 +40,8 @@ function begin_loadMap() {
 
 function begin_getPid() {
 	//Async Get unique player ID
-	query("getpid",function(x) {
-		game.pid = ByteBuffer.toInt(x);
+	query("getpid",function(buffer) {
+		game.pid = buffer.getInt();
 		
 		//Set the player entity
 		entities[game.pid] = new Entity(3,4);
@@ -54,6 +53,29 @@ function begin_getPid() {
 
 function begin_enterGameLoop() {
 	renderLooper();	//Starts the render Looper
+	communicationLooper();	//Start the communication looping process
+}
+
+function communicationLooper() {
+	//Tell the server where we are
+	var player = entities[game.pid];
+	query("update&" + game.pid + "&" + player.x + "&" + player.y, function(buffer){
+		var count = buffer.getInt();
+		
+		for (var i = 0; i < count; i++) {
+			var eid = buffer.getInt();
+			var x = buffer.getInt();
+			var y = buffer.getInt();
+			
+			if (eid == game.pid) { continue; }
+			if (!entities[eid]) { entities[eid] = new Entity(x,y); }
+			entities[eid].x = x;
+			entities[eid].y = y;
+		}
+		
+		setTimeout(function() { communicationLooper(); },100);
+	});
+	
 }
 
 function renderLooper() {

@@ -25,7 +25,7 @@ public class Server {
 			System.out.println("Awaiting connections");
 			while (true) {
 				try {
-					Thread.sleep(500);
+					//Thread.sleep(500);
 					Socket client = socket.accept();
 					ServerThread thread = new ServerThread(game, client);
 					thread.run();	//CHANGE TO .start() to be multithreaded.  WARNING, code must be threadsafe then!

@@ -1,11 +1,11 @@
 /*Sends a string query to the server then executes callback
-* callback takes one argument, which is the response from the query
+* callback takes one argument, which is the response from the query in a byte buffer
 */
 function query(query, callback) {
-	query = escape(query);
+	//query = escape(query);
 	$.ajax("g?" + query,{
 		complete: function(result) {
-			callback(result.responseText);
+			callback(ByteBuffer.wrap(result.responseText));
 		}
 	});
 }
