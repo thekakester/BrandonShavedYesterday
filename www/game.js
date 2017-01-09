@@ -67,8 +67,8 @@ function render() {
 	}
 	
 	for (var e in entities) {
-		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].x,32,32);	
-		entities[e].x = (entities[e].x + 1) % 20;
+		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].y,32,32);	
+		
 	}
 	
 	
@@ -90,21 +90,22 @@ function render() {
 window.onkeydown = function(e) {
 	switch (e.code) {
 		case "ArrowUp":
-			//DoStuff
+			entities[game.pid].y = entities[game.pid].y -1;
 			break;
 		case "ArrowDown":
-			//DoStuff
+			entities[game.pid].y = entities[game.pid].y +1;
 			break;
 		case "ArrowLeft":
-			//DoStuff
+			entities[game.pid].x = entities[game.pid].x -1;
 			break;
 		case "ArrowRight":
-			//DoStuff
+			entities[game.pid].x = entities[game.pid].x +1;
 			break;
 		default:
 			alert("Much Wow. Such.")
 		
 	}
+	render();
 }
 
 
