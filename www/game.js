@@ -52,7 +52,7 @@ function begin_getPid() {
 		game.pid = buffer.getInt();
 		
 		//Set the player entity
-		entities[game.pid] = new Entity(3,4);
+		entities[game.pid] = new Entity(10,10);
 		console.log("Player " + game.pid + ": " + entities[game.pid].x + " " + entities[game.pid].y);
 		
 		begin_enterGameLoop();	//Next step
@@ -106,11 +106,16 @@ function render() {
 	move(dX,dY);
 	
 	
+	//Offset everything by the player's position
+	var player = entities[game.pid];
+	var offsetX = tween(player.oldX,player.x,player.tween) - 7;
+	var offsetY = tween(player.oldY,player.y,player.tween) - 7;
+	
 	
 	context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
-			context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * c, 32 * r,32,32);		
+			context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 		}
 	}
 	
@@ -126,7 +131,7 @@ function render() {
 		var srcY = Math.floor(character / 4);
 		srcY *= (32 * 4);
 		
-		context.drawImage(images.characters, srcX,srcY,32,32,32 * x, 32 * y,32,32);	
+		context.drawImage(images.characters, srcX,srcY,32,32,32 * (x-offsetX), 32 * (y-offsetY),32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
