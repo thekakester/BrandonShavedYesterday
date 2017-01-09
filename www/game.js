@@ -89,16 +89,16 @@ function render() {
 window.onkeydown = function(e) {
 	switch (e.code) {
 		case "ArrowUp":
-			entities[game.pid].y = entities[game.pid].y -1;
+			entities[game.pid].set("y",entities[game.pid].y -1);
 			break;
 		case "ArrowDown":
-			entities[game.pid].y = entities[game.pid].y +1;
+			entities[game.pid].set("y",entities[game.pid].y +1);
 			break;
 		case "ArrowLeft":
-			entities[game.pid].x = entities[game.pid].x -1;
+			entities[game.pid].set("y",entities[game.pid].x -1);
 			break;
 		case "ArrowRight":
-			entities[game.pid].x = entities[game.pid].x +1;
+			entities[game.pid].set("y",entities[game.pid].x +1);
 			break;
 		default:
 			alert("Much Wow. Such.")
