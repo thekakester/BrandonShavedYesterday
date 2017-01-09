@@ -2,6 +2,7 @@ var context;	//The context we draw to
 var game = {};  //The main game object!
 
 var images = {}
+var entities = [];
 
 function begin() {
 	var canvas = document.getElementById("game-canvas");
@@ -9,7 +10,7 @@ function begin() {
 	game.height = canvas.height;
 	
 	images.tiles = PreloadImage("assets/tiles.png");
-	images.tiles = PreloadImage("assets/characters.png");
+	images.characters = PreloadImage("assets/characters.png");
 	PreloadImage.wait();	//Wait for all images to load
 	
     context = canvas.getContext('2d');
@@ -40,6 +41,10 @@ function begin_getPid() {
 	query("getpid",function(x) {
 		game.pid = ByteBuffer.toInt(x);
 		
+		//Set the player entity
+		entities[game.pid] = new Entity(3,4);
+		console.log("Player " + game.pid + ": " + entities[game.pid].x + " " + entities[game.pid].y);
+		
 		begin_enterGameLoop();	//Next step
 	});
 }
@@ -60,6 +65,13 @@ function render() {
 			context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * c, 32 * r,32,32);		
 		}
 	}
+	
+	for (var e in entities) {
+		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].x,32,32);	
+		entities[e].x = (entities[e].x + 1) % 20;
+	}
+	
+	
 }
 
 //GAME STUFF
