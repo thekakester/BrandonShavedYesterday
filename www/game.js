@@ -55,7 +55,7 @@ function begin_enterGameLoop() {
 
 function renderLooper() {
 	render();
-	setTimeout(30,function() { renderLooper(); });
+	setTimeout(function() {renderLooper()},30);
 }
 
 function render() {
@@ -67,7 +67,7 @@ function render() {
 	}
 	
 	for (var e in entities) {
-		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].x,32,32);	
+		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].y,32,32);	
 		entities[e].x = (entities[e].x + 1) % 20;
 	}
 	

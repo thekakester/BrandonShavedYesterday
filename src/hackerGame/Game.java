@@ -1,10 +1,6 @@
 package hackerGame;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Random;
-import java.util.Scanner;
 
 public class Game {
 	public Map map;
