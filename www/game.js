@@ -90,24 +90,38 @@ function render() {
  *  ContextMenu (square key with lines in it?)
  */
 window.onkeydown = function(e) {
+	var x = entities[game.pid].x;
+	var y = entities[game.pid].y;
+	
 	switch (e.code) {
 		case "ArrowUp":
-			entities[game.pid].set("y",entities[game.pid].y -1);
+			move(x,y-1);
 			break;
 		case "ArrowDown":
-			entities[game.pid].set("y",entities[game.pid].y +1);
+			move(x,y+1);
 			break;
 		case "ArrowLeft":
-			entities[game.pid].set("x",entities[game.pid].x -1);
+			move(x-1,y);
 			break;
 		case "ArrowRight":
-			entities[game.pid].set("x",entities[game.pid].x +1);
+			move(x+1,y);
 			break;
 		default:
 			alert("Much Wow. Such.")
 		
 	}
 	render();
+}
+
+function move(column, row){
+	if(column < 0 || row < 0 || column >= game.map.cols || row >= game.map.rows){
+		//Do not pass go, do not collect $200
+		return;
+	}
+	if(game.map.tile[row][column]!==0){
+		entities[game.pid].set("x",column);
+		entities[game.pid].set("y",row);
+	}
 }
 
 
