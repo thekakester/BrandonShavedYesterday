@@ -10,6 +10,12 @@ function query(query, callback) {
 	});
 }
 
+function tween(oldVal,newVal,tweenAmount) {
+	tweenAmount = tweenAmount > 1 ? 1 : tweenAmount;
+	tweenAmount = tweenAmount < 0 ? 0 : tweenAmount;
+	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
+}
+
 
 /******************************************************
 * BYTE BUFFER 

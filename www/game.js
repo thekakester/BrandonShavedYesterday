@@ -4,11 +4,19 @@ var game = {};  //The main game object!
 var images = {}
 var entities = [];
 
+var keyboard = [];
+
 function begin() {
 	var canvas = document.getElementById("game-canvas");
 	game.width = canvas.width;
 	game.height = canvas.height;
 	context = canvas.getContext('2d');
+	
+	//Init keyboard
+	keyboard["ArrowUp"] = false;
+	keyboard["ArrowDown"] = false;
+	keyboard["ArrowLeft"] = false;
+	keyboard["ArrowRight"] = false;
 	
 	images.tiles = PreloadImage("assets/tiles.png");
 	images.characters = PreloadImage("assets/characters.png");
@@ -68,9 +76,13 @@ function communicationLooper() {
 			var y = buffer.getInt();
 			
 			if (eid == game.pid) { continue; }
-			if (!entities[eid]) { entities[eid] = new Entity(x,y); }
-			entities[eid].x = x;
-			entities[eid].y = y;
+			var e = entities[eid];
+			if (!e) { entities[eid] = new Entity(x,y); e = entities[eid];}
+			e.oldX = tween(e.oldX,e.x,e.tween);
+			e.oldY = tween(e.oldY,e.y,e.tween);
+			e.tween = 0;
+			e.x = x;
+			e.y = y;
 		}
 		
 		setTimeout(function() { communicationLooper(); },100);
@@ -84,6 +96,17 @@ function renderLooper() {
 }
 
 function render() {
+	//Handle movement
+	var dX = 0;
+	var dY = 0;
+	if (keyboard["ArrowUp"]) {dY--;}
+	if (keyboard["ArrowDown"]) {dY++;}
+	if (keyboard["ArrowLeft"]) {dX--;}
+	if (keyboard["ArrowRight"]) {dX++;}
+	move(dX,dY);
+	
+	
+	
 	context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
@@ -92,7 +115,13 @@ function render() {
 	}
 	
 	for (var e in entities) {
-		context.drawImage(images.characters, 0,0,32,32,32 * entities[e].x, 32 * entities[e].y,32,32);	
+		e = entities[e];
+		var x = tween(e.oldX,e.x,e.tween);
+		var y = tween(e.oldY,e.y,e.tween);
+		
+		context.drawImage(images.characters, 0,0,32,32,32 * x, 32 * y,32,32);	
+		e.tween+=0.2;
+		if (e.tween > 1) {e.tween = 1;}
 	}
 	
 	
@@ -111,36 +140,30 @@ function render() {
  *  MetalLeft (Windows key)
  *  ContextMenu (square key with lines in it?)
  */
+ 
 window.onkeydown = function(e) {
-	var x = entities[game.pid].x;
-	var y = entities[game.pid].y;
-	
-	switch (e.code) {
-		case "ArrowUp":
-			move(x,y-1);
-			break;
-		case "ArrowDown":
-			move(x,y+1);
-			break;
-		case "ArrowLeft":
-			move(x-1,y);
-			break;
-		case "ArrowRight":
-			move(x+1,y);
-			break;
-		default:
-			alert("Much Wow. Such.")
-		
-	}
-	render();
+	keyboard[e.code] = true;
+}
+
+window.onkeyup = function(e) {
+	keyboard[e.code] = false;
 }
 
 function move(column, row){
+	if (entities[game.pid].tween < 1) { return; }
+	
+	column = entities[game.pid].x + column;
+	row = entities[game.pid].y + row;
+	
 	if(column < 0 || row < 0 || column >= game.map.cols || row >= game.map.rows){
 		//Do not pass go, do not collect $200
 		return;
 	}
 	if(game.map.tile[row][column]!==0){
+		entities[game.pid].oldX = entities[game.pid].x;
+		entities[game.pid].oldY = entities[game.pid].y;
+		entities[game.pid].tween = 0;
+		
 		entities[game.pid].set("x",column);
 		entities[game.pid].set("y",row);
 	}
@@ -151,6 +174,9 @@ function move(column, row){
 Entity.prototype = {
 	x: 0,
 	y: 0,
+	tween: 1,
+	oldX: 0,
+	oldY: 0,
 	name: "unnamed",
 	delta: [],
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}

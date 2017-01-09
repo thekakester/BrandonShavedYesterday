@@ -25,8 +25,8 @@ public class ServerThread extends Thread {
 	public ServerThread(Game game, Socket socket) {
 		this.socket = socket;
 		this.game = game;
-		this.address = socket.getLocalAddress().toString() + " (" + System.nanoTime() % 1000 + ")";
-		System.out.println("New connection from " + address);
+		this.address = socket.getInetAddress().toString() + " (" + System.nanoTime() % 1000 + ")";
+		//System.out.println("New connection from " + address);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class ServerThread extends Thread {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(address + " Connection closed");
+		//System.out.println(address + " Connection closed");
 	}
 
 	private void sendResponse(byte[] responseBody) {

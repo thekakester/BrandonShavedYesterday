@@ -14,7 +14,7 @@ public class Game {
 
 	public Game() {
 		//Uncomment this line to generate a new map file
-		map = new Map("default.map",true);
+		map = new Map("default.map",false);
 	}
 
 	/**WARNING: Not thread safe!
@@ -36,7 +36,6 @@ public class Game {
 			Entity e = entities.get(eid);
 			e.x = x;
 			e.y = y;
-			System.out.println("Updated: " + e);
 		}
 	}
 
