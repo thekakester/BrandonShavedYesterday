@@ -1,12 +1,14 @@
 var context;	//The context we draw to
 var game = {};  //The main game object!
 
+var images = {}
+
 function begin() {
 	var canvas = document.getElementById("game-canvas");
 	game.width = canvas.width;
 	game.height = canvas.height;
 	
-	PreloadImage("assets/tiles.png");
+	images.tiles = PreloadImage("assets/tiles.png");
 	PreloadImage.wait();	//Wait for all images to load
 	
     context = canvas.getContext('2d');
@@ -55,11 +57,11 @@ function render() {
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
 			if (game.map.tile[r][c] == 1) {
-				context.fillStyle='green'
+				context.drawImage(images.tiles, 0,0,32,32,32 * c, 32 * r,32,32);
 			} else {
-				context.fillStyle='yellow'
+				context.drawImage(images.tiles, 0,32,32,32,32 * c, 32 * r,32,32);
 			}
-			context.fillRect(5 * c, 5 * r,5,5);
+			
 		}
 	}
 }

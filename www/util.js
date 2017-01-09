@@ -82,6 +82,7 @@ function PreloadImage(path) {
 	img.className = "hidden";
 	img.onload = function() {PreloadImage.__remaining--;}
 	document.body.appendChild(img);
+	return img;
 }
 
 PreloadImage.wait = function(callback) {
