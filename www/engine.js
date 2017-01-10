@@ -9,10 +9,21 @@
 /*Notes to developer:
 Please keep lines under 100 characters*/
 var engine = {};
+var game = {};
+game.init = function(){};	//Override this: Executes at beginning
+game.update = function(){};	//Override this: Executes before draw each frame
+game.draw = function(){};	//Override this: Executes at the end of each frame
 
 /***************************
 * ENGINE API FUNCTIONS     *
 ***************************/
+
+/*Starts the game!
+* This must be called after everything is done in game.init()
+* The engine will then begin calling game.update() and game.draw()
+* at appropriate times
+*/
+engine.enterGameLoop = function() {};
 
 /*Start loading an image with a given path.
 * This image can be referenced by the tag provided.
@@ -86,15 +97,41 @@ Group appropriate sections and functions for readability */
 
 /*******************************************************************************
 * Section: HTML DOM Object and initialization                                  *
-********************************************************************************
-/**TODO** Make this create and add the canvas to the game*/
-engine.canvas = document.createElement("canvas");
-engine.canvas.setAttribute("width","500px");
-engine.canvas.setAttribute("height","500px");
-engine.canvas.setAttribute("border","1");
-document.body.appendChild(engine.canvas);
+*******************************************************************************/
+//Add our little bit of style
+document.write("<style>.hidden{display:none;}</style>");
 
-engine.__context = engine.canvas.getContext('2d');
+window.onload = function() {
+	engine.canvas = document.createElement("canvas");
+	engine.canvas.setAttribute("width","500px");
+	engine.canvas.setAttribute("height","500px");
+	engine.canvas.setAttribute("border","1");
+	document.body.appendChild(engine.canvas);
+	engine.__context = engine.canvas.getContext('2d');
+	game.init();
+}
+
+engine.enterGameLoop = function() {
+	engine.__renderLoop();			//Starts the render Looper
+	engine.__communicationLoop();	//Start the communication looping process
+}
+
+engine.__renderLoop = function() {
+	game.paint();
+	engine.__updateSprites();
+	setTimeout(function() {engine.__renderLoop()},30);
+}
+
+engine.__communicationLoop = function() {
+	game.communicate();
+	setTimeout(function() {engine.__communicationLoop()},100);
+}
+
+engine.__updateSprites = function () {
+	for (var key in engine.__sprites) {
+		engine.__sprites[key].nextFrame();
+	}
+}
 
 /*******************************************************************************
 * Section: Private Objects                                                     *
@@ -226,6 +263,57 @@ window.onkeyup = function(e) {
 engine.isKeyDown = function(keycode) {
 	return !!engine.__keyboard[keycode];
 }
+
+/*******************************************************************************
+* Section: ByteBuffer                                                          *
+* Author: Mitch                                                                *
+*******************************************************************************/
+
+/*Description: Made to mimic the Java byte buffer.
+* 
+* Wrap (read) example:
+* var buff = ByteBuffer.wrap(someByteArray);
+* alert(buff.getInt());
+*
+*
+* (BELOW NOT YET IMPLEMENTED)
+* Allocate (write) example:
+* var buff = new ByteBuffer();
+* buff.putInt(10);
+* buff.putInt(64);
+* alert(buff.array());
+*/
+
+//Byte buffer written by mitch to match Java library
+ByteBuffer = function() {}
+
+//Byte Buffer Static Methods
+ByteBuffer.wrap = function(stringData) {
+	//Create a byte buffer to return
+	var buffer = new ByteBuffer();
+	for (var i = 0; i < stringData.length; i++) {
+		buffer.__data[i] = stringData.charCodeAt(i);
+	}
+	return buffer;
+}
+
+ByteBuffer.toInt = function(fourByteArray) {
+	return ByteBuffer.wrap(fourByteArray).getInt();
+}
+
+//Byte Buffer Class Values
+ByteBuffer.prototype = {
+	__data: [],
+	__index: 0,
+	getInt: function() {
+		//Convert 4 bytes to an int and return it
+		return (this.__data[this.__index++] << 24) + (this.__data[this.__index++] << 16) + (this.__data[this.__index++] << 6) + (this.__data[this.__index++]);
+	},
+	getByte: function() {
+		return this.__data[this.__index++];
+	},
+}
+
 
 /*******************************************************************************
 * Section: 3rd party misc.                                                     *

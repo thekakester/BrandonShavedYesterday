@@ -1,5 +1,4 @@
-var context;	//The context we draw to
-var game = {
+game = {
 	entities: [],		//Usage: game.entities[entityID]
 	player: null,		//Usage: game.player  (reference to player entity)
 	width: 0,
@@ -8,7 +7,7 @@ var game = {
 	map: {},
 }
 
-function begin() {
+game.init = function () {
 	game.width = engine.canvas.width;
 	game.height = engine.canvas.height;
 	
@@ -62,16 +61,13 @@ function begin_getPid() {
 		game.entities[game.pid] = game.player;
 		console.log("Player " + game.pid + ": " + game.player.x + " " + game.player.y);
 		
-		begin_enterGameLoop();	//Next step
+		engine.enterGameLoop();	//Next step
 	});
 }
 
-function begin_enterGameLoop() {
-	renderLooper();	//Starts the render Looper
-	communicationLooper();	//Start the communication looping process
-}
 
-function communicationLooper() {
+
+game.communicate = function() {
 	//Tell the server where we are
 	query("update&" + game.pid + "&" + game.player.x + "&" + game.player.y, function(buffer){
 		var count = buffer.getInt();
@@ -90,25 +86,11 @@ function communicationLooper() {
 			e.x = x;
 			e.y = y;
 		}
-		
-		setTimeout(function() { communicationLooper(); },100);
 	});
 	
 }
 
-function renderLooper() {
-	render();
-	updateSprites();
-	setTimeout(function() {renderLooper()},30);
-}
-
-function updateSprites() {
-	for (var key in engine.__sprites) {
-		engine.__sprites[key].nextFrame();
-	}
-}
-
-function render() {
+game.paint = function () {
 	//Handle movement
 	var dX = 0;
 	var dY = 0;
@@ -164,6 +146,7 @@ function move(column, row){
 		//Do not pass go, do not collect $200
 		return;
 	}
+	
 	if(game.map.tile[row][column]!==0){
 		game.player.oldX = game.player.x;
 		game.player.oldY = game.player.y;
@@ -173,7 +156,6 @@ function move(column, row){
 		game.player.set("y",row);
 	}
 }
-
 
 //GAME STUFF
 Entity.prototype = {
@@ -190,4 +172,22 @@ Entity.prototype = {
 function Entity(x,y) {
 	this.x = x;
 	this.y = y;
+}
+
+function tween(oldVal,newVal,tweenAmount) {
+	tweenAmount = tweenAmount > 1 ? 1 : tweenAmount;
+	tweenAmount = tweenAmount < 0 ? 0 : tweenAmount;
+	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
+}
+
+/*Sends a string query to the server then executes callback
+* callback takes one argument, which is the response from the query in a byte buffer
+*/
+function query(query, callback) {
+	//query = escape(query);
+	$.ajax("g?" + query,{
+		complete: function(result) {
+			callback(ByteBuffer.wrap(result.responseText));
+		}
+	});
 }
