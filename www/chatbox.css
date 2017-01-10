@@ -1,0 +1,20 @@
+.chatbox {
+	float: left;
+	background-color: black;
+	width: 400px;
+	height: 1200px;
+	overflow: scroll;
+}
+
+.chatbox > .name {
+	color: lightblue;
+}
+
+.chatbox > .text {
+	color: white;
+}
+
+.chatbox > .timestamp {
+	color: yellow;
+	float: right;
+}
