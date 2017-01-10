@@ -43,10 +43,16 @@ public class ServerThread extends Thread {
 			String[] data = request.split("\\?");
 			System.out.println(address + " requesting: " + request);
 			if (data[0].equals("/g")) {
+				if (data.length < 2) {
+					//They didn't ask anything, so we won't respond
+					sendResponse("".getBytes());
+					return;
+				}
 				//Do the game logic
 				handleQuery(data[1].split("&"));
 			} else {
 				//Find the file they requested
+				if (data[0].length()==1) { data[0] = "/index.html"; }
 				File f = new File("www" + data[0]);
 				if (f.exists()) {
 					String responseType = "application/octet-stream";
@@ -56,6 +62,7 @@ public class ServerThread extends Thread {
 					sendResponse(Files.readAllBytes(f.toPath()),responseType);
 				} else {
 					System.out.println(address + " " + f.getPath() + " doesn't exist");
+					sendResponse("".getBytes());
 				}
 			}
 		} catch (Exception e) {
@@ -106,7 +113,10 @@ public class ServerThread extends Thread {
 			getPid();
 		} else if (query.equals("update")) {
 			update(args);
+		} else {
+			sendResponse(("Unhandled server command: " + query).getBytes());
 		}
+		
 	}
 
 	/**This gets called by the client while loading and should send all data
