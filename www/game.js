@@ -14,13 +14,6 @@ function begin() {
 	game.height = canvas.height;
 	context = canvas.getContext('2d');
 	
-	//Init keyboard
-	//TODO add isKeyDown() method in engine
-	engine.__keyboard["ArrowUp"] = false;
-	engine.__keyboard["ArrowDown"] = false;
-	engine.__keyboard["ArrowLeft"] = false;
-	engine.__keyboard["ArrowRight"] = false;
-	
 	engine.preloadImage("assets/tiles.png","tiles");
 	engine.preloadImage("assets/characters.png","characters");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
@@ -121,10 +114,10 @@ function render() {
 	//Handle movement
 	var dX = 0;
 	var dY = 0;
-	if (engine.__keyboard["ArrowUp"]) {dY--;}
-	if (engine.__keyboard["ArrowDown"]) {dY++;}
-	if (engine.__keyboard["ArrowLeft"]) {dX--;}
-	if (engine.__keyboard["ArrowRight"]) {dX++;}
+	if (engine.isKeyDown("ArrowUp")) {dY--;}
+	if (engine.isKeyDown("ArrowDown")) {dY++;}
+	if (engine.isKeyDown("ArrowLeft")) {dX--;}
+	if (engine.isKeyDown("ArrowRight")) {dX++;}
 	move(dX,dY);
 	
 	
@@ -161,27 +154,6 @@ function render() {
 	
 }
 
-//INPUT STUFF
-
-/* e.code = 
- * 	ArrowUp
- *  Numpad0
- *  KeyA
- *  Digit1
- *  ShiftRight
- *  Space
- *  CapsLock
- *  MetalLeft (Windows key)
- *  ContextMenu (square key with lines in it?)
- */
- 
-window.onkeydown = function(e) {
-	engine.__keyboard[e.code] = true;
-}
-
-window.onkeyup = function(e) {
-	engine.__keyboard[e.code] = false;
-}
 
 function move(column, row){
 	if (game.player.tween < 1) { return; }

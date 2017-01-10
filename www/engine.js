@@ -38,8 +38,12 @@ engine.preloadImage = function(path,tag){};
 */
 engine.onImagesLoaded = function(callback){};
 
-
-
+/*Returns true if a key is pressed.  False otherwise
+* keycode is the default javascript keycode convention.
+* Example:
+* if (engine.isKeyDown("ArrowUp")) { movePlayerUp(); }
+*/
+engine.isKeyDown = function(keycode){};
 
 /*******************************************************************************
 ********************************************************************************
@@ -157,6 +161,22 @@ engine.__Frame.prototype = {
 	x: 0,
 	y: 0,
 	duration: 0,
+}
+
+/*******************************************************************************
+* Section: Keyboard input                                                      *
+* Author: Mitch                                                                *
+*******************************************************************************/
+window.onkeydown = function(e) {
+	engine.__keyboard[e.code] = true;
+}
+
+window.onkeyup = function(e) {
+	engine.__keyboard[e.code] = false;
+}
+
+engine.isKeyDown = function(keycode) {
+	return !!engine.__keyboard[keycode];
 }
 
 /*******************************************************************************
