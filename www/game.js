@@ -154,7 +154,7 @@ function paintGame() {
 	}
 }
 
-selected = 0;
+var selected = 0;
 function paintMenu() {
 	paintGame();
 	
