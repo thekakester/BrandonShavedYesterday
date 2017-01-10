@@ -102,9 +102,11 @@ Group appropriate sections and functions for readability */
 document.write("<style>.hidden{display:none;}</style>");
 
 window.onload = function() {
+	engine.width = 500;
+	engine.height = 500;
 	engine.canvas = document.createElement("canvas");
-	engine.canvas.setAttribute("width","500px");
-	engine.canvas.setAttribute("height","500px");
+	engine.canvas.setAttribute("width",engine.width + "px");
+	engine.canvas.setAttribute("height",engine.height + "px");
 	engine.canvas.setAttribute("border","1");
 	document.body.appendChild(engine.canvas);
 	engine.__context = engine.canvas.getContext('2d');
@@ -117,6 +119,8 @@ engine.enterGameLoop = function() {
 }
 
 engine.__renderLoop = function() {
+	engine.__context.clearRect(0,0,engine.width,engine.height);
+	game.update();
 	game.paint();
 	engine.__updateSprites();
 	setTimeout(function() {engine.__renderLoop()},30);
@@ -325,6 +329,20 @@ ByteBuffer.prototype = {
 engine.__isFunction = function(obj) {
   return !!(obj && obj.constructor && obj.call && obj.apply);
 };
+
+
+engine.ajax = function (url,successCallback,failureCallback) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+			if (xmlhttp.status == 200) {
+				successCallback(xmlhttp.responseText);
+			} else { failureCallback(); }
+		}
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+}
 
 /*******************************************************************************
 ********************************************************************************

@@ -90,6 +90,7 @@ game.communicate = function() {
 	
 }
 
+game.update = function() {}
 game.paint = function () {
 	//Handle movement
 	var dX = 0;
@@ -105,7 +106,7 @@ game.paint = function () {
 	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 7) * 32);
 	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 7) * 32);
 	
-	engine.__context.clearRect(0,0,game.width,game.height);
+	
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
@@ -184,10 +185,10 @@ function tween(oldVal,newVal,tweenAmount) {
 * callback takes one argument, which is the response from the query in a byte buffer
 */
 function query(query, callback) {
+	var url = "g?" + query;
 	//query = escape(query);
-	$.ajax("g?" + query,{
-		complete: function(result) {
-			callback(ByteBuffer.wrap(result.responseText));
-		}
-	});
+	engine.ajax(url,
+		function(result) {callback(ByteBuffer.wrap(result));},
+		function() { console.log("ERROR COMMUNICATING WITH: " + url); }
+	);
 }
