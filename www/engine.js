@@ -16,6 +16,16 @@ game.draw = function(){};	//Override this: Executes at the end of each frame
 game.sendMessage = function(){};	//Override: Send a message to the server
 game.onServerRespond = function(response){};	//Override: Called when server responds
 
+/***************************
+* ENGINE SETTINGS          *
+***************************/
+//Change these to fit your game
+engine.fps = 30;
+engine.width = 800;
+engine.height = 600;
+
+//How often to comminicate with the server (time in ms)
+engine.serverMessageDelay = 100;
 
 /***************************
 * ENGINE API FUNCTIONS     *
@@ -84,6 +94,8 @@ engine.drawSprite = function(spriteTag,x,y){};
 */
 engine.isKeyDown = function(keycode){};
 
+/**TODO DOCUMENT**/
+engine.sendMessage = function(message,callback){}
 
 
 /*******************************************************************************
@@ -105,8 +117,6 @@ Group appropriate sections and functions for readability */
 document.write("<style>.hidden{display:none;}</style>");
 
 window.onload = function() {
-	engine.width = 500;
-	engine.height = 500;
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
@@ -121,11 +131,17 @@ engine.enterGameLoop = function() {
 }
 
 engine.__renderLoop = function() {
-	engine.__context.clearRect(0,0,engine.width,engine.height);
+	var n = new Date().getTime();
 	game.update();
+	engine.__context.clearRect(0,0,engine.width,engine.height);
+	
 	game.paint();
 	engine.__updateSprites();
-	setTimeout(function() {engine.__renderLoop()},30);
+	
+	//Time remaining = (1/FPS) - timeTaken
+	//Multiply 1/fps by 1000 for milliseconds
+	var remainingTime = (1000/engine.fps) - (new Date().getTime()-n);
+	setTimeout(function() {engine.__renderLoop()},remainingTime);
 }
 
 engine.__communicationLoop = function() {
@@ -136,7 +152,7 @@ engine.__communicationLoop = function() {
 
 engine.__onServerRespond = function(response) {
 	game.onServerRespond(response);
-	setTimeout(function() {engine.__communicationLoop()},100);
+	setTimeout(function() {engine.__communicationLoop()},engine.serverMessageDelay);
 }
 
 engine.__updateSprites = function () {
@@ -145,10 +161,9 @@ engine.__updateSprites = function () {
 	}
 }
 
-/**TODO DOCUMENT**/
 engine.sendMessage = function(message,callback) {
 	var url = "g?" + message;
-	engine.ajax(url,
+	engine.__ajax(url,
 		function(result) {callback(result);},
 		function() { console.log("ERROR COMMUNICATING WITH: " + url); }
 	);
@@ -348,7 +363,7 @@ engine.__isFunction = function(obj) {
 };
 
 
-engine.ajax = function (url,successCallback,failureCallback) {
+engine.__ajax = function (url,successCallback,failureCallback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
