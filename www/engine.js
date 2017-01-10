@@ -97,6 +97,13 @@ engine.isKeyDown = function(keycode){};
 /**TODO DOCUMENT**/
 engine.sendMessage = function(message,callback){}
 
+/*This represents the time in milliseconds that the game is killing time
+between game.paint() calls.
+As long as this number is greater than 0, your game is running faster than
+the time between frames.  If it is 0, consider optimizing your code to increase
+the framerate!
+Note: This value should only be read from, never written to*/
+engine.leftoverTimePerFrame = 0;
 
 /*******************************************************************************
 ********************************************************************************
@@ -130,18 +137,37 @@ engine.enterGameLoop = function() {
 	engine.__communicationLoop();	//Start the communication looping process
 }
 
+engine.__lastPaintTimeInMillis = 0;	//Must be initialized
+
+/*This needs some explanation:
+Render goes before paint.  Lets say our FPS calls for 30ms between frames.
+This means that paint() needs to be called every 30ms, regardless of how
+long update() takes and the previous paint() took.
+Therefore, we must measure time taken between successive paint() calls*/
 engine.__renderLoop = function() {
-	var n = new Date().getTime();
+	//Update part
 	game.update();
-	engine.__context.clearRect(0,0,engine.width,engine.height);
-	
-	game.paint();
 	engine.__updateSprites();
 	
-	//Time remaining = (1/FPS) - timeTaken
-	//Multiply 1/fps by 1000 for milliseconds
-	var remainingTime = (1000/engine.fps) - (new Date().getTime()-n);
-	setTimeout(function() {engine.__renderLoop()},remainingTime);
+	//How long has it been since the last time we called paint?
+	var timePast = new Date().getTime()-engine.__lastPaintTimeInMillis;
+	var sleepTime = (1000/engine.fps) - timePast;
+	
+	//Snap time remaining between 0 and 1 second.
+	sleepTime = (sleepTime < 0 || sleepTime > 1000) ? 0 : sleepTime;
+	
+	//Store this and make it accessable to the user
+	engine.leftoverTimePerFrame = sleepTime;
+	
+	//Wait this much longer before calling paint
+	setTimeout(function() { 
+		engine.__lastPaintTimeInMillis = new Date().getTime();
+		engine.__context.clearRect(0, 0, engine.width, engine.height);
+		game.paint();
+		
+		//Re-loop (no stack overflow because this is a delegate!!!)
+		engine.__renderLoop();
+	},sleepTime);
 }
 
 engine.__communicationLoop = function() {

@@ -85,7 +85,7 @@ game.onServerRespond = function(response) {
 		
 		if (eid == game.player.id) { continue; }
 		var e = game.entities[eid];
-		if (!e) { game.entities[eid] = new Entity(x,y); e = game.entities[eid];}
+		if (!e) { game.entities[eid] = new Entity(eid,x,y); e = game.entities[eid];}
 		e.oldX = tween(e.oldX,e.x,e.tween);
 		e.oldY = tween(e.oldY,e.y,e.tween);
 		e.tween = 0;
