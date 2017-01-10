@@ -1,16 +1,12 @@
-game = {
-	entities: [],		//Usage: game.entities[entityID]
-	player: null,		//Usage: game.player  (reference to player entity)
-	width: 0,
-	height: 0,
-	pid: 0,
-	map: {},
-}
+/**An explicit definition of properties of the game object**/
+game.entities = [];		//Usage: game.entities[entityID]
+game.player = null;		//Usage: game.player  (reference to player entity)
+game.map = {};
 
+/*******************************************************************************
+* INITIALIZATION                                                               *
+*******************************************************************************/
 game.init = function () {
-	game.width = engine.canvas.width;
-	game.height = engine.canvas.height;
-	
 	engine.preloadImage("assets/tiles.png","tiles");
 	engine.preloadImage("assets/characters.png","characters");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
@@ -36,7 +32,9 @@ function begin_loadSprites() {
 
 function begin_loadMap() {
 	//Async Load map
-	query("init",function(buffer) {
+	console.log("Loading map");
+	engine.sendMessage("init",function(response) {
+		var buffer = ByteBuffer.wrap(response);
 		game.map.rows = buffer.getInt();
 		game.map.cols = buffer.getInt();
 		game.map.tile = []
@@ -53,7 +51,9 @@ function begin_loadMap() {
 
 function begin_getPid() {
 	//Async Get unique player ID
-	query("getpid",function(buffer) {
+	console.log("Getting player ID");
+	engine.sendMessage("getpid",function(response) {
+		var buffer = ByteBuffer.wrap(response);
 		game.pid = buffer.getInt();
 		
 		//Set the player entity
@@ -65,30 +65,37 @@ function begin_getPid() {
 	});
 }
 
-
-
-game.communicate = function() {
-	//Tell the server where we are
-	query("update&" + game.pid + "&" + game.player.x + "&" + game.player.y, function(buffer){
-		var count = buffer.getInt();
-		
-		for (var i = 0; i < count; i++) {
-			var eid = buffer.getInt();
-			var x = buffer.getInt();
-			var y = buffer.getInt();
-			
-			if (eid == game.pid) { continue; }
-			var e = game.entities[eid];
-			if (!e) { game.entities[eid] = new Entity(x,y); e = game.entities[eid];}
-			e.oldX = tween(e.oldX,e.x,e.tween);
-			e.oldY = tween(e.oldY,e.y,e.tween);
-			e.tween = 0;
-			e.x = x;
-			e.y = y;
-		}
-	});
-	
+/*******************************************************************************
+* Server Communication                                                         *
+*******************************************************************************/
+game.sendMessage = function() {
+	//Return the message to send to the server
+	return "update&" + game.pid + "&" + game.player.x + "&" + game.player.y;
 }
+
+game.onServerRespond = function(response) {
+	var buffer = ByteBuffer.wrap(response);
+	var count = buffer.getInt();
+		
+	for (var i = 0; i < count; i++) {
+		var eid = buffer.getInt();
+		var x = buffer.getInt();
+		var y = buffer.getInt();
+		
+		if (eid == game.pid) { continue; }
+		var e = game.entities[eid];
+		if (!e) { game.entities[eid] = new Entity(x,y); e = game.entities[eid];}
+		e.oldX = tween(e.oldX,e.x,e.tween);
+		e.oldY = tween(e.oldY,e.y,e.tween);
+		e.tween = 0;
+		e.x = x;
+		e.y = y;
+	}
+}
+
+/*******************************************************************************
+* Update and Paint                                                             *
+*******************************************************************************/
 
 game.update = function() {}
 game.paint = function () {
@@ -158,6 +165,10 @@ function move(column, row){
 	}
 }
 
+/*******************************************************************************
+* Data Structures and Util                                                     *
+*******************************************************************************/
+
 //GAME STUFF
 Entity.prototype = {
 	x: 0,
@@ -179,16 +190,4 @@ function tween(oldVal,newVal,tweenAmount) {
 	tweenAmount = tweenAmount > 1 ? 1 : tweenAmount;
 	tweenAmount = tweenAmount < 0 ? 0 : tweenAmount;
 	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
-}
-
-/*Sends a string query to the server then executes callback
-* callback takes one argument, which is the response from the query in a byte buffer
-*/
-function query(query, callback) {
-	var url = "g?" + query;
-	//query = escape(query);
-	engine.ajax(url,
-		function(result) {callback(ByteBuffer.wrap(result));},
-		function() { console.log("ERROR COMMUNICATING WITH: " + url); }
-	);
 }

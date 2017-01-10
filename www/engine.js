@@ -13,6 +13,9 @@ var game = {};
 game.init = function(){};	//Override this: Executes at beginning
 game.update = function(){};	//Override this: Executes before draw each frame
 game.draw = function(){};	//Override this: Executes at the end of each frame
+game.sendMessage = function(){};	//Override: Send a message to the server
+game.onServerRespond = function(response){};	//Override: Called when server responds
+
 
 /***************************
 * ENGINE API FUNCTIONS     *
@@ -127,7 +130,13 @@ engine.__renderLoop = function() {
 }
 
 engine.__communicationLoop = function() {
-	game.communicate();
+	var message = game.sendMessage();
+	engine.sendMessage(message,engine.__onServerRespond);
+	
+}
+
+engine.__onServerRespond = function(response) {
+	game.onServerRespond(response);
 	setTimeout(function() {engine.__communicationLoop()},100);
 }
 
@@ -135,6 +144,15 @@ engine.__updateSprites = function () {
 	for (var key in engine.__sprites) {
 		engine.__sprites[key].nextFrame();
 	}
+}
+
+/**TODO DOCUMENT**/
+engine.sendMessage = function(message,callback) {
+	var url = "g?" + message;
+	engine.ajax(url,
+		function(result) {callback(result);},
+		function() { console.log("ERROR COMMUNICATING WITH: " + url); }
+	);
 }
 
 /*******************************************************************************

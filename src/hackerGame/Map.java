@@ -24,11 +24,12 @@ public class Map implements SerializableObject {
 	/**If generateNew is set to true, a new map will be generated and saved to filename
 	 * 
 	 * @param filename
-	 * @param generateNew
+	 * @param regenerate If set to true, a new map will always be generated.  Otherwise, it will only be generated if it doesn't exist
 	 */
-	public Map(String filename, boolean generateNew) {
+	public Map(String filename, boolean regenerate) {
 		mapFilename = filename;
-		if (generateNew) {
+		File f = new File(filename);
+		if (regenerate || !f.exists()) {
 			generateNewMap(100,100,true);	//YOU CAN MODIFY THIS!  (change the map type)
 		}
 		load();
