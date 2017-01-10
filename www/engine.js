@@ -15,13 +15,16 @@ var engine = {};
 ***************************/
 
 /*Start loading an image with a given path.
-* This image will be stored as
-* game.engine.images.<tag>
+* This image can be referenced by the tag provided.
+*
 * WARNING: Make sure to use engine.onImagesLoaded()
 * before using your images to make sure they are loaded
 *
 * Example:
 * engine.preloadImage("assets/tiles.png","tiles");
+*
+* Example (Drawing at position 100,50 ):
+* engine.drawImage("tiles",100,50);
 */
 engine.preloadImage = function(path,tag){};
 
@@ -38,12 +41,36 @@ engine.preloadImage = function(path,tag){};
 */
 engine.onImagesLoaded = function(callback){};
 
+/****TODO****/
+engine.drawImage = function(imageTag,x,y) {};
+
+/*Create and store a sprite object from a preloaded image
+* This can be accessed later using its tag.
+* The width/height is of the SPRITE, not the source image.
+*
+* Example:
+* var tmp = engine.createSprite("mySprite","myImage",32,32);
+* var xSrc = 32;
+* var ySrc = 64;
+* var durationInFrames = 15;
+* tmp.addFrame(xSrc,ySrc,durationInFrames);
+*
+* Example (Drawing at position 100,50 ):
+* engine.drawSprite("mySprite",100,50);
+*/
+engine.createSprite = function(spriteTag,imageTag,width,height){};
+
+/****TODO*****/
+engine.drawSprite = function(spriteTag,x,y){};
+
 /*Returns true if a key is pressed.  False otherwise
 * keycode is the default javascript keycode convention.
 * Example:
 * if (engine.isKeyDown("ArrowUp")) { movePlayerUp(); }
 */
 engine.isKeyDown = function(keycode){};
+
+
 
 /*******************************************************************************
 ********************************************************************************
@@ -56,6 +83,18 @@ engine.isKeyDown = function(keycode){};
 
 /*Notes to developer: Please follow style conventions.  Don't be lazy
 Group appropriate sections and functions for readability */
+
+/*******************************************************************************
+* Section: HTML DOM Object and initialization                                  *
+********************************************************************************
+/**TODO** Make this create and add the canvas to the game*/
+engine.canvas = document.createElement("canvas");
+engine.canvas.setAttribute("width","500px");
+engine.canvas.setAttribute("height","500px");
+engine.canvas.setAttribute("border","1");
+document.body.appendChild(engine.canvas);
+
+engine.__context = engine.canvas.getContext('2d');
 
 /*******************************************************************************
 * Section: Private Objects                                                     *
@@ -97,6 +136,11 @@ engine.onImagesLoaded = function(callback) {
 	}
 }
 
+engine.drawImage = function (imageTag) {
+	arguments[0] = engine.__images[imageTag];
+	engine.__context.drawImage.apply(engine.__context,arguments);
+}
+
 /*******************************************************************************
 * Section: Sprites                                                             *
 * Author: Mitch                                                                *
@@ -130,9 +174,9 @@ engine.__Sprite.prototype = {
 	__frames: null,
 	__frame: 0,
 	__subFrame: 0,
-	draw: function(context, x, y) {
+	draw: function(x, y) {
 		var f = this.__frames[this.__frame];
-		context.drawImage(this.__image,f.x,f.y,this.__width,this.__height,x,y,this.__width,this.__height);
+		engine.__context.drawImage(this.__image,f.x,f.y,this.__width,this.__height,x,y,this.__width,this.__height);
 	},
 	nextFrame: function() {
 		this.__subFrame++;
@@ -161,6 +205,10 @@ engine.__Frame.prototype = {
 	x: 0,
 	y: 0,
 	duration: 0,
+}
+
+engine.drawSprite = function (spriteTag,x,y) {
+	engine.__sprites[spriteTag].draw(x,y);
 }
 
 /*******************************************************************************

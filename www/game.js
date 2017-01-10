@@ -9,10 +9,8 @@ var game = {
 }
 
 function begin() {
-	var canvas = document.getElementById("game-canvas");
-	game.width = canvas.width;
-	game.height = canvas.height;
-	context = canvas.getContext('2d');
+	game.width = engine.canvas.width;
+	game.height = engine.canvas.height;
 	
 	engine.preloadImage("assets/tiles.png","tiles");
 	engine.preloadImage("assets/characters.png","characters");
@@ -125,12 +123,13 @@ function render() {
 	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 7) * 32);
 	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 7) * 32);
 	
-	context.clearRect(0,0,game.width,game.height);
+	engine.__context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
-			engine.__sprites[game.map.tile[r][c]].draw(context,(32 * c) - offsetX,(32 * r)-offsetY);
+			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
+			engine.drawSprite(game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
 		}
 	}
 	
@@ -146,7 +145,7 @@ function render() {
 		var srcY = Math.floor(character / 4);
 		srcY *= (32 * 4);
 		
-		context.drawImage(engine.__images.characters, srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
+		engine.drawImage("characters", srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
