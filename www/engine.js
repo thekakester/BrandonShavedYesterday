@@ -354,7 +354,7 @@ ByteBuffer.wrap = function(stringData) {
 	//Create a byte buffer to return
 	var buffer = new ByteBuffer();
 	for (var i = 0; i < stringData.length; i++) {
-		buffer.__data[i] = stringData.charCodeAt(i);
+		buffer.__data[i] = stringData.charCodeAt(i)&0xFF;//Do &0XFF to only look at one byte.  String formatting in javascript messes with this
 	}
 	return buffer;
 }
@@ -369,7 +369,7 @@ ByteBuffer.prototype = {
 	__index: 0,
 	getInt: function() {
 		//Convert 4 bytes to an int and return it
-		return (this.__data[this.__index++] << 24) + (this.__data[this.__index++] << 16) + (this.__data[this.__index++] << 6) + (this.__data[this.__index++]);
+		return (this.__data[this.__index++] << 24) | (this.__data[this.__index++] << 16) | (this.__data[this.__index++] << 8) | (this.__data[this.__index++]);
 	},
 	getByte: function() {
 		return this.__data[this.__index++];
@@ -391,6 +391,7 @@ engine.__isFunction = function(obj) {
 
 engine.__ajax = function (url,successCallback,failureCallback) {
     var xmlhttp = new XMLHttpRequest();
+	xmlhttp.overrideMimeType('text\/plain; charset=x-user-defined');	//Allows binary data response (above 128)
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 			if (xmlhttp.status == 200) {
