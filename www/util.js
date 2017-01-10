@@ -16,7 +16,6 @@ function tween(oldVal,newVal,tweenAmount) {
 	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
 }
 
-
 /******************************************************
 * BYTE BUFFER 
 * -----------
@@ -67,34 +66,3 @@ ByteBuffer.prototype = {
 }
 
 
-/******************************************************
-* IMAGE PRELOADER 
-* -----------
-* Author: Mitch
-* Description: Images must be loaded before they can be drawn by the canvas
-* This method will create a DOM object, load the image, and return a reference to ut
-* 
-* Usage:
-* var image1 = PreloadImage("assets/myImage.png");
-* var image2 = PreloadImage("assets/myOtherImage.png");
-* PreloadImage.wait(function() { alert('done!'); });	//Wait until both images above load
-*
-******************************************************/
-PreloadImage.__remaining = 0;
-function PreloadImage(path) {
-	PreloadImage.__remaining++;
-	var img = document.createElement("img");
-	img.setAttribute("src",path);
-	img.className = "hidden";
-	img.onload = function() {PreloadImage.__remaining--;}
-	document.body.appendChild(img);
-	return img;
-}
-
-PreloadImage.wait = function(callback) {
-	if (PreloadImage.__remaining == 0) {
-		callback();
-	} else {
-		setTimeout(function() {PreloadImage.wait(callback)},30);
-	}
-}

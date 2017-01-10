@@ -1,10 +1,12 @@
 var context;	//The context we draw to
-var game = {};  //The main game object!
-
-var images = {}
-var entities = [];
-var sprites = {};
-var keyboard = [];
+var game = {
+	entities: [],		//Usage: game.entities[entityID]
+	player: null,		//Usage: game.player  (reference to player entity)
+	width: 0,
+	height: 0,
+	pid: 0,
+	map: {},
+}
 
 function begin() {
 	var canvas = document.getElementById("game-canvas");
@@ -13,36 +15,31 @@ function begin() {
 	context = canvas.getContext('2d');
 	
 	//Init keyboard
-	keyboard["ArrowUp"] = false;
-	keyboard["ArrowDown"] = false;
-	keyboard["ArrowLeft"] = false;
-	keyboard["ArrowRight"] = false;
+	//TODO add isKeyDown() method in engine
+	engine.__keyboard["ArrowUp"] = false;
+	engine.__keyboard["ArrowDown"] = false;
+	engine.__keyboard["ArrowLeft"] = false;
+	engine.__keyboard["ArrowRight"] = false;
 	
-	images.tiles = PreloadImage("assets/tiles.png");
-	images.characters = PreloadImage("assets/characters.png");
-	PreloadImage.wait(function() {
-		begin_loadSprites();	//Wait for images to load, then move to the next step
-	});
-	
-    
-	
+	engine.preloadImage("assets/tiles.png","tiles");
+	engine.preloadImage("assets/characters.png","characters");
+	engine.onImagesLoaded(function() { begin_loadSprites(); });
+
 }
 
 function begin_loadSprites() {
-	sprites.tiles = [];
-	sprites.tiles[0] = new Sprite(images.tiles,32,32);
-	sprites.tiles[0].addFrame(new Frame(160,96,15));
-	sprites.tiles[0].addFrame(new Frame(160,128,15));
+	var tmp = engine.createSprite("0","tiles",32,32);	//Create sprite "0"
+	tmp.addFrame(160,96,15);
+	tmp.addFrame(160,128,15);
 	
-	sprites.tiles[1] = new Sprite(images.tiles,32,32);
-	sprites.tiles[1].addFrame(new Frame(64,320,15));
-	sprites.tiles[1].addFrame(new Frame(96,320,15));
-	sprites.tiles[1].addFrame(new Frame(128,320,15));
-	sprites.tiles[1].addFrame(new Frame(160,320,15));
+	var tmp = engine.createSprite("1","tiles",32,32);	//Create sprite "1"
+	tmp.addFrame(64,320,15);
+	tmp.addFrame(96,320,15);
+	tmp.addFrame(128,320,15);
+	tmp.addFrame(160,320,15);
 	
-	sprites.tiles[2] = new Sprite(images.tiles,32,32);
-	sprites.tiles[2].addFrame(new Frame(96,32,1));
-	
+	var tmp = engine.createSprite("2","tiles",32,32);	//Create sprite "2"
+	tmp.addFrame(96,32,1);
 	
 	begin_loadMap();
 }
@@ -50,7 +47,6 @@ function begin_loadSprites() {
 function begin_loadMap() {
 	//Async Load map
 	query("init",function(buffer) {
-		game.map = {}
 		game.map.rows = buffer.getInt();
 		game.map.cols = buffer.getInt();
 		game.map.tile = []
@@ -71,8 +67,9 @@ function begin_getPid() {
 		game.pid = buffer.getInt();
 		
 		//Set the player entity
-		entities[game.pid] = new Entity(10,10);
-		console.log("Player " + game.pid + ": " + entities[game.pid].x + " " + entities[game.pid].y);
+		game.player = new Entity(10,10);
+		game.entities[game.pid] = game.player;
+		console.log("Player " + game.pid + ": " + game.player.x + " " + game.player.y);
 		
 		begin_enterGameLoop();	//Next step
 	});
@@ -85,8 +82,7 @@ function begin_enterGameLoop() {
 
 function communicationLooper() {
 	//Tell the server where we are
-	var player = entities[game.pid];
-	query("update&" + game.pid + "&" + player.x + "&" + player.y, function(buffer){
+	query("update&" + game.pid + "&" + game.player.x + "&" + game.player.y, function(buffer){
 		var count = buffer.getInt();
 		
 		for (var i = 0; i < count; i++) {
@@ -95,8 +91,8 @@ function communicationLooper() {
 			var y = buffer.getInt();
 			
 			if (eid == game.pid) { continue; }
-			var e = entities[eid];
-			if (!e) { entities[eid] = new Entity(x,y); e = entities[eid];}
+			var e = game.entities[eid];
+			if (!e) { game.entities[eid] = new Entity(x,y); e = game.entities[eid];}
 			e.oldX = tween(e.oldX,e.x,e.tween);
 			e.oldY = tween(e.oldY,e.y,e.tween);
 			e.tween = 0;
@@ -116,8 +112,8 @@ function renderLooper() {
 }
 
 function updateSprites() {
-	for (var key in sprites.tiles) {
-		sprites.tiles[key].nextFrame();
+	for (var key in engine.__sprites) {
+		engine.__sprites[key].nextFrame();
 	}
 }
 
@@ -125,30 +121,28 @@ function render() {
 	//Handle movement
 	var dX = 0;
 	var dY = 0;
-	if (keyboard["ArrowUp"]) {dY--;}
-	if (keyboard["ArrowDown"]) {dY++;}
-	if (keyboard["ArrowLeft"]) {dX--;}
-	if (keyboard["ArrowRight"]) {dX++;}
+	if (engine.__keyboard["ArrowUp"]) {dY--;}
+	if (engine.__keyboard["ArrowDown"]) {dY++;}
+	if (engine.__keyboard["ArrowLeft"]) {dX--;}
+	if (engine.__keyboard["ArrowRight"]) {dX++;}
 	move(dX,dY);
 	
 	
 	//Offset everything by the player's position
-	var player = entities[game.pid];
-	var offsetX = Math.floor((tween(player.oldX,player.x,player.tween) - 7) * 32);
-	var offsetY = Math.floor((tween(player.oldY,player.y,player.tween) - 7) * 32);
-	
+	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 7) * 32);
+	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 7) * 32);
 	
 	context.clearRect(0,0,game.width,game.height);
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
-			sprites.tiles[game.map.tile[r][c]].draw(context,(32 * c) - offsetX,(32 * r)-offsetY);
+			engine.__sprites[game.map.tile[r][c]].draw(context,(32 * c) - offsetX,(32 * r)-offsetY);
 		}
 	}
 	
-	for (var id in entities) {
-		var e = entities[id];
+	for (var id in game.entities) {
+		var e = game.entities[id];
 		var x = tween(e.oldX,e.x,e.tween);
 		var y = tween(e.oldY,e.y,e.tween);
 		
@@ -159,7 +153,7 @@ function render() {
 		var srcY = Math.floor(character / 4);
 		srcY *= (32 * 4);
 		
-		context.drawImage(images.characters, srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
+		context.drawImage(engine.__images.characters, srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
@@ -182,30 +176,30 @@ function render() {
  */
  
 window.onkeydown = function(e) {
-	keyboard[e.code] = true;
+	engine.__keyboard[e.code] = true;
 }
 
 window.onkeyup = function(e) {
-	keyboard[e.code] = false;
+	engine.__keyboard[e.code] = false;
 }
 
 function move(column, row){
-	if (entities[game.pid].tween < 1) { return; }
+	if (game.player.tween < 1) { return; }
 	
-	column = entities[game.pid].x + column;
-	row = entities[game.pid].y + row;
+	column = game.player.x + column;
+	row = game.player.y + row;
 	
 	if(column < 0 || row < 0 || column >= game.map.cols || row >= game.map.rows){
 		//Do not pass go, do not collect $200
 		return;
 	}
 	if(game.map.tile[row][column]!==0){
-		entities[game.pid].oldX = entities[game.pid].x;
-		entities[game.pid].oldY = entities[game.pid].y;
-		entities[game.pid].tween = 0;
+		game.player.oldX = game.player.x;
+		game.player.oldY = game.player.y;
+		game.player.tween = 0;
 		
-		entities[game.pid].set("x",column);
-		entities[game.pid].set("y",row);
+		game.player.set("x",column);
+		game.player.set("y",row);
 	}
 }
 
