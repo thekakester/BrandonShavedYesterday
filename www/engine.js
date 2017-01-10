@@ -16,6 +16,16 @@ game.draw = function(){};	//Override this: Executes at the end of each frame
 game.sendMessage = function(){};	//Override: Send a message to the server
 game.onServerRespond = function(response){};	//Override: Called when server responds
 
+/***************************
+* ENGINE SETTINGS          *
+***************************/
+//Change these to fit your game
+engine.fps = 30;
+engine.width = 800;
+engine.height = 600;
+
+//How often to comminicate with the server (time in ms)
+engine.serverMessageDelay = 100;
 
 /***************************
 * ENGINE API FUNCTIONS     *
@@ -84,7 +94,16 @@ engine.drawSprite = function(spriteTag,x,y){};
 */
 engine.isKeyDown = function(keycode){};
 
+/**TODO DOCUMENT**/
+engine.sendMessage = function(message,callback){}
 
+/*This represents the time in milliseconds that the game is killing time
+between game.paint() calls.
+As long as this number is greater than 0, your game is running faster than
+the time between frames.  If it is 0, consider optimizing your code to increase
+the framerate!
+Note: This value should only be read from, never written to*/
+engine.leftoverTimePerFrame = 0;
 
 /*******************************************************************************
 ********************************************************************************
@@ -105,12 +124,9 @@ Group appropriate sections and functions for readability */
 document.write("<style>.hidden{display:none;}</style>");
 
 window.onload = function() {
-	engine.width = 500;
-	engine.height = 500;
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
-	engine.canvas.setAttribute("border","1");
 	document.body.appendChild(engine.canvas);
 	engine.__context = engine.canvas.getContext('2d');
 	game.init();
@@ -121,12 +137,37 @@ engine.enterGameLoop = function() {
 	engine.__communicationLoop();	//Start the communication looping process
 }
 
+engine.__lastPaintTimeInMillis = 0;	//Must be initialized
+
+/*This needs some explanation:
+Render goes before paint.  Lets say our FPS calls for 30ms between frames.
+This means that paint() needs to be called every 30ms, regardless of how
+long update() takes and the previous paint() took.
+Therefore, we must measure time taken between successive paint() calls*/
 engine.__renderLoop = function() {
-	engine.__context.clearRect(0,0,engine.width,engine.height);
+	//Update part
 	game.update();
-	game.paint();
 	engine.__updateSprites();
-	setTimeout(function() {engine.__renderLoop()},30);
+	
+	//How long has it been since the last time we called paint?
+	var timePast = new Date().getTime()-engine.__lastPaintTimeInMillis;
+	var sleepTime = (1000/engine.fps) - timePast;
+	
+	//Snap time remaining between 0 and 1 second.
+	sleepTime = (sleepTime < 0 || sleepTime > 1000) ? 0 : sleepTime;
+	
+	//Store this and make it accessable to the user
+	engine.leftoverTimePerFrame = sleepTime;
+	
+	//Wait this much longer before calling paint
+	setTimeout(function() { 
+		engine.__lastPaintTimeInMillis = new Date().getTime();
+		engine.__context.clearRect(0, 0, engine.width, engine.height);
+		game.paint();
+		
+		//Re-loop (no stack overflow because this is a delegate!!!)
+		engine.__renderLoop();
+	},sleepTime);
 }
 
 engine.__communicationLoop = function() {
@@ -137,7 +178,7 @@ engine.__communicationLoop = function() {
 
 engine.__onServerRespond = function(response) {
 	game.onServerRespond(response);
-	setTimeout(function() {engine.__communicationLoop()},100);
+	setTimeout(function() {engine.__communicationLoop()},engine.serverMessageDelay);
 }
 
 engine.__updateSprites = function () {
@@ -146,10 +187,9 @@ engine.__updateSprites = function () {
 	}
 }
 
-/**TODO DOCUMENT**/
 engine.sendMessage = function(message,callback) {
 	var url = "g?" + message;
-	engine.ajax(url,
+	engine.__ajax(url,
 		function(result) {callback(result);},
 		function() { console.log("ERROR COMMUNICATING WITH: " + url); }
 	);
@@ -349,7 +389,7 @@ engine.__isFunction = function(obj) {
 };
 
 
-engine.ajax = function (url,successCallback,failureCallback) {
+engine.__ajax = function (url,successCallback,failureCallback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {

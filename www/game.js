@@ -54,12 +54,13 @@ function begin_getPid() {
 	console.log("Getting player ID");
 	engine.sendMessage("getpid",function(response) {
 		var buffer = ByteBuffer.wrap(response);
-		game.pid = buffer.getInt();
+		
+		var pid = buffer.getInt();
 		
 		//Set the player entity
-		game.player = new Entity(10,10);
-		game.entities[game.pid] = game.player;
-		console.log("Player " + game.pid + ": " + game.player.x + " " + game.player.y);
+		game.player = new Entity(pid,10,10);
+		game.entities[pid] = game.player;
+		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
 		engine.enterGameLoop();	//Next step
 	});
@@ -70,7 +71,7 @@ function begin_getPid() {
 *******************************************************************************/
 game.sendMessage = function() {
 	//Return the message to send to the server
-	return "update&" + game.pid + "&" + game.player.x + "&" + game.player.y;
+	return "update&" + game.player.id + "&" + game.player.x + "&" + game.player.y;
 }
 
 game.onServerRespond = function(response) {
@@ -82,9 +83,9 @@ game.onServerRespond = function(response) {
 		var x = buffer.getInt();
 		var y = buffer.getInt();
 		
-		if (eid == game.pid) { continue; }
+		if (eid == game.player.id) { continue; }
 		var e = game.entities[eid];
-		if (!e) { game.entities[eid] = new Entity(x,y); e = game.entities[eid];}
+		if (!e) { game.entities[eid] = new Entity(eid,x,y); e = game.entities[eid];}
 		e.oldX = tween(e.oldX,e.x,e.tween);
 		e.oldY = tween(e.oldY,e.y,e.tween);
 		e.tween = 0;
@@ -173,6 +174,7 @@ function move(column, row){
 Entity.prototype = {
 	x: 0,
 	y: 0,
+	id: 0,
 	tween: 1,
 	oldX: 0,
 	oldY: 0,
@@ -181,7 +183,8 @@ Entity.prototype = {
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
 
-function Entity(x,y) {
+function Entity(id,x,y) {
+	this.id = id;
 	this.x = x;
 	this.y = y;
 }
