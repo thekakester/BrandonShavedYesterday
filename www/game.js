@@ -159,15 +159,76 @@ function paintMenu() {
 //******************
 //* TERMINAL       *
 //******************
-
+var terminalLineBuffer = [];
+var terminalCommandBuffer = [];
+var terminalCommandBufferMaxSize = 20;	//Arbitrary number
+var terminalFontSize = 20;
+var terminalLineBufferMaxSize = (engine.height / terminalFontSize) - 2;
+var terminalHistoryIndex = 0;
 function updateTerminal() {
+	engine.__context.font = terminalFontSize + "px Consolas";
 	engine.recordKeyboard(true);
+	
+	//USE UP/DOWN TO GO THROUGH HISTORY
+	var getHistory = 0;
+	if (engine.isKeyPressed("ArrowUp")) {
+		getHistory = 1;	//Go back one history
+	}
+	if (engine.isKeyPressed("ArrowDown")) {
+		getHistory = -1; //Go forward one history
+	}
+	if (getHistory != 0) {
+		terminalHistoryIndex+=getHistory;
+		if (terminalHistoryIndex < 0 || terminalHistoryIndex > terminalCommandBuffer.length) {
+			terminalHistoryIndex-=getHistory
+		} else {
+			if (terminalHistoryIndex == 0) {engine.keyboardBuffer = "";}
+			else {
+				//Go back this many commands
+				var command;
+				var i = terminalCommandBuffer.length - terminalHistoryIndex + 1;
+				if (i > 0) {
+					for (command in terminalCommandBuffer) {
+						i--;
+						if (i == 0) {break;}
+					}
+					engine.keyboardBuffer = terminalCommandBuffer[command];
+				}
+			}
+		}
+	}
+	
+	if (engine.isKeyPressed("Enter")) {
+		queuelikeAdd(terminalLineBuffer,terminalLineBufferMaxSize,engine.keyboardBuffer);
+		queuelikeAdd(terminalCommandBuffer,terminalCommandBufferMaxSize,engine.keyboardBuffer);
+		engine.keyboardBuffer = "";
+	}
 }
 
 function paintTerminal() {
 	var txt = "> " + engine.keyboardBuffer;
-	engine.__context.fillText(txt,10,40);
-	engine.__context.fillText(txt.length + "",10,90);
+	
+	
+	//First line should be at the top
+	var y = terminalFontSize;
+	//Draw the buffer
+	for (var line in terminalLineBuffer) {
+		engine.__context.fillText(terminalLineBuffer[line],10,y);
+		y+=terminalFontSize;
+	}
+	engine.__context.fillText(txt,10,y);
+}
+
+function queuelikeAdd(array,maxSize,line) {
+	array.push(line);
+	if (array.length > maxSize) {
+		var index;
+		//Get the first element
+		for (index in array) {
+			break;
+		}
+		array.splice(index, 1);
+	}
 }
 
 //******************
