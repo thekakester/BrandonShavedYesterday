@@ -1,17 +1,13 @@
 package engine;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Scanner;
 
-import game.Game;
 
 /**This class handles communication with the client.
  * No game logic should be written here.  Serialization code is fine
@@ -22,7 +18,7 @@ import game.Game;
  */
 public class ServerThread extends Thread {
 	private final Socket socket;
-	private final Game game;
+	private final GameInterface game;
 	private final String address;
 	private String response;
 
@@ -31,7 +27,7 @@ public class ServerThread extends Thread {
 	 * @param game
 	 * @param socket
 	 */
-	public ServerThread(Game game, Socket socket) {
+	public ServerThread(GameInterface game, Socket socket) {
 		this.socket = socket;
 		this.game = game;
 		this.address = socket.getInetAddress().toString() + " (" + System.nanoTime() % 1000 + ")";

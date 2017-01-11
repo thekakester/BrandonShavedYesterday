@@ -13,11 +13,14 @@ import java.util.Scanner;
 import game.Game;
 
 public class Server {
-	public static void main(String[] args) { new Server(); }
 
-	Game game = new Game();
+	private GameInterface game;
 	
-	public Server() {
+	/**Create a server for the selected game
+	 * 
+	 * @param game
+	 */
+	public Server(GameInterface game) {
 		
 		//Start a simple web server
 		int port = Settings.PORT;	//Shouldn't change

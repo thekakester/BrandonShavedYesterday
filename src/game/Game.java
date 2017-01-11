@@ -3,25 +3,26 @@ package game;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
+import engine.GameInterface;
 import engine.Server;
 
-public class Game {
-	public Map map;
+public class Game implements GameInterface {
 
-	private int lastAddedEntityID = 99;
+	//This method starts the server and the game
+	public static void main(String[] args) {new Server (new Game()); }
+
+	public Map map;
+	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 
-	//Constructor that calls Server.main() for convenience
-	//This will then create our game object
-	public static void main(String[] args) {Server.main(args); }
-
 	public Game() {
-		//Uncomment this line to generate a new map file
+		//Set second argument to true to ALWAYS generate a new map file
 		map = new Map("default.map",false);
 	}
 
-	/**WARNING: Not thread safe!
-	 * 
+	/**Get an ID for an entity that hasn't been used yet
+	 * WARNING: Not thread safe!
+	 *  Threads have been disabled
 	 * @return
 	 */
 	public int getNewEntityId() {
