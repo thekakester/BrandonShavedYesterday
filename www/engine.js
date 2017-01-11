@@ -94,6 +94,17 @@ engine.drawSprite = function(spriteTag,x,y){};
 */
 engine.isKeyDown = function(keycode){};
 
+/*Similar to isKeyDown(), except this will only return true once
+* until the key is released and pressed again. (mimicks typing)
+* If you press and hold a key, this will return true, wait a bit,
+* then repeatedly return true
+* Example:
+*   //User is pressing the up arrow
+*   if (engine.keyPressed("ArrowUp")) { alert("Pressed");} //This code runs
+*   if (engine.keyPressed("ArrowUp")) { alert("Pressed");} //This code doesn't
+*/
+engine.isKeyPressed = function(keycode){};
+
 /**TODO DOCUMENT**/
 engine.sendMessage = function(message,callback){}
 
@@ -202,6 +213,7 @@ engine.sendMessage = function(message,callback) {
 engine.__images = [];	//Usage: engine.__images[tag];
 engine.__sprites = [];	//Usage: engine.__sprites[tag];
 engine.__keyboard = [];	//Usage: engine.__keyboard[keyCode]; (using js keycode)
+engine.__keyPress = [];	//Usage: engine.__keyPress[keyCode]; (using js keycode)
 
 /*******************************************************************************
 * Section: Image Preloader                                                     *
@@ -316,14 +328,23 @@ engine.drawSprite = function (spriteTag,x,y) {
 *******************************************************************************/
 window.onkeydown = function(e) {
 	engine.__keyboard[e.code] = true;
+	engine.__keyPress[e.code] = true;
+	console.log("Pressed " + e.code);
 }
 
 window.onkeyup = function(e) {
 	engine.__keyboard[e.code] = false;
+	engine.__keyPress[e.code] = false;
 }
 
 engine.isKeyDown = function(keycode) {
 	return !!engine.__keyboard[keycode];
+}
+
+engine.isKeyPressed = function(keycode) {
+	var result = !!engine.__keyPress[keycode];
+	engine.__keyPress[keycode] = false;
+	return result;
 }
 
 /*******************************************************************************
@@ -354,7 +375,7 @@ ByteBuffer.wrap = function(stringData) {
 	//Create a byte buffer to return
 	var buffer = new ByteBuffer();
 	for (var i = 0; i < stringData.length; i++) {
-		buffer.__data[i] = stringData.charCodeAt(i);
+		buffer.__data[i] = stringData.charCodeAt(i)&0xFF;//Do &0XFF to only look at one byte.  String formatting in javascript messes with this
 	}
 	return buffer;
 }
@@ -369,7 +390,7 @@ ByteBuffer.prototype = {
 	__index: 0,
 	getInt: function() {
 		//Convert 4 bytes to an int and return it
-		return (this.__data[this.__index++] << 24) + (this.__data[this.__index++] << 16) + (this.__data[this.__index++] << 6) + (this.__data[this.__index++]);
+		return (this.__data[this.__index++] << 24) | (this.__data[this.__index++] << 16) | (this.__data[this.__index++] << 8) | (this.__data[this.__index++]);
 	},
 	getByte: function() {
 		return this.__data[this.__index++];
@@ -391,6 +412,7 @@ engine.__isFunction = function(obj) {
 
 engine.__ajax = function (url,successCallback,failureCallback) {
     var xmlhttp = new XMLHttpRequest();
+	xmlhttp.overrideMimeType('text\/plain; charset=x-user-defined');	//Allows binary data response (above 128)
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 			if (xmlhttp.status == 200) {

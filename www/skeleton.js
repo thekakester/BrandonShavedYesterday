@@ -24,7 +24,13 @@ game.paint = function () {
 	engine.drawImage("ball",x,100);
 }
 
-//Called every few milliseconds (100ms) to talk to the server
-game.communicate = function() {
-	//Unimplemented
+//Called every few milliseconds (usually 100ms) to talk to the server
+game.sendMessage = function() {
+	//Return the message to send to the server
+	return "testMessage";
+}
+
+//Called when the server responds to the message we sent
+game.onServerRespond = function(response) {
+	console.log(response);
 }

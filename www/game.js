@@ -2,6 +2,7 @@
 game.entities = [];		//Usage: game.entities[entityID]
 game.player = null;		//Usage: game.player  (reference to player entity)
 game.map = {};
+game.type = "menu";
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -100,6 +101,17 @@ game.onServerRespond = function(response) {
 
 game.update = function() {}
 game.paint = function () {
+	
+	if (game.type == "menu") {
+		return paintMenu();
+	} else if (game.type == "terminal") {
+		return paintTerminal();
+	} else {
+		return paintGame();
+	}
+}
+
+function paintGame() {
 	//Handle movement
 	var dX = 0;
 	var dY = 0;
@@ -140,8 +152,41 @@ game.paint = function () {
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
+}
+
+var selected = 0;
+function paintMenu() {
+	paintGame();
 	
+	//Draw a blackish box
+	engine.__context.fillStyle = "black";
+	engine.__context.fillRect(250,250,300,100);
 	
+	/**TODO: Timing race between bitmap font and regular font**/
+	engine.__context.font = "30px Arial";
+	engine.__context.fillStyle = "white";
+	
+	if (engine.isKeyPressed("ArrowDown") || engine.isKeyPressed("ArrowUp")) {
+		selected=(selected+1)%2;
+	}
+	
+	if (engine.isKeyPressed("Enter")) {
+		game.type = selected==0 ? "virtual" : "terminal";
+	}
+	
+	var myText = "";
+	
+	myText = "virtual player";
+	if (selected == 0) { myText = "> " + myText;}
+	engine.__context.fillText(myText,260,290);
+	
+	myText = "terminal";
+	if (selected == 1) { myText = "> " + myText;}
+	engine.__context.fillText(myText,260,330);
+}
+
+function paintTerminal() {
+	engine.__context.fillText("Terminal isn't implemented yet",10,40);
 }
 
 
