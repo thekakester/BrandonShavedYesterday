@@ -1,20 +1,65 @@
+
+
+.scrollcontainer {
+	float:left;
+	width:500px;
+}
+
+.scrollcontainer > *{
+	
+	background-size: 100%;
+    background-repeat: no-repeat;
+   
+    height:60px;
+    position: relative;
+}
+
+.scrolltop {
+	
+	background-image: url("top.png");
+	background-position: center top;
+}
+
+.scrollbottom {
+    background-image: url("top.png");
+	background-position: center bottom;
+	
+}
+
+.scrollcontent {
+    background-image: url("mid.png");
+	background-position: center;
+	background-repeat: repeat-y;
+	background-size:68%;
+	margin: -1% 0 -1% 0;
+	z-index:-1;
+
+}
+
 .chatbox {
-	float: left;
-	background-color: black;
-	width: 400px;
-	height: 1200px;
-	overflow: scroll;
+
+	width: auto;
+	height: inherit;
+	overflow: auto;
+}
+
+.chatbox .moving {
+	
 }
 
 .chatbox > .name {
 	color: lightblue;
 }
 
-.chatbox > .text {
-	color: white;
+.chatbox > .message {
+	color: black;
 }
 
 .chatbox > .timestamp {
 	color: yellow;
 	float: right;
+}
+
+canvas {
+	float: left;
 }
