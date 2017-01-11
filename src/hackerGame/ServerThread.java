@@ -39,7 +39,7 @@ public class ServerThread extends Thread {
 			}
 			String request = scanner.nextLine().split(" ")[1];
 
-			//Separate the args
+			//Separate the args from the page
 			String[] data = request.split("\\?");
 			System.out.println(address + " requesting: " + request);
 			if (data[0].equals("/g")) {
@@ -49,7 +49,7 @@ public class ServerThread extends Thread {
 					return;
 				}
 				//Do the game logic
-				handleQuery(data[1].split("&"));
+				handleQuery(data[1]);
 			} else {
 				//Find the file they requested
 				if (data[0].length()==1) { data[0] = "/index.html"; }
@@ -98,40 +98,78 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	private byte[] intToBytes(int x) {
-		ByteBuffer bb = ByteBuffer.allocate(4);
-		bb.putInt(x);
-		return bb.array();
-	}
-
-	public void handleQuery(String[] args) throws Exception {
-		String query = args[0];
-
-		if (query.equals("init")) {
-			init();
-		} else if (query.equals("getpid")) {
-			getPid();
-		} else if (query.equals("update")) {
-			update(args);
-		} else {
-			sendResponse(("Unhandled server command: " + query).getBytes());
+	public void handleQuery(String urlData) throws Exception {
+		//Example url:
+		//update=1|4|7&map=|1|1|6&message=hello%20there
+		
+		//Step 1, separate out each argument
+		String[] args = urlData.split("&");
+		
+		
+		byte[][] responses = new byte[args.length][];
+		int index = 0;	//Which response to fill next
+		
+		//Step 2, loop over each argument
+		for (String argument : args) {
+			//Step 3: Split the key from the value
+			//Example:  update=1|4|7
+			//Becomes "update" and "1|4|7"
+			String[] keyValue = argument.split("=");
+			if (keyValue.length < 2) {
+				responses[index++] = new byte[0];
+				//Something is wrong
+				System.out.println("Can't understant argument, not enough arguments: " + argument);
+			} else {
+				//Any parsing further than this is specific to the method.  We'll pass this along
+				responses[index++] = game.execute(keyValue[0],keyValue[1]);
+			}
 		}
 		
+		
+		//Combine all the responses
+		int length = 0;
+		for (byte[] response : responses) { length += response.length; }
+		
+		//Create a main response object
+		byte[] combinedResponse = new byte[length];
+		
+		//Copy data over
+		index = 0;
+		for (byte[] response : responses) {
+			for (byte b : response) {
+				combinedResponse[index++] = b;
+			}
+		}
+		
+		sendResponse(combinedResponse);
+//		
+//		//return this response
+//		
+//		if (query.equals("init")) {
+//			init();
+//		} else if (query.equals("getpid")) {
+//			getPid();
+//		} else if (query.equals("update")) {
+//			update(args);
+//		} else {
+//			sendResponse(("Unhandled server command: " + query).getBytes());
+//		}
+//		
 	}
 
 	/**This gets called by the client while loading and should send all data
 	 * 
 	 */
-	private void init() {
-		sendResponse(game.map.serialize());
-	}
-
-	private void getPid() {
-		sendResponse(intToBytes(game.getNewEntityId()));
-	}
-	
-	private void update(String[] args) {
-		game.updateEntity(Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]));
-		sendResponse(game.serializeEntities());
-	}
+//	private void init() {
+//		sendResponse(game.map.serialize());
+//	}
+//
+//	private void getPid() {
+//		sendResponse(intToBytes(game.getNewEntityId()));
+//	}
+//	
+//	private void update(String[] args) {
+//		game.updateEntity(Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+//		sendResponse(game.serializeEntities());
+//	}
 }

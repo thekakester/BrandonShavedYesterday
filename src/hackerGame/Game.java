@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 public class Game {
 	public Map map;
-	
+
 	private int lastAddedEntityID = 99;
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 
@@ -49,4 +49,33 @@ public class Game {
 		}
 		return bb.array();
 	}
+
+	public byte[] execute(String key, String value) {
+		try {
+			if (key.equalsIgnoreCase("init")) {
+				return this.map.serialize();
+			}
+
+			if (key.equalsIgnoreCase("getpid")) {
+				return intToBytes(getNewEntityId());
+			}
+
+			if (key.equals("update")) {
+				String[] args = value.split("\\|");
+				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+				return serializeEntities();
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ("Unknown or invalid command: " + key).getBytes();
+	}
+
+	private byte[] intToBytes(int x) {
+		ByteBuffer bb = ByteBuffer.allocate(4);
+		bb.putInt(x);
+		return bb.array();
+	}
+
 }

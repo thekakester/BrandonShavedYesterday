@@ -5,7 +5,7 @@ game.map = {
 	delta: {},
 	set: function(row,col,value) {
 		this[row][col] = value;
-		this.delta[row + "," + col] = value;
+		this.delta[row + "|" + col + "|" + value] = null;
 	}
 };
 game.type = "menu";
@@ -40,7 +40,7 @@ function begin_loadSprites() {
 function begin_loadMap() {
 	//Async Load map
 	console.log("Loading map");
-	engine.sendMessage("init",function(response) {
+	engine.sendMessage("init=1",function(response) {
 		var buffer = ByteBuffer.wrap(response);
 		game.map.rows = buffer.getInt();
 		game.map.cols = buffer.getInt();
@@ -59,7 +59,7 @@ function begin_loadMap() {
 function begin_getPid() {
 	//Async Get unique player ID
 	console.log("Getting player ID");
-	engine.sendMessage("getpid",function(response) {
+	engine.sendMessage("getpid=1",function(response) {
 		var buffer = ByteBuffer.wrap(response);
 		
 		var pid = buffer.getInt();
@@ -76,9 +76,34 @@ function begin_getPid() {
 /*******************************************************************************
 * Server Communication                                                         *
 *******************************************************************************/
+
+//This method gets called every 100ms or so.  It will send the following message
+//To the server.  Be sure to escape any sensitive data
 game.sendMessage = function() {
 	//Return the message to send to the server
-	return "update&" + game.player.id + "&" + game.player.x + "&" + game.player.y;
+	var message = "update=" + game.player.id + "|" + game.player.x + "|" + game.player.y;
+	
+	//If something changed in the map, relay that information
+	if (game.map.delta.length > 0) {
+		//Add this to the message
+		var tmp = "&map=";
+		
+		//Key is in format row|col|tile
+		for (var key in game.map.delta) {
+			tmp += "|" + key;	//Note the extra "|" at the beginning!
+		}
+		
+		message += tmp;
+	}
+	
+	return message;
+	
+	//TODO, this should be changed so that commands are separated by &
+	//example: update=4|10|16&message=hello
+	//This translates to 2 commands, which are "update" and "message" respectively
+	// update -> "4|10|16"
+	// message -> "hello"
+	//The server should then loop over these commands and execute them
 }
 
 game.onServerRespond = function(response) {
