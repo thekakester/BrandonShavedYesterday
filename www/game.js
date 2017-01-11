@@ -1,7 +1,13 @@
 /**An explicit definition of properties of the game object**/
 game.entities = [];		//Usage: game.entities[entityID]
 game.player = null;		//Usage: game.player  (reference to player entity)
-game.map = {};
+game.map = {
+	delta: {},
+	set: function(row,col,value) {
+		this[row][col] = value;
+		this.delta[row + "," + col] = value;
+	}
+};
 game.type = "menu";
 
 /*******************************************************************************
@@ -159,14 +165,128 @@ function paintMenu() {
 //******************
 //* TERMINAL       *
 //******************
-
+var terminalLineBuffer = [];
+var terminalCommandBuffer = [];
+var terminalCommandBufferMaxSize = 20;	//Arbitrary number
+var terminalFontSize = 20;
+var terminalLineBufferMaxSize = (engine.height / terminalFontSize) - 2;
+var terminalHistoryIndex = 0;
 function updateTerminal() {
+	engine.__context.font = terminalFontSize + "px Consolas";
 	engine.recordKeyboard(true);
+	
+	//USE UP/DOWN TO GO THROUGH HISTORY
+	var getHistory = 0;
+	if (engine.isKeyPressed("ArrowUp")) {
+		getHistory = 1;	//Go back one history
+	}
+	if (engine.isKeyPressed("ArrowDown")) {
+		getHistory = -1; //Go forward one history
+	}
+	if (getHistory != 0) {
+		terminalHistoryIndex+=getHistory;
+		if (terminalHistoryIndex < 0 || terminalHistoryIndex > terminalCommandBuffer.length) {
+			terminalHistoryIndex-=getHistory
+		} else {
+			if (terminalHistoryIndex == 0) {engine.keyboardBuffer = "";}
+			else {
+				//Go back this many commands
+				var command;
+				var i = terminalCommandBuffer.length - terminalHistoryIndex + 1;
+				if (i > 0) {
+					for (command in terminalCommandBuffer) {
+						i--;
+						if (i == 0) {break;}
+					}
+					engine.keyboardBuffer = terminalCommandBuffer[command];
+				}
+			}
+		}
+	}
+	
+	if (engine.isKeyPressed("Enter")) {
+		tPrint(engine.keyboardBuffer)
+		queuelikeAdd(terminalCommandBuffer,terminalCommandBufferMaxSize,engine.keyboardBuffer);
+		execute(engine.keyboardBuffer);
+		engine.keyboardBuffer = "";
+		terminalHistoryIndex = 0;
+	}
+}
+
+function tPrint(line) {
+	queuelikeAdd(terminalLineBuffer,terminalLineBufferMaxSize,line);
+}
+
+function execute(command) {
+	var args = command.toLowerCase().split(" ");
+	command = args[0];
+	
+	if (command == "help") {
+		tPrint("List of commands:");
+		tPrint("listentities:  Lists all the objects in the game");
+		tPrint("settile <eid> <tilenum>:  Change the tile below entity \"eid\"");
+		return;
+	}
+	
+	if (command == "clear") {
+		terminalHistoryIndex = 0;
+		terminalLineBuffer = [];
+		return;
+	}
+	
+	if (command == "settile") {
+		//Get the tile at eid's position
+		var eid = args[1];
+		if (game.entities[eid]) {
+			if (args[2] && Number.isInteger(args[2])) {
+				var x = game.entities[eid].x;
+				var y = game.entities[eid].y;
+				game.map.set(y,x,args[2])
+			} else {
+				
+			}
+		} else {
+			tPrint("EID: " + eid + " doesn't exist");
+		}
+		return;
+	}
+	
+	if (command == "listentities") {
+		for (var eid in game.entities) {
+			var e = game.entities[eid];
+			tPrint(eid + ": (" + e.x + "," + e.y + ") " + e.name);
+		}
+		return;
+	}
+	
+	//If we made it this far, the player needs help
+	tPrint("ERROR: Unrecognized command.  Try typing help");
 }
 
 function paintTerminal() {
 	var txt = "> " + engine.keyboardBuffer;
-	engine.__context.fillText(txt,10,40);
+	
+	
+	//First line should be at the top
+	var y = terminalFontSize;
+	//Draw the buffer
+	for (var line in terminalLineBuffer) {
+		engine.__context.fillText(terminalLineBuffer[line],10,y);
+		y+=terminalFontSize;
+	}
+	engine.__context.fillText(txt,10,y);
+}
+
+function queuelikeAdd(array,maxSize,line) {
+	array.push(line);
+	if (array.length > maxSize) {
+		var index;
+		//Get the first element
+		for (index in array) {
+			break;
+		}
+		array.splice(index, 1);
+	}
 }
 
 //******************

@@ -155,12 +155,15 @@ Group appropriate sections and functions for readability */
 //Add our little bit of style
 document.write("<style>.hidden{display:none;}</style>");
 
+var tmp_onLoad = window.onload;
 window.onload = function() {
+	if (tmp_onLoad) {tmp_onLoad(parameters);}
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
 	document.body.appendChild(engine.canvas);
 	engine.__context = engine.canvas.getContext('2d');
+	
 	game.init();
 }
 
@@ -354,14 +357,25 @@ window.onkeydown = function(e) {
 	engine.__keyboard[e.code] = true;
 	engine.__keyPress[e.code] = true;
 	console.log("Pressed " + e.code);
-	if (engine.__recordKeyboard) {
-		engine.__addToBuffer(e.code);
+
+	if (engine.__recordKeyboard && e.which == 8 && engine.keyboardBuffer.length > 0) {
+		engine.keyboardBuffer = engine.keyboardBuffer.substr(0,engine.keyboardBuffer.length-1);
 	}
 }
 
 window.onkeyup = function(e) {
 	engine.__keyboard[e.code] = false;
 	engine.__keyPress[e.code] = false;
+}
+
+//Onkeypress is like onkeydown, but it only fires for visible things
+//Special case for backspace in onkeydown
+window.onkeypress = function(e) {
+	if (engine.__recordKeyboard) {
+		if (e.key.length == 1) {
+			engine.keyboardBuffer += e.key;
+		}
+	}
 }
 
 engine.isKeyDown = function(keycode) {
@@ -376,19 +390,6 @@ engine.isKeyPressed = function(keycode) {
 
 engine.recordKeyboard = function (boolEnable) {
 	engine.__recordKeyboard = boolEnable;
-}
-
-engine.__addToBuffer = function(code) {
-	var upperCase = engine.isKeyDown("ShiftLeft") || engine.isKeyDown("ShiftRight");
-	if (code.startsWith("Key")) {
-		var add = code.substr(3);
-		if (!upperCase) {
-			add = add.toLowerCase();
-		}
-		engine.keyboardBuffer += add;
-	} else {
-		
-	}
 }
 
 /*******************************************************************************
@@ -466,6 +467,13 @@ engine.__ajax = function (url,successCallback,failureCallback) {
     };
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
+};
+
+//Print off an object, all of its keys and values
+engine.__printObject = function(object) {
+	for (var key in object) {
+		console.log(key + ": " + object[key]);
+	}
 }
 
 /*******************************************************************************
