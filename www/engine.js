@@ -105,6 +105,27 @@ engine.isKeyDown = function(keycode){};
 */
 engine.isKeyPressed = function(keycode){};
 
+/*Enable or disable keyboard recording.
+* If enabled, all text will be stored in the variable engine.keyboardBuffer
+* Calling this will NOT clear the buffer.  Buffer clearing must be done manually
+*/
+engine.recordKeyboard = function(boolEnable) {};
+
+/* If keyboard recording is enabled, visible text will be stored here.
+* You can clear the buffer by setting this variable to empty string.
+*
+* Example:
+*	//Assume this code is in game.update() and runs once per frame
+*	engine.recordKeyboard(true);
+*	console.log(engine.keyboardBuffer);
+
+* Example (clear buffer):
+*	if (engine.keyboardBuffer.length > 10) {
+*		engine.keyboardBuffer = "";	
+*	}
+*/
+engine.keyboardBuffer = "";
+
 /**TODO DOCUMENT**/
 engine.sendMessage = function(message,callback){}
 
@@ -326,10 +347,16 @@ engine.drawSprite = function (spriteTag,x,y) {
 * Section: Keyboard input                                                      *
 * Author: Mitch                                                                *
 *******************************************************************************/
+engine.__recordKeyboard = false;
+engine.keyboardBuffer = "";
+
 window.onkeydown = function(e) {
 	engine.__keyboard[e.code] = true;
 	engine.__keyPress[e.code] = true;
 	console.log("Pressed " + e.code);
+	if (engine.__recordKeyboard) {
+		engine.__addToBuffer(e.code);
+	}
 }
 
 window.onkeyup = function(e) {
@@ -345,6 +372,23 @@ engine.isKeyPressed = function(keycode) {
 	var result = !!engine.__keyPress[keycode];
 	engine.__keyPress[keycode] = false;
 	return result;
+}
+
+engine.recordKeyboard = function (boolEnable) {
+	engine.__recordKeyboard = boolEnable;
+}
+
+engine.__addToBuffer = function(code) {
+	var upperCase = engine.isKeyDown("ShiftLeft") || engine.isKeyDown("ShiftRight");
+	if (code.startsWith("Key")) {
+		var add = code.substr(3);
+		if (!upperCase) {
+			add = add.toLowerCase();
+		}
+		engine.keyboardBuffer += add;
+	} else {
+		
+	}
 }
 
 /*******************************************************************************
