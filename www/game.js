@@ -167,6 +167,7 @@ function updateTerminal() {
 function paintTerminal() {
 	var txt = "> " + engine.keyboardBuffer;
 	engine.__context.fillText(txt,10,40);
+	engine.__context.fillText(txt.length + "",10,90);
 }
 
 //******************
