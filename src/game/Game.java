@@ -1,7 +1,9 @@
-package hackerGame;
+package game;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+
+import engine.Server;
 
 public class Game {
 	public Map map;
@@ -10,6 +12,7 @@ public class Game {
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 
 	//Constructor that calls Server.main() for convenience
+	//This will then create our game object
 	public static void main(String[] args) {Server.main(args); }
 
 	public Game() {
@@ -50,7 +53,12 @@ public class Game {
 		return bb.array();
 	}
 
-	public byte[] execute(String key, String value) {
+	/**A client will routinely send us arguments.
+	 * @param key Often the command that is to be executed.  Eg "setplayerposition"
+	 * @param value The argument(s) associated.  These must be parsed manually because their format is not restricted.  Eg "10,10"
+	 * @return Return a byte array to send back to the client.  For convenience, use a ByteBuffer for numeric values and String.getBytes() for strings.
+	 */
+	public byte[] respondToClient(String key, String value) {
 		try {
 			if (key.equalsIgnoreCase("init")) {
 				return this.map.serialize();
@@ -72,10 +80,9 @@ public class Game {
 		return ("Unknown or invalid command: " + key).getBytes();
 	}
 
+	//Method for conveniently converting a single integer
 	private byte[] intToBytes(int x) {
-		ByteBuffer bb = ByteBuffer.allocate(4);
-		bb.putInt(x);
-		return bb.array();
+		return ByteBuffer.allocate(4).putInt(x).array();
 	}
 
 }

@@ -1,4 +1,4 @@
-package hackerGame;
+package game;
 
 import java.util.Date;
 

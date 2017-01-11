@@ -1,4 +1,4 @@
-package hackerGame;
+package game;
 
 public class Entity {
 	public final int id;

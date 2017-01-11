@@ -1,4 +1,4 @@
-package hackerGame;
+package engine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.util.Random;
 import java.util.Scanner;
 
+import game.Game;
+
 public class Server {
 	public static void main(String[] args) { new Server(); }
 
@@ -18,7 +20,7 @@ public class Server {
 	public Server() {
 		
 		//Start a simple web server
-		int port = 80;	//Shouldn't change
+		int port = Settings.PORT;	//Shouldn't change
 		try {
 			System.out.println("Starting web server on port " + port);
 			ServerSocket socket = new ServerSocket(port);
