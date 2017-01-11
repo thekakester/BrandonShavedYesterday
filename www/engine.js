@@ -157,7 +157,7 @@ document.write("<style>.hidden{display:none;}</style>");
 
 var tmp_onLoad = window.onload;
 window.onload = function() {
-	if (tmp_onLoad) {tmp_onLoad(parameters);}
+	if (tmp_onLoad) {tmp_onLoad();}
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
