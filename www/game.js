@@ -1,7 +1,13 @@
 /**An explicit definition of properties of the game object**/
 game.entities = [];		//Usage: game.entities[entityID]
 game.player = null;		//Usage: game.player  (reference to player entity)
-game.map = {};
+game.map = {
+	delta: {},
+	set: function(row,col,value) {
+		this[row][col] = value;
+		this.delta[row + "," + col] = value;
+	}
+};
 game.type = "menu";
 
 /*******************************************************************************
@@ -199,10 +205,62 @@ function updateTerminal() {
 	}
 	
 	if (engine.isKeyPressed("Enter")) {
-		queuelikeAdd(terminalLineBuffer,terminalLineBufferMaxSize,engine.keyboardBuffer);
+		tPrint(engine.keyboardBuffer)
 		queuelikeAdd(terminalCommandBuffer,terminalCommandBufferMaxSize,engine.keyboardBuffer);
+		execute(engine.keyboardBuffer);
 		engine.keyboardBuffer = "";
+		terminalHistoryIndex = 0;
 	}
+}
+
+function tPrint(line) {
+	queuelikeAdd(terminalLineBuffer,terminalLineBufferMaxSize,line);
+}
+
+function execute(command) {
+	var args = command.toLowerCase().split(" ");
+	command = args[0];
+	
+	if (command == "help") {
+		tPrint("List of commands:");
+		tPrint("listentities:  Lists all the objects in the game");
+		tPrint("settile <eid> <tilenum>:  Change the tile below entity \"eid\"");
+		return;
+	}
+	
+	if (command == "clear") {
+		terminalHistoryIndex = 0;
+		terminalLineBuffer = [];
+		return;
+	}
+	
+	if (command == "settile") {
+		//Get the tile at eid's position
+		var eid = args[1];
+		if (game.entities[eid]) {
+			if (args[2] && Number.isInteger(args[2])) {
+				var x = game.entities[eid].x;
+				var y = game.entities[eid].y;
+				game.map.set(y,x,args[2])
+			} else {
+				
+			}
+		} else {
+			tPrint("EID: " + eid + " doesn't exist");
+		}
+		return;
+	}
+	
+	if (command == "listentities") {
+		for (var eid in game.entities) {
+			var e = game.entities[eid];
+			tPrint(eid + ": (" + e.x + "," + e.y + ") " + e.name);
+		}
+		return;
+	}
+	
+	//If we made it this far, the player needs help
+	tPrint("ERROR: Unrecognized command.  Try typing help");
 }
 
 function paintTerminal() {

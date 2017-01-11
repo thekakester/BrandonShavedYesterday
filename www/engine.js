@@ -155,7 +155,9 @@ Group appropriate sections and functions for readability */
 //Add our little bit of style
 document.write("<style>.hidden{display:none;}</style>");
 
+var tmp_onLoad = window.onload;
 window.onload = function() {
+	if (tmp_onLoad) {tmp_onLoad(parameters);}
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
