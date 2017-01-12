@@ -172,7 +172,7 @@ public class ServerThread extends Thread {
 
 		//Combine all the responses
 		int length = 0;	//Total length of all the responses
-		for (byte[] response : responses) { length += response.length; }
+		for (byte[] response : responses) { if (response!=null) length += response.length; }
 
 		//Create a main response object
 		byte[] combinedResponse = new byte[length];
