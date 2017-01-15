@@ -8,7 +8,11 @@ game.map = {
 		this.delta[row + "|" + col + "|" + value] = null;
 	}
 };
+game.collidableTiles = [];	//An array of unpassable tiles
 game.type = "menu";
+game.debug = {};
+game.debug.enabled = false;
+game.debug.selectedTile = 0;
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -21,42 +25,47 @@ game.init = function () {
 }
 
 function begin_loadSprites() {
-	var tmp = engine.createSprite("0","tiles",32,32);	//Sprite: Plain grass
+	game.uniqueTileIDs = 0;
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Plain grass
 	tmp.addFrame(32,0,15);
 	
-	var tmp = engine.createSprite("1","tiles",32,32);	//Sprite: Flowers
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Flowers
 	tmp.addFrame(64,0,15);
 	tmp.addFrame(96,0,15);
 	tmp.addFrame(128,0,15);
 	tmp.addFrame(160,0,15);
 	
-	var tmp = engine.createSprite("2","tiles",32,32);	//Sprite: Med Grass
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Med Grass
 	tmp.addFrame(0,32,15);
 	
-	var tmp = engine.createSprite("3","tiles",32,32);	//Sprite: Long Grass
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Long Grass
 	tmp.addFrame(32,32,15);
 	
-	var tmp = engine.createSprite("4","tiles",32,32);	//Sprite: Sandstone
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Sandstone
 	tmp.addFrame(64,32,15);
 	
-	var tmp = engine.createSprite("5","tiles",32,32);	//Sprite: Water
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Water
+	game.collidableTiles[game.uniqueTileIDs-1] = true;
 	tmp.addFrame(96,32,15);
 	tmp.addFrame(128,32,15);
 	
-	var tmp = engine.createSprite("6","tiles",32,32);	//Sprite: Vert Bridge
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Vert Bridge
 	tmp.addFrame(160,32,15);
 	
-	var tmp = engine.createSprite("7","tiles",32,32);	//Sprite: Horiz Bridge
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Horiz Bridge
 	tmp.addFrame(0,64,15);
 	
-	var tmp = engine.createSprite("8","tiles",32,32);	//Sprite: Stone
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Stone
 	tmp.addFrame(32,64,15);
 	
-	var tmp = engine.createSprite("9","tiles",32,32);	//Sprite: Lava
-	tmp.addFrame(64,64,15);
-	tmp.addFrame(96,64,15);
-	tmp.addFrame(128,64,15);
-	tmp.addFrame(160,64,15);
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Lava
+	game.collidableTiles[game.uniqueTileIDs-1] = true;
+	tmp.addFrame(64,64,10);
+	tmp.addFrame(96,64,10);
+	tmp.addFrame(128,64,10);
+	tmp.addFrame(160,64,10);
+	tmp.addFrame(128,64,10);
+	tmp.addFrame(96,64,10);
 	
 	
 	begin_loadMap();
@@ -352,13 +361,39 @@ function updateGame() {
 	if (engine.isKeyDown("ArrowLeft")) {dX--;}
 	if (engine.isKeyDown("ArrowRight")) {dX++;}
 	move(dX,dY);
+	
+	if (engine.isKeyPressed("Escape")) {
+		game.debug.enabled = !game.debug.enabled;
+		game.debug.selectedTile = 0;
+		console.log("Set debug mode to " + game.debug.enabled);
+	}
+	
+	if (game.debug.enabled) {
+		if (engine.isKeyPressed("Digit1")) {
+			game.debug.selectedTile--;
+		}
+		if (engine.isKeyPressed("Digit2")) {
+			game.debug.selectedTile++;
+		}
+		
+		//Assume X tiles.  add by X then mod by X.  Solves + and - changes
+		game.debug.selectedTile += game.uniqueTileIDs;
+		game.debug.selectedTile %= game.uniqueTileIDs;
+		
+		if (engine.isKeyDown("Digit3")) {
+			var row = game.player.y;
+			var col = game.player.x;
+			var tile = game.debug.selectedTile;
+			console.log("Changing (" + col + "," + row + ") to " + tile);
+			game.map.tile[row][col] = tile;
+		}
+	}
 }
 
 function paintGame() {
 	//Offset everything by the player's position
 	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 7) * 32);
 	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 7) * 32);
-	
 	
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
@@ -385,27 +420,59 @@ function paintGame() {
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
+	
+	//////////DEBUG MODE
+	if (game.debug.enabled) {
+		engine.__context.fillStyle = "#000";
+		engine.__context.fillRect(0,0,engine.width,42);
+		engine.__context.fillStyle = "#fff";
+		engine.__context.fillRect(game.debug.selectedTile * (32+5), 0,32+10,32+10);
+		//Draw tiles at the top for level editor
+		for (var i =0 ; i < game.uniqueTileIDs; i++) {
+			engine.drawSprite(i,(i*(32+5) + 5),5);
+		}
+	}
 }
 
-function move(column, row){
+function move(xMovement, yMovement){
 	if (game.player.tween < 1) { return; }
 	
-	column = game.player.x + column;
-	row = game.player.y + row;
+	var moved = false;
+	var playerX = game.player.x;
+	var playerY = game.player.y;
 	
-	if(column < 0 || row < 0 || column >= game.map.cols || row >= game.map.rows){
-		//Do not pass go, do not collect $200
-		return;
+	//Player can walk anywhere in debug mode
+	if (game.debug.enabled) {
+		playerX += xMovement;
+		playerY += yMovement;
+		moved = true;
+	} else {
+		//Try moving x first
+		if (xMovement != 0 && isPassable(playerY, playerX + xMovement)) {
+			playerX += xMovement; moved = true;
+		} else if (yMovement != 0 && isPassable(playerY + yMovement,playerX)) {
+			playerY += yMovement; moved = true;
+		}
 	}
 	
-	if(game.map.tile[row][column]!==0){
+	if (moved) {
 		game.player.oldX = game.player.x;
 		game.player.oldY = game.player.y;
 		game.player.tween = 0;
 		
-		game.player.set("x",column);
-		game.player.set("y",row);
+		game.player.set("x",playerX);
+		game.player.set("y",playerY);
 	}
+}
+
+//Returns true if there is a tile at position [row][col] and it is a passable tile
+function isPassable(row,col) {
+	if(col < 0 || row < 0 || col >= game.map.cols || row >= game.map.rows){
+		//Do not pass go, do not collect $200
+		return false;
+	}
+	
+	return !game.collidableTiles[game.map.tile[row][col]];
 }
 
 /*******************************************************************************

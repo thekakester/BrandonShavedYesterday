@@ -85,12 +85,13 @@ public class Map implements SerializableObject {
 		System.out.println("Generating a new map file");
 		map = new int[rows][cols];
 
-		if (randomOnes) {
-			Random rand = new Random();
-			for (int r = 0; r < rows; r++) {
-				for (int c = 0; c < cols; c++) {
-					map[r][c] = rand.nextInt(10);//  0-9
-				}
+		
+		Random rand = new Random();
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
+				int tile = 5;
+				if (randomOnes) { tile = rand.nextInt(10); }
+				map[r][c] = tile;
 			}
 		}
 		save();
