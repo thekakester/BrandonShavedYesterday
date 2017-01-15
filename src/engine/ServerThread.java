@@ -71,6 +71,7 @@ public class ServerThread extends Thread {
 			//and let it handle the response to send back.
 			if (filename.equals("/g")) {
 				letGameGenerateResponse(arguments);
+				return;
 			}
 
 			
@@ -98,7 +99,8 @@ public class ServerThread extends Thread {
 	 */
 	private void sendFile(File f, boolean isHTML) {
 		try {
-			sendResponse(Files.readAllBytes(f.toPath()),isHTML);
+			byte[] bytes = Files.readAllBytes(f.toPath());
+			sendResponse(bytes,isHTML);
 		} catch (Exception e) {
 			//There was a problem reading the file
 			//Don't leave the client hanging though
