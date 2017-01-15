@@ -87,11 +87,10 @@ public class Map implements SerializableObject {
 
 		if (randomOnes) {
 			Random rand = new Random();
-			for (int i = 0; i < (rows * cols) / 2; i++) {
-				map[rand.nextInt(rows)][rand.nextInt(cols)] = 1;
-			}
-			for (int i = 0; i < (rows * cols) / 2; i++) {
-				map[rand.nextInt(rows)][rand.nextInt(cols)] = 2;
+			for (int r = 0; r < rows; r++) {
+				for (int c = 0; c < cols; c++) {
+					map[r][c] = rand.nextInt(10);//  0-9
+				}
 			}
 		}
 		save();

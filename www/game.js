@@ -21,18 +21,43 @@ game.init = function () {
 }
 
 function begin_loadSprites() {
-	var tmp = engine.createSprite("0","tiles",32,32);	//Create sprite "0"
-	tmp.addFrame(160,96,15);
-	tmp.addFrame(160,128,15);
+	var tmp = engine.createSprite("0","tiles",32,32);	//Sprite: Plain grass
+	tmp.addFrame(32,0,15);
 	
-	var tmp = engine.createSprite("1","tiles",32,32);	//Create sprite "1"
-	tmp.addFrame(64,320,15);
-	tmp.addFrame(96,320,15);
-	tmp.addFrame(128,320,15);
-	tmp.addFrame(160,320,15);
+	var tmp = engine.createSprite("1","tiles",32,32);	//Sprite: Flowers
+	tmp.addFrame(64,0,15);
+	tmp.addFrame(96,0,15);
+	tmp.addFrame(128,0,15);
+	tmp.addFrame(160,0,15);
 	
-	var tmp = engine.createSprite("2","tiles",32,32);	//Create sprite "2"
-	tmp.addFrame(96,32,1);
+	var tmp = engine.createSprite("2","tiles",32,32);	//Sprite: Med Grass
+	tmp.addFrame(0,32,15);
+	
+	var tmp = engine.createSprite("3","tiles",32,32);	//Sprite: Long Grass
+	tmp.addFrame(32,32,15);
+	
+	var tmp = engine.createSprite("4","tiles",32,32);	//Sprite: Sandstone
+	tmp.addFrame(64,32,15);
+	
+	var tmp = engine.createSprite("5","tiles",32,32);	//Sprite: Water
+	tmp.addFrame(96,32,15);
+	tmp.addFrame(128,32,15);
+	
+	var tmp = engine.createSprite("6","tiles",32,32);	//Sprite: Vert Bridge
+	tmp.addFrame(160,32,15);
+	
+	var tmp = engine.createSprite("7","tiles",32,32);	//Sprite: Horiz Bridge
+	tmp.addFrame(0,64,15);
+	
+	var tmp = engine.createSprite("8","tiles",32,32);	//Sprite: Stone
+	tmp.addFrame(32,64,15);
+	
+	var tmp = engine.createSprite("9","tiles",32,32);	//Sprite: Lava
+	tmp.addFrame(64,64,15);
+	tmp.addFrame(96,64,15);
+	tmp.addFrame(128,64,15);
+	tmp.addFrame(160,64,15);
+	
 	
 	begin_loadMap();
 }
