@@ -6,12 +6,17 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Map implements SerializableObject {
 	private final String mapFilename;
 	private int map[][];
+	
+	//Map player-entityID to a delta object
+	//Delta represents what's changed that they don't know about
+	private HashMap<Integer,MapDelta> deltas = new HashMap<Integer,MapDelta>();
 	
 	/**Default constructor.  Use this if you don't exclusively need the other
 	 * 
@@ -114,5 +119,22 @@ public class Map implements SerializableObject {
 			};
 		}
 		return bb.array();
+	}
+
+	public void set(int row, int col, int tile) {
+		map[row][col] = tile;
+		
+		//Tell our deltas what happened
+		for (MapDelta d : deltas.values()) {
+			d.add(row, col, tile);
+		}
+	}
+	
+	public byte[] getDeltaAsBytes(int pid) {
+		return deltas.get(pid).serialize();	//Will throw an exception if they player is not subscribed for deltas
+	}
+
+	public void subscribe(int pid) {
+		this.deltas.put(pid,new MapDelta());
 	}
 }

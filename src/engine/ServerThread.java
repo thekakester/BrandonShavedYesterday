@@ -151,7 +151,10 @@ public class ServerThread extends Thread {
 		//Store the game's response to each part (arg) so we can combine them later
 		//Since each response is in bytes, and we need to store all the responses
 		//this must be an array of responses, which is an array of byte arrays
-		byte[][] responses = new byte[args.length][];
+		byte[][] responses = new byte[args.length+1][];
+		
+		//Last response is terminator (0 as a 4 byte int)
+		responses[args.length] = new byte[] {0,0,0,0};
 
 		//Step 2, loop over each argument
 		for (int i = 0; i < args.length; i++) {
@@ -182,6 +185,7 @@ public class ServerThread extends Thread {
 		//Copy data, byte by byte, from each response calculated earlier
 		int index = 0;
 		for (byte[] response : responses) {
+			if (response == null) { continue; }
 			for (byte b : response) {
 				combinedResponse[index++] = b;
 			}

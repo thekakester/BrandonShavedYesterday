@@ -68,14 +68,24 @@ function begin_loadSprites() {
 	tmp.addFrame(96,64,10);
 	
 	
-	begin_loadMap();
+	begin_serverInit();
 }
 
-function begin_loadMap() {
+function begin_serverInit() {
 	//Async Load map
-	console.log("Loading map");
+	console.log("Getting player ID and map");
 	engine.sendMessage("init=1",function(response) {
 		var buffer = ByteBuffer.wrap(response);
+		
+		/* GET PLAYER ID */
+		var pid = buffer.getInt();
+		
+		//Set the player entity
+		game.player = new Entity(pid,10,10);
+		game.entities[pid] = game.player;
+		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
+		
+		/* GET MAP */
 		game.map.rows = buffer.getInt();
 		game.map.cols = buffer.getInt();
 		game.map.tile = []
@@ -85,8 +95,9 @@ function begin_loadMap() {
 				game.map.tile[r][c] = buffer.getInt();
 			}
 		}
+		console.log("Loaded map with " + game.map.rows + " rows and " + game.map.cols + " cols");
 		
-		begin_getPid();	//Next step
+		engine.enterGameLoop();	//Next step
 	});
 }
 
@@ -96,12 +107,7 @@ function begin_getPid() {
 	engine.sendMessage("getpid=1",function(response) {
 		var buffer = ByteBuffer.wrap(response);
 		
-		var pid = buffer.getInt();
 		
-		//Set the player entity
-		game.player = new Entity(pid,10,10);
-		game.entities[pid] = game.player;
-		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
 		engine.enterGameLoop();	//Next step
 	});
@@ -114,49 +120,78 @@ function begin_getPid() {
 //This method gets called every 100ms or so.  It will send the following message
 //To the server.  Be sure to escape any sensitive data
 game.sendMessage = function() {
+	/*----------PLAYER-----------*/
 	//Return the message to send to the server
-	var message = "update=" + game.player.id + "|" + game.player.x + "|" + game.player.y;
+	var message = "entity=" + game.player.id + "|" + game.player.x + "|" + game.player.y;
 	
+	/*----------MAP-------------*/
 	//If something changed in the map, relay that information
-	if (game.map.delta.length > 0) {
-		//Add this to the message
-		var tmp = "&map=";
-		
-		//Key is in format row|col|tile
-		for (var key in game.map.delta) {
-			tmp += "|" + key;	//Note the extra "|" at the beginning!
-		}
-		
-		message += tmp;
+	//Add this to the message
+	var tmp = "&map=";
+	
+	//Key is in format row|col|tile
+	for (var key in game.map.delta) {
+		tmp += "|" + key;	//Note the extra "|" at the beginning!
 	}
 	
+	//Make sure we actually have something to send
+	if (tmp != "&map=") {
+		message += tmp;
+		game.map.delta = {};	//Clear our delta
+	}
+	
+	/*---------CHAT-----------*/
+	//TODO put chat code here
+	
+	
+	//Last call is always update.  This asks for what has changed
+	message += "&update=" + game.player.id;
 	return message;
 	
-	//TODO, this should be changed so that commands are separated by &
-	//example: update=4|10|16&message=hello
-	//This translates to 2 commands, which are "update" and "message" respectively
-	// update -> "4|10|16"
-	// message -> "hello"
-	//The server should then loop over these commands and execute them
 }
 
 game.onServerRespond = function(response) {
 	var buffer = ByteBuffer.wrap(response);
-	var count = buffer.getInt();
+	while (true) {
+		var responseType = buffer.getInt();
+		if (responseType == 0) { break; }	//0 means end
 		
-	for (var i = 0; i < count; i++) {
-		var eid = buffer.getInt();
-		var x = buffer.getInt();
-		var y = buffer.getInt();
+		//Response 1: Entity Info Update
+		if (responseType == 1) {
+			var count = buffer.getInt();
+			
+			for (var i = 0; i < count; i++) {
+				var eid = buffer.getInt();
+				var x = buffer.getInt();
+				var y = buffer.getInt();
+				
+				if (eid == game.player.id) { continue; }
+				var e = game.entities[eid];
+				if (!e) { game.entities[eid] = new Entity(eid,x,y); e = game.entities[eid];}
+				e.oldX = tween(e.oldX,e.x,e.tween);
+				e.oldY = tween(e.oldY,e.y,e.tween);
+				e.tween = 0;
+				e.x = x;
+				e.y = y;
+			}
+		}
 		
-		if (eid == game.player.id) { continue; }
-		var e = game.entities[eid];
-		if (!e) { game.entities[eid] = new Entity(eid,x,y); e = game.entities[eid];}
-		e.oldX = tween(e.oldX,e.x,e.tween);
-		e.oldY = tween(e.oldY,e.y,e.tween);
-		e.tween = 0;
-		e.x = x;
-		e.y = y;
+		//Response 2: Map update
+		if (responseType == 2) {
+			var count = buffer.getInt();
+			for (var i = 0; i < count; i++) {
+				var row = buffer.getInt();
+				var col = buffer.getInt();
+				var type = buffer.getInt();
+				game.map.tile[row][col] = type;
+			}
+		}
+		
+		//Response 3: Chat
+		if (responseType == 3) {
+			
+		}
+		
 	}
 }
 
@@ -386,6 +421,7 @@ function updateGame() {
 			var tile = game.debug.selectedTile;
 			console.log("Changing (" + col + "," + row + ") to " + tile);
 			game.map.tile[row][col] = tile;
+			game.map.delta[row + "|" + col + "|" + tile] = true;
 		}
 	}
 }

@@ -44,8 +44,10 @@ public class Game implements GameInterface {
 	}
 
 	public byte[] serializeEntities() {
-		ByteBuffer bb = ByteBuffer.allocate(((entities.size() * 3) + 1) * 4);
+		ByteBuffer bb = ByteBuffer.allocate(((entities.size() * 3) + 2) * 4);
+		bb.putInt(ResponseType.ENTITY_UPDATE);
 		bb.putInt(entities.size());
+		
 		for (Entity e : entities.values()) {
 			bb.putInt(e.id);
 			bb.putInt(e.x);
@@ -62,18 +64,41 @@ public class Game implements GameInterface {
 	public byte[] respondToClient(String key, String value) {
 		try {
 			if (key.equalsIgnoreCase("init")) {
-				return this.map.serialize();
+				//Return the PID and the original map state
+				int pid = getNewEntityId();
+				
+				//Subscribe this player to the deltas!
+				map.subscribe(pid);
+				
+				return concat(intToBytes(pid),map.serialize());
 			}
 
-			if (key.equalsIgnoreCase("getpid")) {
-				return intToBytes(getNewEntityId());
-			}
-
-			if (key.equals("update")) {
+			if (key.equals("entity")) {
 				String[] args = value.split("\\|");
 				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
-				return serializeEntities();
-			}	
+				return null;	//Nothing to say back
+			}
+			
+			if (key.equals("map")) {
+				String[] args = value.split("\\|");
+				//Loop over the args
+				for (int i = 1; i+2 < args.length; i+=3) {
+					int row = Integer.parseInt(args[i]);
+					int col = Integer.parseInt(args[i+1]);
+					int tile = Integer.parseInt(args[i+2]);
+					map.set(row,col,tile);
+					return null;	//nothing to say back!
+				}
+			}
+			
+			if (key.equals("update")) {
+				//Return anything that might have changed
+				int pid = Integer.parseInt(value);
+				byte[] response = new byte[0];
+				response = concat(response,serializeEntities());
+				response = concat(response,map.getDeltaAsBytes(pid));
+				return response;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,6 +109,14 @@ public class Game implements GameInterface {
 	//Method for conveniently converting a single integer
 	private byte[] intToBytes(int x) {
 		return ByteBuffer.allocate(4).putInt(x).array();
+	}
+	
+	private byte[] concat(byte[] arrayA, byte[] arrayB) {
+		byte[] combined = new byte[arrayA.length+arrayB.length];
+		int i = 0;
+		for (byte b : arrayA) {combined[i++] = b;}
+		for (byte b : arrayB) {combined[i++] = b;}
+		return combined;
 	}
 
 }
