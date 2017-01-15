@@ -9,7 +9,7 @@ import engine.Server;
 public class Game implements GameInterface {
 
 	//This method starts the server and the game
-	public static void main(String[] args) {new Server (new Game()); }
+	public static void main(String[] args) {new Server (new Game(),args);}
 
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101

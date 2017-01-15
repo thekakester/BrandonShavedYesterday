@@ -6,7 +6,7 @@ import engine.Server;
 public class SkeletonGame implements GameInterface {
 
 	//Start the server and the game!
-	public static void main(String[] args) { new Server(new SkeletonGame()); }
+	public static void main(String[] args) { new Server(new SkeletonGame(),args); }
 	
 	@Override
 	public byte[] respondToClient(String key, String value) {
