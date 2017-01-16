@@ -14,6 +14,7 @@ game.debug = {};
 game.debug.enabled = false;
 game.debug.selectedTile = 0;
 game.debug.brushSize = 1;
+playerPath = null;
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -401,7 +402,7 @@ function updateGame() {
 	if (engine.isKeyPressed("Escape")) {
 		game.debug.enabled = !game.debug.enabled;
 		game.debug.selectedTile = 0;
-		game.debug.brushSize = 1;
+		game.debug.brushSize = 0;
 		console.log("Set debug mode to " + game.debug.enabled);
 	}
 	
@@ -436,13 +437,16 @@ function updateGame() {
 					var col = game.player.x + xOffset;
 					
 					//Avoid out of bounds
-					if (row < 0 || row >= engine.height-1 || col < 0 || col >= engine.width-1) { continue; }
+					if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
 					game.map.tile[row][col] = tile;
 					game.map.delta[row + "|" + col + "|" + tile] = true;
 				}
 			}
 		}
 	}
+	
+	//Calculate a path from our player to the spot 20,20
+	playerPath = findPath(game.player.x,game.player.y,48,64);
 }
 
 function paintGame() {
@@ -474,6 +478,28 @@ function paintGame() {
 		engine.drawImage("characters", srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
+	}
+	
+	//Draw our path
+	if (playerPath != null) {
+		engine.__context.beginPath();
+		engine.__context.moveTo(0,0);
+		var prevNode = null;
+		for (var node in playerPath) {
+			node = playerPath[node];
+			var x = (node.x*32) + 16;
+			x-=offsetX;
+			var y = (node.y*32) + 16;
+			y-=offsetY;
+			if (prevNode != null) {
+				//Draw a line from here
+				engine.__context.lineTo(x,y);
+			} else {
+				engine.__context.moveTo(x,y);
+			}
+			prevNode = node;
+		}
+		engine.__context.stroke();
 	}
 	
 	//////////DEBUG MODE
@@ -532,7 +558,7 @@ function isPassable(row,col) {
 		//Do not pass go, do not collect $200
 		return false;
 	}
-	
+
 	return !game.collidableTiles[game.map.tile[row][col]];
 }
 
@@ -565,7 +591,56 @@ function tween(oldVal,newVal,tweenAmount) {
 	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
 }
 
+//Queue implementation, 3rd party minified
+//code.stephenmorley.org
+function Queue(){var a=[],b=0;this.getLength=function(){return a.length-b};this.isEmpty=function(){return 0==a.length};this.enqueue=function(b){a.push(b)};this.dequeue=function(){if(0!=a.length){var c=a[b];2*++b>=a.length&&(a=a.slice(b),b=0);return c}};this.peek=function(){return 0<a.length?a[b]:void 0}};
+
 
 function findPath(startX,startY,endX,endY,maxRadius) {
+	var q = new Queue();
+	var visited = [];	//A set of visited nodes
 	
+	//Add our end point
+	q.enqueue({x:endX,y:endY,prev:null});
+	visited[endX + "," + endY] = true;
+	
+	while (!q.isEmpty()) {
+		var node = q.dequeue();
+		var neighbors = [
+			{x:node.x-1,y:node.y,  prev:node},
+			{x:node.x+1,y:node.y,  prev:node},
+			{x:node.x  ,y:node.y-1,prev:node},
+			{x:node.x  ,y:node.y+1,prev:node}]
+		//Add all unvisited tiles that are passable
+		for(var neighbor in neighbors) {
+			neighbor = neighbors[neighbor]
+			if (visited[neighbor.x+","+neighbor.y] == true) { continue; }
+			if (isPassable(neighbor.y,neighbor.x)) {
+				//Is this our goal???
+				if (neighbor.x == startX && neighbor.y == startY) {
+					//We found it!  Build the path!
+					return __buildPathFromGraph(neighbor);
+				}
+				
+				//Add it to our queue
+				q.enqueue(neighbor);
+				visited[neighbor.x + "," + neighbor.y] = true;
+			}
+		}
+	}
+	return null;
+}
+
+function __buildPathFromGraph(node) {
+	var path = [];
+	
+	//Fake node so we can start with node in our loop
+	node = {x:-1,y:-1,prev:node};
+	
+	//Build our path in reverse order
+	while (node.prev != null) {
+		node = node.prev;
+		path.push(node);
+	}
+	return path;
 }
