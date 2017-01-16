@@ -564,3 +564,8 @@ function tween(oldVal,newVal,tweenAmount) {
 	tweenAmount = tweenAmount < 0 ? 0 : tweenAmount;
 	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
 }
+
+
+function findPath(startX,startY,endX,endY,maxRadius) {
+	
+}

@@ -15,6 +15,7 @@ import game.Game;
 public class Server {
 
 	private GameInterface game;
+	private long lastSaveTime = 0;
 	
 	/**Create a server for the selected game
 	 * 
@@ -45,6 +46,12 @@ public class Server {
 					thread.run();	//CHANGE TO .start() to be multithreaded.  WARNING, code must be threadsafe then!
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+				
+				//Save the map every 10 seconds
+				if (System.currentTimeMillis() - lastSaveTime > 10000) {
+					lastSaveTime = System.currentTimeMillis();
+					game.save();
 				}
 			}
 			

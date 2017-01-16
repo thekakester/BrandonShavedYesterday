@@ -87,8 +87,8 @@ public class Game implements GameInterface {
 					int col = Integer.parseInt(args[i+1]);
 					int tile = Integer.parseInt(args[i+2]);
 					map.set(row,col,tile);
-					return null;	//nothing to say back!
 				}
+				return null;	//nothing to say back!
 			}
 			
 			if (key.equals("update")) {
