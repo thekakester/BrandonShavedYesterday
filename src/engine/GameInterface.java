@@ -7,4 +7,9 @@ public interface GameInterface {
 	 * @return Return a byte array to send back to the client.  For convenience, use a ByteBuffer for numeric values and String.getBytes() for strings.
 	 */
 	public byte[] respondToClient(String key, String value);
+
+	/**Called evert 10 seconds
+	 * 
+	 */
+	public void save();
 }

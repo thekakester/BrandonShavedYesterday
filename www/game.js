@@ -13,6 +13,7 @@ game.type = "menu";
 game.debug = {};
 game.debug.enabled = false;
 game.debug.selectedTile = 0;
+game.debug.brushSize = 1;
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -400,6 +401,7 @@ function updateGame() {
 	if (engine.isKeyPressed("Escape")) {
 		game.debug.enabled = !game.debug.enabled;
 		game.debug.selectedTile = 0;
+		game.debug.brushSize = 1;
 		console.log("Set debug mode to " + game.debug.enabled);
 	}
 	
@@ -410,18 +412,35 @@ function updateGame() {
 		if (engine.isKeyPressed("Digit2")) {
 			game.debug.selectedTile++;
 		}
+		if (engine.isKeyPressed("Digit4")) {
+			if (game.debug.brushSize > 0) {
+				game.debug.brushSize--;
+			}
+		}
+		if (engine.isKeyPressed("Digit5")) {
+			if (game.debug.brushSize < 10) {
+				game.debug.brushSize++;
+			}
+		}
 		
 		//Assume X tiles.  add by X then mod by X.  Solves + and - changes
 		game.debug.selectedTile += game.uniqueTileIDs;
 		game.debug.selectedTile %= game.uniqueTileIDs;
 		
 		if (engine.isKeyDown("Digit3")) {
-			var row = game.player.y;
-			var col = game.player.x;
 			var tile = game.debug.selectedTile;
-			console.log("Changing (" + col + "," + row + ") to " + tile);
-			game.map.tile[row][col] = tile;
-			game.map.delta[row + "|" + col + "|" + tile] = true;
+			
+			for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
+				for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
+					var row = game.player.y + yOffset;
+					var col = game.player.x + xOffset;
+					
+					//Avoid out of bounds
+					if (row < 0 || row >= engine.height-1 || col < 0 || col >= engine.width-1) { continue; }
+					game.map.tile[row][col] = tile;
+					game.map.delta[row + "|" + col + "|" + tile] = true;
+				}
+			}
 		}
 	}
 }
@@ -463,6 +482,12 @@ function paintGame() {
 		engine.__context.fillRect(0,0,engine.width,42);
 		engine.__context.fillStyle = "#fff";
 		engine.__context.fillRect(game.debug.selectedTile * (32+5), 0,32+10,32+10);
+		
+		//Draw percent of brushSize
+		engine.__context.fillStyle = "#f00";
+		var height = game.debug.brushSize * 4.2;	//0-10 * 42 is a size of 0 to 42
+		engine.__context.fillRect(game.debug.selectedTile * (32+5), 42-height,32+10,height);
+		
 		//Draw tiles at the top for level editor
 		for (var i =0 ; i < game.uniqueTileIDs; i++) {
 			engine.drawSprite(i,(i*(32+5) + 5),5);

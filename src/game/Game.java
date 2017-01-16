@@ -119,4 +119,10 @@ public class Game implements GameInterface {
 		return combined;
 	}
 
+	//This gets called every 10 seconds while players are connected
+	@Override
+	public void save() {
+		map.save();
+	}
+
 }

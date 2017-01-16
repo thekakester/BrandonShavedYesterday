@@ -27,6 +27,11 @@ public class SkeletonGame implements GameInterface {
 		//Empty response
 		return null;
 	}
+
+	//Gets called every 10 seconds while a player is connected
+	@Override
+	public void save() {
+	}
 	
 
 }

@@ -21,6 +21,7 @@ public class ServerThread extends Thread {
 	private final GameInterface game;
 	private final String address;
 	private String response;
+	private long lastSaveTime = 0;
 
 	/**Note, this may or may not actually be a separate thread! 
 	 * See server.java
@@ -88,6 +89,12 @@ public class ServerThread extends Thread {
 				socket.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+			
+			//Save the map every 10 seconds
+			if (System.currentTimeMillis() - lastSaveTime > 10000) {
+				game.save();
+				lastSaveTime = System.currentTimeMillis();
 			}
 		}
 	}
