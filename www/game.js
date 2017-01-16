@@ -47,7 +47,6 @@ function begin_loadSprites() {
 	tmp.addFrame(64,32,15);
 	
 	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Water
-	game.collidableTiles[game.uniqueTileIDs-1] = true;
 	tmp.addFrame(96,32,15);
 	tmp.addFrame(128,32,15);
 	
@@ -61,7 +60,6 @@ function begin_loadSprites() {
 	tmp.addFrame(32,64,15);
 	
 	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Lava
-	game.collidableTiles[game.uniqueTileIDs-1] = true;
 	tmp.addFrame(64,64,10);
 	tmp.addFrame(96,64,10);
 	tmp.addFrame(128,64,10);
@@ -98,6 +96,12 @@ function begin_serverInit() {
 			}
 		}
 		console.log("Loaded map with " + game.map.rows + " rows and " + game.map.cols + " cols");
+		
+		/* GET UNPASSABLE TILES */
+		var count = buffer.getInt();
+		for (var i = 0; i < count; i++) {
+			game.collidableTiles[buffer.getInt()] = true;
+		}
 		
 		engine.enterGameLoop();	//Next step
 	});
@@ -445,8 +449,8 @@ function updateGame() {
 		}
 	}
 	
-	//Calculate a path from our player to the spot 20,20
-	playerPath = findPath(game.player.x,game.player.y,48,64);
+	//Deprecated.  Handled on server now
+	//playerPath = findPath(game.player.x,game.player.y,48,64);
 }
 
 function paintGame() {
@@ -481,6 +485,7 @@ function paintGame() {
 	}
 	
 	//Draw our path
+	/*DEBUG PATHFINDING STUFF
 	if (playerPath != null) {
 		engine.__context.beginPath();
 		engine.__context.moveTo(0,0);
@@ -500,7 +505,7 @@ function paintGame() {
 			prevNode = node;
 		}
 		engine.__context.stroke();
-	}
+	}*/
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
@@ -595,7 +600,8 @@ function tween(oldVal,newVal,tweenAmount) {
 //code.stephenmorley.org
 function Queue(){var a=[],b=0;this.getLength=function(){return a.length-b};this.isEmpty=function(){return 0==a.length};this.enqueue=function(b){a.push(b)};this.dequeue=function(){if(0!=a.length){var c=a[b];2*++b>=a.length&&(a=a.slice(b),b=0);return c}};this.peek=function(){return 0<a.length?a[b]:void 0}};
 
-
+/**I don't see any reason to use this...
+*/
 function findPath(startX,startY,endX,endY,maxRadius) {
 	var q = new Queue();
 	var visited = [];	//A set of visited nodes

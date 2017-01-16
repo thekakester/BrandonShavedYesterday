@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Map implements SerializableObject {
 	private final String mapFilename;
 	private int map[][];
-	
+	private int[] unpassableTiles = {5,9};	//Water, lava
 	//Map player-entityID to a delta object
 	//Delta represents what's changed that they don't know about
 	private HashMap<Integer,MapDelta> deltas = new HashMap<Integer,MapDelta>();
@@ -109,8 +109,14 @@ public class Map implements SerializableObject {
 	 */
 	@Override
 	public byte[] serialize() {
-		int length = ((map.length * map[0].length) + 2) * 4;
-		ByteBuffer bb = ByteBuffer.allocate(length);
+		int length = 2;	//Width + height ints
+		length += map.length * map[0].length;	//One int for each tile
+		length += 1;	//count of unpassable tiles
+		length += unpassableTiles.length;
+		
+		int bytesNeeded = length * 4;
+		
+		ByteBuffer bb = ByteBuffer.allocate(bytesNeeded);
 		bb.putInt(map.length);
 		bb.putInt(map[0].length);
 		for (int[] row : map) {
@@ -118,6 +124,13 @@ public class Map implements SerializableObject {
 				bb.putInt(val);
 			};
 		}
+		
+		//UnpassableTiles
+		bb.putInt(unpassableTiles.length);
+		for (int tileID : unpassableTiles) {
+			bb.putInt(tileID);
+		}
+		
 		return bb.array();
 	}
 
