@@ -9,19 +9,21 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 import game.Game;
 
 public class Server {
 
-	private GameInterface game;
+	private GameBase game;
 	private long lastSaveTime = 0;
+	private static Semaphore gameLock = new Semaphore(1);
 	
 	/**Create a server for the selected game
 	 * 
 	 * @param game
 	 */
-	public Server(GameInterface game, String[] args) {
+	public Server(GameBase game, String[] args) {
 		
 		//Start a simple web server
 		int port = Settings.PORT;	//Shouldn't change
@@ -34,6 +36,10 @@ public class Server {
 			} catch (Exception e){System.out.println("ERROR PARSING PORT.  Not a number: " + args[0]);}
 		}
 		
+		//Start a thread to handle our game (default updates every 100ms, acts like another client)
+		GameThread gt = new GameThread(game);
+		gt.start();
+		
 		try {
 			System.out.println("Starting web server on port " + port);
 			ServerSocket socket = new ServerSocket(port);
@@ -43,20 +49,26 @@ public class Server {
 					//Thread.sleep(500);
 					Socket client = socket.accept();
 					ServerThread thread = new ServerThread(game, client);
-					thread.run();	//CHANGE TO .start() to be multithreaded.  WARNING, code must be threadsafe then!
+					thread.start();
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
-				
-				//Save the map every 10 seconds
-				if (System.currentTimeMillis() - lastSaveTime > 10000) {
-					lastSaveTime = System.currentTimeMillis();
-					game.save();
 				}
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void getLock() {
+		try {
+			gameLock.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void releaseLock() {
+		gameLock.release();
 	}
 }

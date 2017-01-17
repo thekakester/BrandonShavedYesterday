@@ -6,7 +6,7 @@ public class Entity {
 	public Entity(int id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Entity " + id + ": (" + x + "," + y + ")";

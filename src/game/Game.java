@@ -3,10 +3,10 @@ package game;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-import engine.GameInterface;
+import engine.GameBase;
 import engine.Server;
 
-public class Game implements GameInterface {
+public class Game extends GameBase {
 
 	//This method starts the server and the game
 	public static void main(String[] args) {new Server (new Game(),args);}
@@ -118,11 +118,10 @@ public class Game implements GameInterface {
 		for (byte b : arrayB) {combined[i++] = b;}
 		return combined;
 	}
-
-	//This gets called every 10 seconds while players are connected
+	
 	@Override
-	public void save() {
-		map.save();
+	public void run() {
+		
 	}
 
 }

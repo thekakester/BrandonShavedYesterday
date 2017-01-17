@@ -1,9 +1,9 @@
 package game;
 
-import engine.GameInterface;
+import engine.GameBase;
 import engine.Server;
 
-public class SkeletonGame implements GameInterface {
+public class SkeletonGame extends GameBase {
 
 	//Start the server and the game!
 	public static void main(String[] args) { new Server(new SkeletonGame(),args); }
@@ -28,9 +28,10 @@ public class SkeletonGame implements GameInterface {
 		return null;
 	}
 
-	//Gets called every 10 seconds while a player is connected
 	@Override
-	public void save() {
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

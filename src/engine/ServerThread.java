@@ -18,7 +18,7 @@ import java.util.Scanner;
  */
 public class ServerThread extends Thread {
 	private final Socket socket;
-	private final GameInterface game;
+	private final GameBase game;
 	private final String address;
 	private String response;
 
@@ -27,7 +27,7 @@ public class ServerThread extends Thread {
 	 * @param game
 	 * @param socket
 	 */
-	public ServerThread(GameInterface game, Socket socket) {
+	public ServerThread(GameBase game, Socket socket) {
 		this.socket = socket;
 		this.game = game;
 		this.address = socket.getInetAddress().toString() + " (" + System.nanoTime() % 1000 + ")";
@@ -74,7 +74,7 @@ public class ServerThread extends Thread {
 				return;
 			}
 
-			
+
 			//Well, this is awkward.  They didn't want a real file or our virtual one.
 			//Send them 404 error!  (pass true to force HTML regardless of file extension
 			sendFile(new File("www/404.html"),true);
@@ -113,7 +113,7 @@ public class ServerThread extends Thread {
 	private void sendResponse(byte[] responseBody) {
 		sendResponse(responseBody, false);  //Assume they're not sending html
 	}
-	
+
 	/**Send a response back to the client.
 	 * @param responseBody The HTTP response data in bytes
 	 */
@@ -148,15 +148,11 @@ public class ServerThread extends Thread {
 		//Step 1, separate out each argument
 		String[] args = urlData.split("&");
 
-		//Store the game's response to each part (arg) so we can combine them later
-		//Since each response is in bytes, and we need to store all the responses
-		//this must be an array of responses, which is an array of byte arrays
-		byte[][] responses = new byte[args.length+1][];
-		
-		//Last response is terminator (0 as a 4 byte int)
-		responses[args.length] = new byte[] {0,0,0,0};
+		//This 2D array will hold all the parsed arguments (unescaped)
+		//Example: {  {"update","1|4|7"} ,  {"map","|1|1|6"}  , {"message","hello there"}  }
+		String[][] keyValuePairs = new String[args.length][];
 
-		//Step 2, loop over each argument
+		//Step 2, loop over each argument and parse out the key/value pairs
 		for (int i = 0; i < args.length; i++) {
 			String argument = args[i];
 
@@ -166,14 +162,43 @@ public class ServerThread extends Thread {
 			String[] keyValue = argument.split("=");
 			String key =  keyValue[0];
 			String value = keyValue.length > 1 ? keyValue[1] : "";
-			
+
 			//The value may be URL escaped (eg: "Hello%20There")
 			//Replace the special characters with their correct counterparts
 			value = URLDecoder.decode(value, "UTF-8");
 
-			//Any parsing further than this is specific to the method.  We'll pass this along
-			responses[i] = game.respondToClient(key,value);
+			keyValuePairs[i] = new String[] {key,value};
 		}
+
+		//Store the game's response to each part (arg) so we can combine them later
+		//Since each response is in bytes, and we need to store all the responses
+		//this must be an array of responses, which is an array of byte arrays
+		byte[][] responses = new byte[args.length+1][];
+
+		//Last response is terminator (0 as a 4 byte int)
+		responses[args.length] = new byte[] {0,0,0,0};
+
+
+		//THREAD UNSAFE CONDITIONS BELOW!  We must lock before proceeding
+		Server.getLock();
+
+		try {
+			//Execute all the commands in the game
+			for (int i = 0; i < keyValuePairs.length; i++) {
+				String key   = keyValuePairs[i][0];
+				String value = keyValuePairs[i][1];
+
+				//Any parsing further than this is specific to the method.  We'll pass this along
+				responses[i] = game.respondToClient(key,value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			//Always release the lock!
+			Server.releaseLock();
+		}
+
+		//Done with the thread critical stuff!
 
 		//Combine all the responses
 		int length = 0;	//Total length of all the responses
