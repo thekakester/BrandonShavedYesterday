@@ -1,7 +1,10 @@
 package game;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import engine.GameBase;
 import engine.Server;
@@ -16,8 +19,9 @@ public class Game extends GameBase {
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 
 	public Game() {
-		//Set second argument to true to ALWAYS generate a new map file
-		map = new Map("default.map",false);
+
+
+		load();	//Load the game (from save files)
 	}
 
 	/**Get an ID for an entity that hasn't been used yet
@@ -30,7 +34,7 @@ public class Game extends GameBase {
 		while (entities.containsKey(id)) {
 			id++;
 		}
-		entities.put(id, new Entity(id));	//Add something so we don't lose this ID to a race condition
+		entities.put(id, null);	//Add something so we don't lose this ID to a race condition
 		lastAddedEntityID = id;
 		return id;
 	}
@@ -44,14 +48,24 @@ public class Game extends GameBase {
 	}
 
 	public byte[] serializeEntities() {
-		ByteBuffer bb = ByteBuffer.allocate(((entities.size() * 3) + 2) * 4);
+
+		//Count the size in bytes of our entites
+		int size = 0;
+		for (Entity e : entities.values()) {
+			size += e.sizeInBytes();
+		}
+
+		//Add 2 more integers (8 bytes): ResponseType and entites.size();
+		size += 8;
+
+		ByteBuffer bb = ByteBuffer.allocate(size);
 		bb.putInt(ResponseType.ENTITY_UPDATE);
 		bb.putInt(entities.size());
-		
+
 		for (Entity e : entities.values()) {
-			bb.putInt(e.id);
-			bb.putInt(e.x);
-			bb.putInt(e.y);
+			for (byte b : e.bytes()) {
+				bb.put(b);
+			}
 		}
 		return bb.array();
 	}
@@ -66,10 +80,13 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("init")) {
 				//Return the PID and the original map state
 				int pid = getNewEntityId();
-				
+
+				//Add the entity for our player
+				entities.put(pid, new Entity(pid,EntityType.PLAYER));
+
 				//Subscribe this player to the deltas!
 				map.subscribe(pid);
-				
+
 				return concat(intToBytes(pid),map.serialize());
 			}
 
@@ -78,7 +95,7 @@ public class Game extends GameBase {
 				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
 				return null;	//Nothing to say back
 			}
-			
+
 			if (key.equals("map")) {
 				String[] args = value.split("\\|");
 				//Loop over the args
@@ -90,7 +107,7 @@ public class Game extends GameBase {
 				}
 				return null;	//nothing to say back!
 			}
-			
+
 			if (key.equals("update")) {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
@@ -110,7 +127,7 @@ public class Game extends GameBase {
 	private byte[] intToBytes(int x) {
 		return ByteBuffer.allocate(4).putInt(x).array();
 	}
-	
+
 	private byte[] concat(byte[] arrayA, byte[] arrayB) {
 		byte[] combined = new byte[arrayA.length+arrayB.length];
 		int i = 0;
@@ -118,13 +135,54 @@ public class Game extends GameBase {
 		for (byte b : arrayB) {combined[i++] = b;}
 		return combined;
 	}
-	
+
 	long lastSave = 0;	
 	@Override
 	public void run() {
+
+		//Save the game every 10 seconds
 		if (System.currentTimeMillis() - 10000 > lastSave) {
-			map.save();
+			save();
 			lastSave = System.currentTimeMillis();
+		}
+	}
+
+	/**Save the game
+	 * 
+	 */
+	public void save() {
+		map.save();	//Save the map
+	}
+
+	public void load() {
+		//Set second argument to true to ALWAYS generate a new map file
+		map = new Map("default.map",false);
+
+		//Load Entities
+		System.out.println("Loading entities");
+		try {
+			Scanner scanner = new Scanner(new File("default.entities"));
+			int lineNum = 0;
+			
+			while (scanner.hasNextLine()) {
+				lineNum++;
+				String line = scanner.nextLine().trim();
+				String data[] = line.split(" ");
+				if (data.length < 3 || data[0].startsWith("#")) { continue; }
+				try {
+					//Get a new entity ID
+					int id = getNewEntityId();
+					Entity e = new Entity(id, Integer.parseInt(data[0]));
+					e.y = Integer.parseInt(data[1]);	//ROW
+					e.x = Integer.parseInt(data[2]);	//Col
+					entities.put(id, e);
+					System.out.println("Loaded entity: " + e);
+				} catch (Exception e) {
+					System.out.println("Failed to load line " + lineNum + " of entites: " + line);
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 

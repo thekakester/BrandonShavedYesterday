@@ -73,6 +73,7 @@ public class Map implements SerializableObject {
 		try {
 			FileOutputStream fos = new FileOutputStream(new File(mapFilename));
 			fos.write(serialize());
+			
 			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();

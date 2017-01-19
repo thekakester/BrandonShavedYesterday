@@ -22,6 +22,7 @@ playerPath = null;
 game.init = function () {
 	engine.preloadImage("assets/tiles.png","tiles");
 	engine.preloadImage("assets/characters.png","characters");
+	engine.preloadImage("assets/objects.png","objects");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
 
 }
@@ -81,7 +82,7 @@ function begin_serverInit() {
 		var pid = buffer.getInt();
 		
 		//Set the player entity
-		game.player = new Entity(pid,10,10);
+		game.player = new Entity(pid,1,10,10);	//Type 1: player
 		game.entities[pid] = game.player;
 		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
@@ -168,17 +169,22 @@ game.onServerRespond = function(response) {
 			
 			for (var i = 0; i < count; i++) {
 				var eid = buffer.getInt();
+				var type = buffer.getInt();
 				var x = buffer.getInt();
 				var y = buffer.getInt();
+				var attributeLen = buffer.getInt();	//Not used yet
+				
+				
 				
 				if (eid == game.player.id) { continue; }
 				var e = game.entities[eid];
-				if (!e) { game.entities[eid] = new Entity(eid,x,y); e = game.entities[eid];}
+				if (!e) { console.log("Creating new entity"); game.entities[eid] = new Entity(eid,type,x,y); e = game.entities[eid];}
 				e.oldX = tween(e.oldX,e.x,e.tween);
 				e.oldY = tween(e.oldY,e.y,e.tween);
 				e.tween = 0;
 				e.x = x;
 				e.y = y;
+				e.type = type;
 			}
 		}
 		
@@ -472,14 +478,7 @@ function paintGame() {
 		var x = tween(e.oldX,e.x,e.tween);
 		var y = tween(e.oldY,e.y,e.tween);
 		
-		var character = id % 8;
-		var srcX = character % 4;
-		srcX *= (32*3);
-		srcX += 32;
-		var srcY = Math.floor(character / 4);
-		srcY *= (32 * 4);
-		
-		engine.drawImage("characters", srcX,srcY,32,32,(32 * x)-offsetX, (32 * y)-offsetY,32,32);	
+		drawEntity(e.type,(x*32)-offsetX,(y*32)-offsetY);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
@@ -523,6 +522,18 @@ function paintGame() {
 		for (var i =0 ; i < game.uniqueTileIDs; i++) {
 			engine.drawSprite(i,(i*(32+5) + 5),5);
 		}
+	}
+}
+
+//TODO change this to use sprites.  This function shouldn't exist
+//Instead, each thing should have a sprite and call e.draw();
+function drawEntity(type,x,y) {
+	if (type == 1) {
+		engine.drawImage("characters", 128,0,32,32,x,y,32,32);
+	} else if (type == 2) {
+		engine.drawImage("objects", 0,0,32,32,x,y,32,32);
+	} else if (type == 3) {
+		engine.drawImage("objects", 32,0,32,32,x,y,32,32);
 	}
 }
 
@@ -576,6 +587,7 @@ Entity.prototype = {
 	x: 0,
 	y: 0,
 	id: 0,
+	type: 0,
 	tween: 1,
 	oldX: 0,
 	oldY: 0,
@@ -584,8 +596,9 @@ Entity.prototype = {
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
 
-function Entity(id,x,y) {
+function Entity(id,type,x,y) {
 	this.id = id;
+	this.type = type;
 	this.x = x;
 	this.y = y;
 }
