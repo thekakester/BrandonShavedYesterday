@@ -86,6 +86,54 @@ function begin_loadSprites() {
 	}
 	
 	
+	var tmp = engine.createSprite("entity5","objects",32,32);	//Sprite: Wall top back left
+	tmp.addFrame(0,64,10);
+	
+	var tmp = engine.createSprite("entity6","objects",32,32);	//Sprite: Wall top back right
+	tmp.addFrame(32,64,10);
+	
+	var tmp = engine.createSprite("entity7","objects",32,32);	//Sprite: Wall bot back left
+	tmp.addFrame(0,96,10);
+	
+	var tmp = engine.createSprite("entity8","objects",32,32);	//Sprite: Wall bot back right
+	tmp.addFrame(32,96,10);
+	
+	var tmp = engine.createSprite("entity9","objects",32,32);	//Sprite: Wall left
+	tmp.addFrame(0,128,10);
+	
+	var tmp = engine.createSprite("entity10","objects",32,32);	//Sprite: Wall right
+	tmp.addFrame(32,128,10);
+	
+	var tmp = engine.createSprite("entity11","objects",32,32);	//Sprite: Wall front top left
+	tmp.addFrame(0,160,10);
+	
+	var tmp = engine.createSprite("entity12","objects",32,32);	//Sprite: Wall front top right
+	tmp.addFrame(32,160,10);
+	
+	var tmp = engine.createSprite("entity13","objects",32,32);	//Sprite: Wall front bot left
+	tmp.addFrame(0,192,10);
+	
+	var tmp = engine.createSprite("entity14","objects",32,32);	//Sprite: Wall front bot right
+	tmp.addFrame(32,192,10);
+	
+	var tmp = engine.createSprite("entity15","objects",32,32);	//Sprite: Wall norm Top
+	tmp.addFrame(64,64,10);
+	
+	var tmp = engine.createSprite("entity16","objects",32,32);	//Sprite: Wall norm
+	tmp.addFrame(64,96,10);
+	
+	var tmp = engine.createSprite("entity17","objects",32,32);	//Sprite: Wall Pillar top left half
+	tmp.addFrame(64,128,10);
+	
+	var tmp = engine.createSprite("entity18","objects",32,32);	//Sprite: Wall Pillar bottom left half
+	tmp.addFrame(64,160,10);
+	
+	var tmp = engine.createSprite("entity19","objects",32,32);	//Sprite: Wall Pillar top right half
+	tmp.addFrame(96,128,10);
+	
+	var tmp = engine.createSprite("entity20","objects",32,32);	//Sprite: Wall Pillar bottom right half
+	tmp.addFrame(96,160,10);
+	
 	
 	begin_serverInit();
 }
