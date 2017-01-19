@@ -23,6 +23,8 @@ game.init = function () {
 	engine.preloadImage("assets/tiles.png","tiles");
 	engine.preloadImage("assets/characters.png","characters");
 	engine.preloadImage("assets/objects.png","objects");
+	engine.preloadImage("assets/darkerTiles.png","darkerTiles");
+	engine.preloadImage("assets/darkerCharacters.png","darkerCharacters");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
 
 }
@@ -61,6 +63,45 @@ function begin_loadSprites() {
 	tmp.addFrame(32,64,15);
 	
 	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Lava
+	tmp.addFrame(64,64,10);
+	tmp.addFrame(96,64,10);
+	tmp.addFrame(128,64,10);
+	tmp.addFrame(160,64,10);
+	tmp.addFrame(128,64,10);
+	tmp.addFrame(96,64,10);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Plain grass
+	tmp.addFrame(32,0,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Flowers
+	tmp.addFrame(64,0,15);
+	tmp.addFrame(96,0,15);
+	tmp.addFrame(128,0,15);
+	tmp.addFrame(160,0,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Med Grass
+	tmp.addFrame(0,32,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Long Grass
+	tmp.addFrame(32,32,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Sandstone
+	tmp.addFrame(64,32,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Water
+	tmp.addFrame(96,32,15);
+	tmp.addFrame(128,32,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Vert Bridge
+	tmp.addFrame(160,32,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Horiz Bridge
+	tmp.addFrame(0,64,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Stone
+	tmp.addFrame(32,64,15);
+	
+	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Miasma
 	tmp.addFrame(64,64,10);
 	tmp.addFrame(96,64,10);
 	tmp.addFrame(128,64,10);
