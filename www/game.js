@@ -69,6 +69,24 @@ function begin_loadSprites() {
 	tmp.addFrame(96,64,10);
 	
 	
+	//ENTITY SPRITES
+	var tmp = engine.createSprite("entity1","characters",32,32);	//Sprite: Player
+	tmp.addFrame(128,0,10);
+	
+	var tmp = engine.createSprite("entity2","objects",32,32);	//Sprite: Sign
+	tmp.addFrame(0,0,10);
+	
+	var tmp = engine.createSprite("entity3","objects",32,32);	//Sprite: Gravestone
+	tmp.addFrame(32,0,10);
+	
+	var tmp = engine.createSprite("entity4","objects",32,32);	//Sprite: Gem
+	var xTmp = 0;
+	for (var i = 0; i < 8; i++) {	//Load the 8 frames, all to the right of eachother
+		tmp.addFrame((xTmp++)*32,32,4);
+	}
+	
+	
+	
 	begin_serverInit();
 }
 
@@ -478,7 +496,7 @@ function paintGame() {
 		var x = tween(e.oldX,e.x,e.tween);
 		var y = tween(e.oldY,e.y,e.tween);
 		
-		drawEntity(e.type,(x*32)-offsetX,(y*32)-offsetY);	
+		engine.drawSprite("entity" + e.type,(x*32)-offsetX,(y*32)-offsetY);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
@@ -525,17 +543,6 @@ function paintGame() {
 	}
 }
 
-//TODO change this to use sprites.  This function shouldn't exist
-//Instead, each thing should have a sprite and call e.draw();
-function drawEntity(type,x,y) {
-	if (type == 1) {
-		engine.drawImage("characters", 128,0,32,32,x,y,32,32);
-	} else if (type == 2) {
-		engine.drawImage("objects", 0,0,32,32,x,y,32,32);
-	} else if (type == 3) {
-		engine.drawImage("objects", 32,0,32,32,x,y,32,32);
-	}
-}
 
 function move(xMovement, yMovement){
 	if (game.player.tween < 1) { return; }
@@ -593,6 +600,7 @@ Entity.prototype = {
 	oldY: 0,
 	name: "unnamed",
 	delta: [],
+	sprite: null,
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
 
