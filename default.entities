@@ -10,22 +10,22 @@
 4 17 15
 
 #Walls (5-20)
-5 0 21        #back top left
-6 0 22        #back top right
-7 0 23        #back bot left
-8 0 24        #back bot right
-9 0 25        #side left
-10 0 26    #side right
-11 0 27    #front top left
-12 0 28    #front top right
-13 0 29    #front bot left
-14 0 30    #front bot right
-15 0 31    #norm top
-16 0 32    #norm
-17 0 33    #Pillar top left half
-18 0 34    #Pillar bot left half
-19 0 35    #Pillar top right half
-20 0 36    #Pillar bot right half
+#5 0 21        #back top left
+#6 0 22        #back top right
+#7 0 23        #back bot left
+#8 0 24        #back bot right
+#9 0 25        #side left
+#10 0 26    #side right
+#11 0 27    #front top left
+#12 0 28    #front top right
+#13 0 29    #front bot left
+#14 0 30    #front bot right
+#15 0 31    #norm top
+#16 0 32    #norm
+#17 0 33    #Pillar top left half
+#18 0 34    #Pillar bot left half
+#19 0 35    #Pillar top right half
+#20 0 36    #Pillar bot right half
 
 
 11 20 21    #front top left

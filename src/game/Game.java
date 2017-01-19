@@ -14,6 +14,8 @@ public class Game extends GameBase {
 	//This method starts the server and the game
 	public static void main(String[] args) {new Server (new Game(),args);}
 
+	public final String MAP = "default";
+	
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
@@ -156,12 +158,14 @@ public class Game extends GameBase {
 
 	public void load() {
 		//Set second argument to true to ALWAYS generate a new map file
-		map = new Map("default.map",false);
+		map = new Map(MAP + ".map",false);
 
 		//Load Entities
-		System.out.println("Loading entities");
+		System.out.println("Loading entities");	
 		try {
-			Scanner scanner = new Scanner(new File("default.entities"));
+			File entitiesFile = new File(MAP + ".entities");
+			if (!entitiesFile.exists()) { entitiesFile.createNewFile(); }
+			Scanner scanner = new Scanner(entitiesFile);
 			int lineNum = 0;
 			
 			while (scanner.hasNextLine()) {
@@ -181,7 +185,7 @@ public class Game extends GameBase {
 					System.out.println("Failed to load line " + lineNum + " of entites: " + line);
 				}
 			}
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
