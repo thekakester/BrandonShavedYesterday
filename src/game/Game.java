@@ -119,9 +119,13 @@ public class Game extends GameBase {
 		return combined;
 	}
 	
+	long lastSave = 0;	
 	@Override
 	public void run() {
-		
+		if (System.currentTimeMillis() - 10000 > lastSave) {
+			map.save();
+			lastSave = System.currentTimeMillis();
+		}
 	}
 
 }
