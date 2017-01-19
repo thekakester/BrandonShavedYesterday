@@ -30,39 +30,41 @@ game.init = function () {
 }
 
 function begin_loadSprites() {
+	//The tag for tile sprites is "tile" followed by the tile number.
+	//Example: "tile0" is grass, "tile1" is flowers, etc.
 	game.uniqueTileIDs = 0;
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Plain grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Plain grass
 	tmp.addFrame(32,0,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Flowers
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Flowers
 	tmp.addFrame(64,0,15);
 	tmp.addFrame(96,0,15);
 	tmp.addFrame(128,0,15);
 	tmp.addFrame(160,0,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Med Grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Med Grass
 	tmp.addFrame(0,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Long Grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Long Grass
 	tmp.addFrame(32,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Sandstone
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Sandstone
 	tmp.addFrame(64,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Water
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Water
 	tmp.addFrame(96,32,15);
 	tmp.addFrame(128,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Vert Bridge
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Vert Bridge
 	tmp.addFrame(160,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Horiz Bridge
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Horiz Bridge
 	tmp.addFrame(0,64,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Stone
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Stone
 	tmp.addFrame(32,64,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Lava
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Lava
 	tmp.addFrame(64,64,10);
 	tmp.addFrame(96,64,10);
 	tmp.addFrame(128,64,10);
@@ -70,38 +72,38 @@ function begin_loadSprites() {
 	tmp.addFrame(128,64,10);
 	tmp.addFrame(96,64,10);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Plain grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Plain grass
 	tmp.addFrame(32,0,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Flowers
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Flowers
 	tmp.addFrame(64,0,15);
 	tmp.addFrame(96,0,15);
 	tmp.addFrame(128,0,15);
 	tmp.addFrame(160,0,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Med Grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Med Grass
 	tmp.addFrame(0,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Long Grass
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Long Grass
 	tmp.addFrame(32,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Sandstone
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Sandstone
 	tmp.addFrame(64,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Water
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Water
 	tmp.addFrame(96,32,15);
 	tmp.addFrame(128,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Vert Bridge
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Vert Bridge
 	tmp.addFrame(160,32,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Horiz Bridge
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Horiz Bridge
 	tmp.addFrame(0,64,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Stone
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Stone
 	tmp.addFrame(32,64,15);
 	
-	var tmp = engine.createSprite(game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Miasma
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Miasma
 	tmp.addFrame(64,64,10);
 	tmp.addFrame(96,64,10);
 	tmp.addFrame(128,64,10);
@@ -576,7 +578,7 @@ function paintGame() {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
 			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
-			engine.drawSprite(game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
+			engine.drawSprite("tile" + game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
 		}
 	}
 	
