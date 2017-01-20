@@ -10,9 +10,11 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.type = "menu";
+game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
 game.debug.enabled = false;
-game.debug.selectedTile = 0;
+game.debug.selected = 0;
+game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
 playerPath = null;
 
@@ -37,10 +39,10 @@ function begin_loadSprites() {
 	tmp.addFrame(32,0,15);
 	
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Flowers
-	tmp.addFrame(64,0,15);
-	tmp.addFrame(96,0,15);
-	tmp.addFrame(128,0,15);
-	tmp.addFrame(160,0,15);
+	tmp.addFrame(64,0,10);
+	tmp.addFrame(96,0,10);
+	tmp.addFrame(128,0,10);
+	tmp.addFrame(160,0,10);
 	
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"tiles",32,32);	//Sprite: Med Grass
 	tmp.addFrame(0,32,15);
@@ -76,10 +78,10 @@ function begin_loadSprites() {
 	tmp.addFrame(32,0,15);
 	
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Flowers
-	tmp.addFrame(64,0,15);
-	tmp.addFrame(96,0,15);
-	tmp.addFrame(128,0,15);
-	tmp.addFrame(160,0,15);
+	tmp.addFrame(64,0,10);
+	tmp.addFrame(96,0,10);
+	tmp.addFrame(128,0,10);
+	tmp.addFrame(160,0,10);
 	
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Darker Med Grass
 	tmp.addFrame(0,32,15);
@@ -112,69 +114,74 @@ function begin_loadSprites() {
 	tmp.addFrame(96,64,10);
 	
 	
+	
 	//ENTITY SPRITES
-	var tmp = engine.createSprite("entity1","characters",32,32);	//Sprite: Player
+	game.uniqueEntityIDs = 0;
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: NULL
+	tmp.addFrame(288,0,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player
 	tmp.addFrame(128,0,10);
 	
-	var tmp = engine.createSprite("entity2","objects",32,32);	//Sprite: Sign
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Sign
 	tmp.addFrame(0,0,10);
 	
-	var tmp = engine.createSprite("entity3","objects",32,32);	//Sprite: Gravestone
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Gravestone
 	tmp.addFrame(32,0,10);
 	
-	var tmp = engine.createSprite("entity4","objects",32,32);	//Sprite: Gem
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Gem
 	var xTmp = 0;
 	for (var i = 0; i < 8; i++) {	//Load the 8 frames, all to the right of eachother
 		tmp.addFrame((xTmp++)*32,32,4);
 	}
 	
 	
-	var tmp = engine.createSprite("entity5","objects",32,32);	//Sprite: Wall top back left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall top back left
 	tmp.addFrame(0,64,10);
 	
-	var tmp = engine.createSprite("entity6","objects",32,32);	//Sprite: Wall top back right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall top back right
 	tmp.addFrame(32,64,10);
 	
-	var tmp = engine.createSprite("entity7","objects",32,32);	//Sprite: Wall bot back left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall bot back left
 	tmp.addFrame(0,96,10);
 	
-	var tmp = engine.createSprite("entity8","objects",32,32);	//Sprite: Wall bot back right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall bot back right
 	tmp.addFrame(32,96,10);
 	
-	var tmp = engine.createSprite("entity9","objects",32,32);	//Sprite: Wall left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall left
 	tmp.addFrame(0,128,10);
 	
-	var tmp = engine.createSprite("entity10","objects",32,32);	//Sprite: Wall right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall right
 	tmp.addFrame(32,128,10);
 	
-	var tmp = engine.createSprite("entity11","objects",32,32);	//Sprite: Wall front top left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front top left
 	tmp.addFrame(0,160,10);
 	
-	var tmp = engine.createSprite("entity12","objects",32,32);	//Sprite: Wall front top right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front top right
 	tmp.addFrame(32,160,10);
 	
-	var tmp = engine.createSprite("entity13","objects",32,32);	//Sprite: Wall front bot left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front bot left
 	tmp.addFrame(0,192,10);
 	
-	var tmp = engine.createSprite("entity14","objects",32,32);	//Sprite: Wall front bot right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front bot right
 	tmp.addFrame(32,192,10);
 	
-	var tmp = engine.createSprite("entity15","objects",32,32);	//Sprite: Wall norm Top
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall norm Top
 	tmp.addFrame(64,64,10);
 	
-	var tmp = engine.createSprite("entity16","objects",32,32);	//Sprite: Wall norm
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall norm
 	tmp.addFrame(64,96,10);
 	
-	var tmp = engine.createSprite("entity17","objects",32,32);	//Sprite: Wall Pillar top left half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar top left half
 	tmp.addFrame(64,128,10);
 	
-	var tmp = engine.createSprite("entity18","objects",32,32);	//Sprite: Wall Pillar bottom left half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar bottom left half
 	tmp.addFrame(64,160,10);
 	
-	var tmp = engine.createSprite("entity19","objects",32,32);	//Sprite: Wall Pillar top right half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar top right half
 	tmp.addFrame(96,128,10);
 	
-	var tmp = engine.createSprite("entity20","objects",32,32);	//Sprite: Wall Pillar bottom right half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar bottom right half
 	tmp.addFrame(96,160,10);
 	
 	
@@ -255,6 +262,10 @@ game.sendMessage = function() {
 		message += tmp;
 		game.map.delta = {};	//Clear our delta
 	}
+	
+	//DEBUG STUFF (do we need to add anything else?)
+	message += game.appendMessage;
+	game.appendMessage = "";
 	
 	/*---------CHAT-----------*/
 	//TODO put chat code here
@@ -520,17 +531,17 @@ function updateGame() {
 	
 	if (engine.isKeyPressed("Escape")) {
 		game.debug.enabled = !game.debug.enabled;
-		game.debug.selectedTile = 0;
+		game.debug.selected = 0;
 		game.debug.brushSize = 0;
 		console.log("Set debug mode to " + game.debug.enabled);
 	}
 	
 	if (game.debug.enabled) {
 		if (engine.isKeyPressed("Digit1")) {
-			game.debug.selectedTile--;
+			game.debug.selected--;
 		}
 		if (engine.isKeyPressed("Digit2")) {
-			game.debug.selectedTile++;
+			game.debug.selected++;
 		}
 		if (engine.isKeyPressed("Digit4")) {
 			if (game.debug.brushSize > 0) {
@@ -542,23 +553,44 @@ function updateGame() {
 				game.debug.brushSize++;
 			}
 		}
+		if (engine.isKeyPressed("Digit6")) {
+			game.debug.row++;
+			game.debug.row %= 2;
+			game.selected = 0;
+		}
+		
+		
 		
 		//Assume X tiles.  add by X then mod by X.  Solves + and - changes
-		game.debug.selectedTile += game.uniqueTileIDs;
-		game.debug.selectedTile %= game.uniqueTileIDs;
+		if (game.debug.row == 0) {
+			game.debug.selected += game.uniqueTileIDs;
+			game.debug.selected %= game.uniqueTileIDs;
+		} else {
+			game.debug.selected += game.uniqueEntityIDs;
+			game.debug.selected %= game.uniqueEntityIDs;
+		}
 		
-		if (engine.isKeyDown("Digit3")) {
-			var tile = game.debug.selectedTile;
-			
-			for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
-				for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
-					var row = game.player.y + yOffset;
-					var col = game.player.x + xOffset;
-					
-					//Avoid out of bounds
-					if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
-					game.map.tile[row][col] = tile;
-					game.map.delta[row + "|" + col + "|" + tile] = true;
+		
+		var selectedID = game.debug.selected;	//Might be a tileID or entityID
+		
+		//if its an entity, tell the server to make a new entity 
+		if (game.debug.row == 1) {
+			if (engine.isKeyPressed("Digit3")) {	//Used pressed so we don't make extra entities
+				//Tell server to make a new entity
+				game.appendMessage += "&createEntity=" + selectedID + "|" + game.player.x + "|" + game.player.y;
+			}
+		} else {	
+			if (engine.isKeyDown("Digit3")) {			
+				for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
+					for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
+						var row = game.player.y + yOffset;
+						var col = game.player.x + xOffset;
+						
+						//Avoid out of bounds
+						if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
+						game.map.tile[row][col] = selectedID;
+						game.map.delta[row + "|" + col + "|" + selectedID] = true;
+					}
 				}
 			}
 		}
@@ -617,19 +649,28 @@ function paintGame() {
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
+		//IDK why i chose 42, but go with it
 		engine.__context.fillStyle = "#000";
-		engine.__context.fillRect(0,0,engine.width,42);
+		engine.__context.fillRect(0,0,engine.width,42*2);
 		engine.__context.fillStyle = "#fff";
-		engine.__context.fillRect(game.debug.selectedTile * (32+5), 0,32+10,32+10);
+		
+		var selectRow = game.debug.row == 1 ? 42 : 0;
+		engine.__context.fillRect(game.debug.selected * (32+5), selectRow,32+10,32+10);
 		
 		//Draw percent of brushSize
 		engine.__context.fillStyle = "#f00";
 		var height = game.debug.brushSize * 4.2;	//0-10 * 42 is a size of 0 to 42
-		engine.__context.fillRect(game.debug.selectedTile * (32+5), 42-height,32+10,height);
+		engine.__context.fillRect(game.debug.selected * (32+5), 42-height,32+10,height);
 		
 		//Draw tiles at the top for level editor
 		for (var i =0 ; i < game.uniqueTileIDs; i++) {
-			engine.drawSprite(i,(i*(32+5) + 5),5);
+			engine.drawSprite("tile" + i,(i*(32+5) + 5),5);
+		}
+		
+		//ENTITY STUFF
+		//Draw tiles at the top for level editor
+		for (var i =0 ; i < game.uniqueEntityIDs; i++) {
+			engine.drawSprite("entity" + i,(i*(32+5) + 5),5+42);
 		}
 	}
 }

@@ -8,18 +8,20 @@ public class GameThread extends Thread {
 
 	@Override
 	public void run() {
-		//Make sure no clients interfere
-		Server.getLock();
+		while (true) {
+			//Make sure no clients interfere
+			Server.getLock();
 
-		try {
-			game.run();
-		} catch (Exception e) { e.printStackTrace(); }
-		finally {
-			Server.releaseLock();
+			try {
+				game.run();
+			} catch (Exception e) { e.printStackTrace(); }
+			finally {
+				Server.releaseLock();
+			}
+
+			try {
+				Thread.sleep(game.delayBetweenRuns());
+			} catch (Exception e) {e.printStackTrace();}
 		}
-
-		try {
-			Thread.sleep(game.delayBetweenRuns());
-		} catch (Exception e) {e.printStackTrace();}
 	}
 }

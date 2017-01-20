@@ -93,13 +93,13 @@ public class Game extends GameBase {
 				return concat(intToBytes(pid),map.serialize());
 			}
 
-			if (key.equals("entity")) {
+			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
 				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
 				return null;	//Nothing to say back
 			}
 
-			if (key.equals("map")) {
+			if (key.equalsIgnoreCase("map")) {
 				String[] args = value.split("\\|");
 				//Loop over the args
 				for (int i = 1; i+2 < args.length; i+=3) {
@@ -111,13 +111,25 @@ public class Game extends GameBase {
 				return null;	//nothing to say back!
 			}
 
-			if (key.equals("update")) {
+			if (key.equalsIgnoreCase("update")) {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
 				byte[] response = new byte[0];
 				response = concat(response,serializeEntities());
 				response = concat(response,map.getDeltaAsBytes(pid));
 				return response;
+			}
+			
+			if (key.equalsIgnoreCase("createEntity")) {
+				//Parse out the params
+				String[] args = value.split("\\|"); // type|x|y
+				//Get an ID and create the entity here
+				int id = getNewEntityId();
+				Entity e = new Entity(id, Integer.parseInt(args[0]));
+				e.x = Integer.parseInt(args[1]);
+				e.y = Integer.parseInt(args[2]);
+				entities.put(id, e);
+				return null;	//The user will get the change with update
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
