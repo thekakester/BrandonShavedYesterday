@@ -190,6 +190,12 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Egg Blue-Orange
 	tmp.addFrame(288,32,10);
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Mushroom Spawn
+	tmp.addFrame(0,288,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Mushroom Enemy
+	tmp.addFrame(0,256,10);
+	
 	
 	begin_serverInit();
 }

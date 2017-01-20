@@ -1,5 +1,6 @@
 package game;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class EntityType {
@@ -25,6 +26,8 @@ public class EntityType {
 	public static final int WALL_PILLAR_BOT_RIGHTHALF 	= 20;
 	public static final int EGG_YELLOW					= 21;
 	public static final int EGG_BLUEORANGE				= 22;
+	public static final int SPAWNER_MUSHROOM			= 23;
+	public static final int MUSHROOM					= 24;
 
 	
 	//STATIC ENTITIES
@@ -32,6 +35,12 @@ public class EntityType {
 	//These should never move or be dynamically created by the game
 	//If you need something that moves, create a spawner instead
 	public static final HashSet<Integer> STATIC_ENTITIES = new HashSet<Integer>();
+	
+	//SPAWNERS
+	//Point the spawner ID to what it spawns.
+	//Ex: SPAWNER_MUSHROOM -> MUSHROOM
+	public static final HashMap<Integer,Integer> SPAWNERS = new HashMap<Integer,Integer>();
+	
 	
 	static {
 		STATIC_ENTITIES.add(SIGN);
@@ -55,5 +64,10 @@ public class EntityType {
 		STATIC_ENTITIES.add(WALL_PILLAR_BOT_RIGHTHALF);
 		STATIC_ENTITIES.add(EGG_YELLOW);
 		STATIC_ENTITIES.add(EGG_BLUEORANGE);
+		STATIC_ENTITIES.add(SPAWNER_MUSHROOM);
+		
+		SPAWNERS.put(SPAWNER_MUSHROOM, MUSHROOM);
 	}
+	
+
 }

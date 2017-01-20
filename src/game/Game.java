@@ -174,6 +174,11 @@ public class Game extends GameBase {
 		return combined;
 	}
 
+	@Override
+	public long delayBetweenRuns() {
+		return 300;
+	}
+	
 	long lastSave = 0;	
 	@Override
 	public void run() {
@@ -182,6 +187,13 @@ public class Game extends GameBase {
 		if (System.currentTimeMillis() - 10000 > lastSave) {
 			save();
 			lastSave = System.currentTimeMillis();
+		}
+
+		//Move all mushrooms slightly
+		for (Entity e : entities.values()) {
+			if (e.type == EntityType.MUSHROOM) {
+				e.y += 1;
+			}
 		}
 	}
 
