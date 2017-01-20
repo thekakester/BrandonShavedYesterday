@@ -23,8 +23,8 @@ public class EntityType {
 	public static final int WALL_PILLAR_TOP_RIGHTHALF 	= 18;
 	public static final int WALL_PILLAR_BOT_LEFTHALF 	= 19;
 	public static final int WALL_PILLAR_BOT_RIGHTHALF 	= 20;
-	public static final int SPAWNER_GHOST 				= 21;
-	public static final int GHOST 						= 22;
+	public static final int EGG_YELLOW					= 21;
+	public static final int EGG_BLUEORANGE				= 22;
 
 	
 	//STATIC ENTITIES
@@ -53,6 +53,7 @@ public class EntityType {
 		STATIC_ENTITIES.add(WALL_PILLAR_TOP_RIGHTHALF);
 		STATIC_ENTITIES.add(WALL_PILLAR_BOT_LEFTHALF);
 		STATIC_ENTITIES.add(WALL_PILLAR_BOT_RIGHTHALF);
-		STATIC_ENTITIES.add(SPAWNER_GHOST);
+		STATIC_ENTITIES.add(EGG_YELLOW);
+		STATIC_ENTITIES.add(EGG_BLUEORANGE);
 	}
 }

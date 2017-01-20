@@ -184,6 +184,12 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar bottom right half
 	tmp.addFrame(96,160,10);
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Egg Yellow
+	tmp.addFrame(256,32,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Egg Blue-Orange
+	tmp.addFrame(288,32,10);
+	
 	
 	begin_serverInit();
 }
