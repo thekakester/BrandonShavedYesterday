@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -120,9 +121,31 @@ public class Game extends GameBase {
 				return response;
 			}
 			
+			//Add an entity, or remove all if ID=0
 			if (key.equalsIgnoreCase("createEntity")) {
 				//Parse out the params
 				String[] args = value.split("\\|"); // type|x|y
+				//If type is 0, remove!
+				if(args[0].equals("0")) {
+					System.out.println("Deleting entities at " + args[1] + "," + args[2]);
+					int x = Integer.parseInt(args[1]);
+					int y = Integer.parseInt(args[2]);
+					
+					//Delete everything in this spot
+					ArrayList<Integer> eidsToDelete = new ArrayList<Integer>();
+					for (Entity e : entities.values()) {
+						if (EntityType.STATIC_ENTITIES.contains(e.type) && e.x == x && e.y == y) {
+							eidsToDelete.add(e.id);
+						}
+					}
+					//Delete all these static entities
+					for (int eid : eidsToDelete) {
+						entities.remove(eid);
+						System.out.println("Removing EID: " + eid);
+					}
+					return null;
+				}
+				
 				//Get an ID and create the entity here
 				int id = getNewEntityId();
 				Entity e = new Entity(id, Integer.parseInt(args[0]));

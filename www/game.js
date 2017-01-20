@@ -117,7 +117,7 @@ function begin_loadSprites() {
 	
 	//ENTITY SPRITES
 	game.uniqueEntityIDs = 0;
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: NULL
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: NULL
 	tmp.addFrame(288,0,10);
 	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player
