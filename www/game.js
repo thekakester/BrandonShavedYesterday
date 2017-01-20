@@ -306,11 +306,21 @@ game.onServerRespond = function(response) {
 				var y = buffer.getInt();
 				var attributeLen = buffer.getInt();	//Not used yet
 				
+				//Read attributes
+				var attributes = [];
+				for (var j = 0; j < attributeLen; j++) {
+					attributes[j] = buffer.getInt();
+				}
 				
 				
 				if (eid == game.player.id) { continue; }
 				var e = game.entities[eid];
-				if (!e) { console.log("Creating new entity"); game.entities[eid] = new Entity(eid,type,x,y); e = game.entities[eid];}
+				if (!e) {
+					console.log("Creating new entity");
+					game.entities[eid] = new Entity(eid,type,x,y);
+					e = game.entities[eid];
+					console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
+				}
 				e.oldX = tween(e.oldX,e.x,e.tween);
 				e.oldY = tween(e.oldY,e.y,e.tween);
 				e.tween = 0;

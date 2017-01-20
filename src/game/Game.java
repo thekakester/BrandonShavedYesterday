@@ -188,12 +188,38 @@ public class Game extends GameBase {
 			save();
 			lastSave = System.currentTimeMillis();
 		}
+		
+		//EVERYTHING BELOW THIS IS BAD!  CHANGE IT!
 
-		//Move all mushrooms slightly
+		ArrayList<Integer> eidsToDelete = new ArrayList<Integer>();
+		
+		//Move all mushrooms slightly (and spawn)
 		for (Entity e : entities.values()) {
-			if (e.type == EntityType.MUSHROOM) {
-				e.y += 1;
+			if (e.attributes.length > 0) {
+				//Does it have anything spawned?
+				if (!entities.containsKey(e.attributes[1])) {
+					//Spawn something new
+					int id = getNewEntityId();
+					Entity newE = new Entity(id,e.attributes[0]);
+					newE.x = e.x;
+					newE.y = e.y;
+					e.attributes[1] = id;
+					entities.put(id,newE);	//Causes concurrent exception most times
+					
+				}
 			}
+			
+			if (e.type == EntityType.MUSHROOM) {
+				e.y -= 1;
+				if (e.y < 0) {
+					eidsToDelete.add(e.id);
+				}
+			}
+		}
+		
+		//Delete deletable things
+		for (int id : eidsToDelete) {
+			entities.remove(id);
 		}
 	}
 

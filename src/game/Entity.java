@@ -12,8 +12,8 @@ public class Entity {
 		this.type = type;
 		
 		//A very bad way at using spawners.  This should probably be re-imagined
-		if (EntityType.SPAWNERS.containsKey(id)) {
-			this.attributes = new int[] {EntityType.SPAWNERS.get(id),-1};	//SpawnType,id of spawned entity
+		if (EntityType.SPAWNERS.containsKey(type)) {
+			this.attributes = new int[] {EntityType.SPAWNERS.get(type),-1};	//SpawnType,id of spawned entity
 		}
 	}
 
