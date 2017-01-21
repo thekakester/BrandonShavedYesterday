@@ -28,6 +28,8 @@ public class EntityType {
 	public static final int EGG_BLUEORANGE				= 22;
 	public static final int SPAWNER_MUSHROOM			= 23;
 	public static final int MUSHROOM					= 24;
+	public static final int SPAWNER_CHICK				= 25;
+	public static final int CHICK						= 26;
 
 	
 	//STATIC ENTITIES
@@ -36,11 +38,13 @@ public class EntityType {
 	//If you need something that moves, create a spawner instead
 	public static final HashSet<Integer> STATIC_ENTITIES = new HashSet<Integer>();
 	
-	//SPAWNERS
-	//Point the spawner ID to what it spawns.
-	//Ex: SPAWNER_MUSHROOM -> MUSHROOM
-	public static final HashMap<Integer,Integer> SPAWNERS = new HashMap<Integer,Integer>();
+	//SPAWNER ENTITIES
+	//Entities that spawn others!
+	public static final HashSet<Integer> SPAWNERS = new HashSet<Integer>();
 	
+	//Collidable objects
+	//Entities that can't be walked over.
+	public static final HashSet<Integer> COLLIDABLE_ENTITIES = new HashSet<Integer>();
 	
 	static {
 		STATIC_ENTITIES.add(SIGN);
@@ -65,8 +69,28 @@ public class EntityType {
 		STATIC_ENTITIES.add(EGG_YELLOW);
 		STATIC_ENTITIES.add(EGG_BLUEORANGE);
 		STATIC_ENTITIES.add(SPAWNER_MUSHROOM);
+		STATIC_ENTITIES.add(SPAWNER_CHICK);
 		
-		SPAWNERS.put(SPAWNER_MUSHROOM, MUSHROOM);
+		SPAWNERS.add(SPAWNER_MUSHROOM);
+		SPAWNERS.add(SPAWNER_CHICK);
+		
+		COLLIDABLE_ENTITIES.add(SIGN);
+		COLLIDABLE_ENTITIES.add(WALL_BACK_TOP_LEFT);
+		COLLIDABLE_ENTITIES.add(WALL_BACK_TOP_RIGHT);
+		COLLIDABLE_ENTITIES.add(WALL_BACK_BOT_LEFT);
+		COLLIDABLE_ENTITIES.add(WALL_BACK_BOT_RIGHT);
+		COLLIDABLE_ENTITIES.add(WALL_SIDE_LEFT);
+		COLLIDABLE_ENTITIES.add(WALL_SIDE_RIGHT);
+		COLLIDABLE_ENTITIES.add(WALL_FRONT_TOP_LEFT);
+		COLLIDABLE_ENTITIES.add(WALL_FRONT_TOP_RIGHT);
+		COLLIDABLE_ENTITIES.add(WALL_FRONT_BOT_LEFT);
+		COLLIDABLE_ENTITIES.add(WALL_FRONT_BOT_RIGHT);
+		COLLIDABLE_ENTITIES.add(WALL_NORM_TOP);
+		COLLIDABLE_ENTITIES.add(WALL_NORM);
+		COLLIDABLE_ENTITIES.add(WALL_PILLAR_TOP_LEFTHALF);
+		COLLIDABLE_ENTITIES.add(WALL_PILLAR_TOP_RIGHTHALF);
+		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_LEFTHALF);
+		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_RIGHTHALF);
 	}
 	
 

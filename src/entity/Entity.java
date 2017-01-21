@@ -24,7 +24,7 @@ public class Entity {
 	 * @return The entity that was created
 	 */
 	public static Entity create(int id, int type) {
-		if (EntityType.SPAWNERS.containsKey(type)) {
+		if (EntityType.SPAWNERS.contains(type)) {
 			return new EntitySpawner(id,type);
 		}
 		

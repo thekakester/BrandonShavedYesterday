@@ -196,6 +196,12 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Mushroom Enemy
 	tmp.addFrame(0,256,10);
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Chick Spawn
+	tmp.addFrame(32,288,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Chick Enemy
+	tmp.addFrame(128,320,10);
+	
 	
 	begin_serverInit();
 }
@@ -683,23 +689,34 @@ function paintGame() {
 		engine.__context.fillRect(0,0,engine.width,42*2);
 		engine.__context.fillStyle = "#fff";
 		
+		var xOffset = 0;
+		while (game.debug.selected - xOffset > 20) {
+			xOffset += 20;
+		}
+		xOffset *= 32+5;
+		
 		var selectRow = game.debug.row == 1 ? 42 : 0;
-		engine.__context.fillRect(game.debug.selected * (32+5), selectRow,32+10,32+10);
+		engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, selectRow,32+10,32+10);
+		
+		//If we go too far to the right, scroll
+		
+		
+		
 		
 		//Draw percent of brushSize
 		engine.__context.fillStyle = "#f00";
 		var height = game.debug.brushSize * 4.2;	//0-10 * 42 is a size of 0 to 42
-		engine.__context.fillRect(game.debug.selected * (32+5), 42-height,32+10,height);
+		engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, 42-height,32+10,height);
 		
 		//Draw tiles at the top for level editor
 		for (var i =0 ; i < game.uniqueTileIDs; i++) {
-			engine.drawSprite("tile" + i,(i*(32+5) + 5),5);
+			engine.drawSprite("tile" + i,(i*(32+5) + 5)-xOffset,5);
 		}
 		
 		//ENTITY STUFF
 		//Draw tiles at the top for level editor
 		for (var i =0 ; i < game.uniqueEntityIDs; i++) {
-			engine.drawSprite("entity" + i,(i*(32+5) + 5),5+42);
+			engine.drawSprite("entity" + i,(i*(32+5) + 5)-xOffset,5+42);
 		}
 	}
 }
