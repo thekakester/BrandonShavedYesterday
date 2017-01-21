@@ -49,6 +49,9 @@ public class Entity {
 	}
 	
 	public byte[] bytes() {
+		//if not alive, set x and y to -1 (lets client know)
+		if (!isAlive) { x = y = -1; }
+		
 		
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
 		

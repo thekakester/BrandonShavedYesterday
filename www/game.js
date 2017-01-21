@@ -312,8 +312,13 @@ game.onServerRespond = function(response) {
 					attributes[j] = buffer.getInt();
 				}
 				
-				
 				if (eid == game.player.id) { continue; }
+				
+				if (x == y && y == -1) {
+					//He dead
+					game.entities[eid] = undefined;
+				}
+				
 				var e = game.entities[eid];
 				if (!e) {
 					console.log("Creating new entity");
