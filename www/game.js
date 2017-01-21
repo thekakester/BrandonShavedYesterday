@@ -326,7 +326,7 @@ game.onServerRespond = function(response) {
 					console.log("Creating new entity");
 					game.entities[eid] = new Entity(eid,type,x,y);
 					e = game.entities[eid];
-					console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
+					//console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
 				}
 				e.oldX = tween(e.oldX,e.x,e.tween);
 				e.oldY = tween(e.oldY,e.y,e.tween);
