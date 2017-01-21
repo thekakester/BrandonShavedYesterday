@@ -170,17 +170,12 @@ public class Game extends GameBase {
 					int y = Integer.parseInt(args[2]);
 
 					//Delete everything in this spot
-					ArrayList<Integer> eidsToDelete = new ArrayList<Integer>();
 					for (Entity e : entities.values()) {
 						if (EntityType.STATIC_ENTITIES.contains(e.type) && e.x == x && e.y == y) {
-							eidsToDelete.add(e.id);
+							deleteEntity(e.id);	//Gets cleaned up by server
 						}
 					}
-					//Delete all these static entities
-					for (int eid : eidsToDelete) {
-						entities.remove(eid);
-						System.out.println("Removing EID: " + eid);
-					}
+					
 					return null;
 				}
 
@@ -189,7 +184,7 @@ public class Game extends GameBase {
 				Entity e = Entity.create(id, Integer.parseInt(args[0]));
 				e.x = Integer.parseInt(args[1]);
 				e.y = Integer.parseInt(args[2]);
-				entities.put(id, e);
+				addEntity(e);
 				return null;	//The user will get the change with update
 			}
 		} catch (Exception e) {
