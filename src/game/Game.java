@@ -91,6 +91,18 @@ public class Game extends GameBase {
 		}
 		entities.remove(eid);
 	}
+	
+	/**update player deltas so they know a tile changed
+	 * 
+	 * @param row
+	 * @param col
+	 * @param type
+	 */
+	public void updateTile(int row, int col, int type) {
+		for (ClientDelta delta : clientDeltas.values()) {
+			delta.updateTile(row,col,type);
+		}
+	}
 
 	public byte[] getClientDelta(int pid) {
 		if (!clientDeltas.containsKey(pid)) {
@@ -101,6 +113,14 @@ public class Game extends GameBase {
 			for (Entity e : entities.values()) {
 				d.addEntity(e);
 			}
+			
+			//Tell them everything about the map
+			for (int row = 0; row < map.getNumRows(); row++) {
+				for (int col = 0; col < map.getNumCols(); col++) {
+					d.updateTile(row, col, map.getTileAt(row,col));
+				}
+			}
+			
 		}
 		return clientDeltas.get(pid).getBytes();
 	}
@@ -121,10 +141,12 @@ public class Game extends GameBase {
 				//Add the entity for our player
 				entities.put(pid, Entity.create(pid,EntityType.PLAYER));
 
-				//Subscribe this player to the deltas!
-				map.subscribe(pid);
-
-				return concat(intToBytes(pid),map.serialize());
+				//Response is 2 things: pid and map dimensions
+				ByteBuffer bb = ByteBuffer.allocate(4*3);
+				bb.putInt(pid);
+				bb.putInt(map.getNumRows());
+				bb.putInt(map.getNumCols());
+				return concat(bb.array(),map.getUnpassableTileIds());
 			}
 
 			if (key.equalsIgnoreCase("entity")) {
@@ -157,10 +179,7 @@ public class Game extends GameBase {
 				
 				((PlayerEntity)entities.get(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
 				
-				byte[] response = new byte[0];
-				response = concat(response,getClientDelta(pid));
-				response = concat(response,map.getDeltaAsBytes(pid));
-				return response;
+				return getClientDelta(pid);
 			}
 
 			//Add an entity, or remove all if ID=0
@@ -271,7 +290,7 @@ public class Game extends GameBase {
 
 	public void load() {
 		//Set second argument to true to ALWAYS generate a new map file
-		map = new Map(MAP + ".map",false);
+		map = new Map(this,MAP + ".map",false);
 
 		//Load Entities
 		System.out.println("Loading entities");	

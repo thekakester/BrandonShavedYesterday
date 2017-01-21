@@ -220,8 +220,10 @@ function begin_serverInit() {
 		game.map.tile = []
 		for (var r = 0; r < game.map.rows; r++) {
 			game.map.tile[r] = [];
+			
+			
 			for (var c = 0; c < game.map.cols; c++) {
-				game.map.tile[r][c] = buffer.getInt();
+				game.map.tile[r][c] = 5;		//Init to tile 5 (water)
 			}
 		}
 		console.log("Loaded map with " + game.map.rows + " rows and " + game.map.cols + " cols");
