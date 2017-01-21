@@ -16,7 +16,24 @@ public class Entity {
 	public final int type;
 	public int[] attributes  = new int[0];	//Dependent on the type of entity (eg.  HP)
 	public int x,y;
-	public Entity(int id, int type) {
+	
+	/**Create and return an entity based on its type
+	 * 
+	 * @param id The ID to assign this entity
+	 * @param type The type of the entity
+	 * @return The entity that was created
+	 */
+	public static Entity create(int id, int type) {
+		if (EntityType.SPAWNERS.containsKey(type)) {
+			return new EntitySpawner(id,type);
+		}
+		
+		//It didn't fit one of the special cases?
+		//Return a standard (static) entity
+		return new Entity(id, type);
+	}
+	
+	protected Entity(int id, int type) {
 		this.id = id;
 		this.type = type;
 		

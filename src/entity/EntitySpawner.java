@@ -1,8 +1,15 @@
 package entity;
 
+import javax.management.RuntimeErrorException;
+
 import game.Game;
 
-public abstract class EntitySpawner extends Entity{
+/**A simple entity spawner.  Can be customized as needed
+ * 
+ * @author midavis
+ *
+ */
+public class EntitySpawner extends Entity{
 
 	protected Entity child = null;
 	
@@ -10,18 +17,26 @@ public abstract class EntitySpawner extends Entity{
 		super(id, type);
 	}
 	
-	/**Create an entity for this spawner and return it.
-	 * You shouldn't have to do anything else, just return it.
-	 * No need to check any conditions
-	 * @return The entity that gets created by this spawn
+	
+	/**Create an entity appropriate for this spawner
+	 * 
+	 * @return An entity that gets spawned by this spawner
 	 */
-	protected abstract Entity createEntity();
+	private Entity createEntity(Game g) {
+		int id = g.getNewEntityId();
+		
+		if (type == EntityType.SPAWNER_MUSHROOM) {
+			return new MushroomEntity(id,this.x,this.y);
+		}
+		
+		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
+	}
 	
 	@Override
 	public void update(Game g) {
 		if (child == null || !child.isAlive) {
-			child = createEntity();
-			
+			child = createEntity(g);
+			System.out.println("Spawned entity");
 			//Add this to the game class
 			g.addEntity(child);
 		}

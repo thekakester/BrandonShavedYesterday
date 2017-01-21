@@ -20,7 +20,7 @@ public class Game extends GameBase {
 	public static void main(String[] args) {new Server (new Game(),args);}
 
 	public final String MAP = "default";
-	
+
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
@@ -46,38 +46,56 @@ public class Game extends GameBase {
 		lastAddedEntityID = id;
 		return id;
 	}
-	
+
 	/**Add an entity to the game and update all references for subscribers
 	 * (Remove entities by setting "isAlive" to false)
 	 * @param e The entity to start tracking
 	 */
 	public void addEntity(Entity e) {
 		entities.put(e.id, e);
-		
+
 		//Add this to all the deltas
 		for (ClientDelta delta : clientDeltas.values()) {
 			delta.addEntity(e);
 		}
 	}
-	
-	public void updateEntity(int eid, int x, int y) {
+
+	/**Mark this entity as updated so that clients learn about it
+	 * Example usage: move entity e up:
+	 * 		e.y--;				//Move it
+	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
+	 * 
+	 * @param eid The EID that got updated.
+	 */
+	public void updateEntity(int eid) {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
-			e.x = x;
-			e.y = y;
 			
-			//Add this to all the deltas
+			//Make sure this is added to deltas so we tell our clients
 			for (ClientDelta delta : clientDeltas.values()) {
 				delta.addEntity(e);
 			}
 		}
 	}
-	
+
+	public void deleteEntity(int eid) {
+		Entity e = entities.get(eid);
+		if (e != null) {
+			e.isAlive = false;				//Make sure the client removes it
+			//Update all the client deltas to reflect this
+			//Add this to all the deltas
+			for (ClientDelta delta : clientDeltas.values()) {
+				delta.addEntity(e);
+			}
+		}
+		entities.remove(eid);
+	}
+
 	public byte[] getClientDelta(int pid) {
 		if (!clientDeltas.containsKey(pid)) {
 			ClientDelta d = new ClientDelta();
 			clientDeltas.put(pid, d);
-			
+
 			//They don't know anything yet!  Tell them everything
 			for (Entity e : entities.values()) {
 				d.addEntity(e);
@@ -86,7 +104,7 @@ public class Game extends GameBase {
 		return clientDeltas.get(pid).getBytes();
 	}
 
-	
+
 
 	/**A client will routinely send us arguments.
 	 * @param key Often the command that is to be executed.  Eg "setplayerposition"
@@ -100,7 +118,7 @@ public class Game extends GameBase {
 				int pid = getNewEntityId();
 
 				//Add the entity for our player
-				entities.put(pid, new Entity(pid,EntityType.PLAYER));
+				entities.put(pid, Entity.create(pid,EntityType.PLAYER));
 
 				//Subscribe this player to the deltas!
 				map.subscribe(pid);
@@ -110,7 +128,13 @@ public class Game extends GameBase {
 
 			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
-				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+				int eid = Integer.parseInt(args[0]);
+				int x = Integer.parseInt(args[1]);
+				int y = Integer.parseInt(args[2]);
+				Entity e = entities.get(eid);
+				e.x = x;
+				e.y = y;
+				updateEntity(eid);
 				return null;	//Nothing to say back
 			}
 
@@ -134,7 +158,7 @@ public class Game extends GameBase {
 				response = concat(response,map.getDeltaAsBytes(pid));
 				return response;
 			}
-			
+
 			//Add an entity, or remove all if ID=0
 			if (key.equalsIgnoreCase("createEntity")) {
 				//Parse out the params
@@ -144,7 +168,7 @@ public class Game extends GameBase {
 					System.out.println("Deleting entities at " + args[1] + "," + args[2]);
 					int x = Integer.parseInt(args[1]);
 					int y = Integer.parseInt(args[2]);
-					
+
 					//Delete everything in this spot
 					ArrayList<Integer> eidsToDelete = new ArrayList<Integer>();
 					for (Entity e : entities.values()) {
@@ -159,10 +183,10 @@ public class Game extends GameBase {
 					}
 					return null;
 				}
-				
+
 				//Get an ID and create the entity here
 				int id = getNewEntityId();
-				Entity e = new Entity(id, Integer.parseInt(args[0]));
+				Entity e = Entity.create(id, Integer.parseInt(args[0]));
 				e.x = Integer.parseInt(args[1]);
 				e.y = Integer.parseInt(args[2]);
 				entities.put(id, e);
@@ -192,7 +216,7 @@ public class Game extends GameBase {
 	public long delayBetweenRuns() {
 		return 300;
 	}
-	
+
 	long lastSave = 0;	
 	@Override
 	public void run() {
@@ -202,38 +226,22 @@ public class Game extends GameBase {
 			save();
 			lastSave = System.currentTimeMillis();
 		}
-		
-		//EVERYTHING BELOW THIS IS BAD!  CHANGE IT!
 
-		ArrayList<Integer> eidsToDelete = new ArrayList<Integer>();
+		//Get a set of all entity ids
+		//Avoid a concurrent modification exception
+		Integer[] eids = new Integer[entities.size()];
+		eids = entities.keySet().toArray(eids);
 		
-		//Move all mushrooms slightly (and spawn)
-		for (Entity e : entities.values()) {
-			if (e.attributes.length > 0) {
-				//Does it have anything spawned?
-				if (!entities.containsKey(e.attributes[1])) {
-					//Spawn something new
-					int id = getNewEntityId();
-					Entity newE = new Entity(id,e.attributes[0]);
-					newE.x = e.x;
-					newE.y = e.y;
-					e.attributes[1] = id;
-					entities.put(id,newE);	//Causes concurrent exception most times
-					
-				}
-			}
+		for (int eid : eids) {
+			Entity e = entities.get(eid);
 			
-			if (e.type == EntityType.MUSHROOM) {
-				e.y -= 1;
-				if (e.y < 0) {
-					eidsToDelete.add(e.id);
-				}
+			//Ignore null entities
+			if (e==null) { entities.remove(eid); continue;}
+
+			e.update(this);
+			if (e.isAlive == false) {
+				entities.remove(eid);
 			}
-		}
-		
-		//Delete deletable things
-		for (int id : eidsToDelete) {
-			entities.remove(id);
 		}
 	}
 
@@ -242,7 +250,7 @@ public class Game extends GameBase {
 	 */
 	public void save() {
 		map.save();	//Save the map
-		
+
 		//Save entities
 		System.out.println("Saving entities");
 		try {
@@ -273,7 +281,7 @@ public class Game extends GameBase {
 			if (!entitiesFile.exists()) { entitiesFile.createNewFile(); }
 			Scanner scanner = new Scanner(entitiesFile);
 			int lineNum = 0;
-			
+
 			while (scanner.hasNextLine()) {
 				lineNum++;
 				String line = scanner.nextLine().trim();
@@ -282,7 +290,7 @@ public class Game extends GameBase {
 				try {
 					//Get a new entity ID
 					int id = getNewEntityId();
-					Entity e = new Entity(id, Integer.parseInt(data[0]));
+					Entity e = Entity.create(id, Integer.parseInt(data[0]));
 					e.y = Integer.parseInt(data[1]);	//ROW
 					e.x = Integer.parseInt(data[2]);	//Col
 					entities.put(id, e);
