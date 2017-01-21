@@ -6,8 +6,10 @@ import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 
 import engine.GameBase;
 import engine.Server;
@@ -25,6 +27,7 @@ public class Game extends GameBase {
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
+	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
 	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 
 	public Game() {
@@ -54,6 +57,11 @@ public class Game extends GameBase {
 	 */
 	public void addEntity(Entity e) {
 		entities.put(e.id, e);
+		
+		//Quicker way to discern between players
+		if (e.type == EntityType.PLAYER) {
+			players.put(e.id, (PlayerEntity)e);
+		}
 
 		//Add this to all the deltas
 		for (ClientDelta delta : clientDeltas.values()) {
@@ -87,6 +95,9 @@ public class Game extends GameBase {
 			//Add this to all the deltas
 			for (ClientDelta delta : clientDeltas.values()) {
 				delta.addEntity(e);
+			}
+			if (e.type == EntityType.PLAYER) {
+				players.remove(e.id);
 			}
 		}
 		entities.remove(eid);
@@ -139,7 +150,7 @@ public class Game extends GameBase {
 				int pid = getNewEntityId();
 
 				//Add the entity for our player
-				entities.put(pid, Entity.create(pid,EntityType.PLAYER));
+				addEntity(Entity.create(pid,EntityType.PLAYER));
 
 				//Response is 2 things: pid and map dimensions
 				ByteBuffer bb = ByteBuffer.allocate(4*3);
@@ -258,7 +269,7 @@ public class Game extends GameBase {
 
 			e.update(this);
 			if (e.isAlive == false) {
-				entities.remove(eid);
+				deleteEntity(e.id);
 			}
 		}
 	}
@@ -320,6 +331,10 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Collection<PlayerEntity> getPlayers() {
+		return players.values();
 	}
 
 }
