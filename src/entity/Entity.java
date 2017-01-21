@@ -28,6 +28,10 @@ public class Entity {
 			return new EntitySpawner(id,type);
 		}
 		
+		if (type == EntityType.PLAYER) {
+			return new PlayerEntity(id, type);
+		}
+		
 		//It didn't fit one of the special cases?
 		//Return a standard (static) entity
 		return new Entity(id, type);
@@ -36,11 +40,6 @@ public class Entity {
 	protected Entity(int id, int type) {
 		this.id = id;
 		this.type = type;
-		
-		//A very bad way at using spawners.  This should probably be re-imagined
-		if (EntityType.SPAWNERS.containsKey(type)) {
-			this.attributes = new int[] {EntityType.SPAWNERS.get(type),-1};	//SpawnType,id of spawned entity
-		}
 	}
 
 	@Override

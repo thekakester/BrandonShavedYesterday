@@ -13,6 +13,7 @@ import engine.GameBase;
 import engine.Server;
 import entity.Entity;
 import entity.EntityType;
+import entity.PlayerEntity;
 
 public class Game extends GameBase {
 
@@ -153,6 +154,9 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("update")) {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
+				
+				((PlayerEntity)entities.get(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
+				
 				byte[] response = new byte[0];
 				response = concat(response,getClientDelta(pid));
 				response = concat(response,map.getDeltaAsBytes(pid));
