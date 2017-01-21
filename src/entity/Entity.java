@@ -1,8 +1,17 @@
-package game;
+package entity;
 
 import java.nio.ByteBuffer;
 
+import game.Game;
+
+/**This is a BASE class.  If an entity is static, use this.
+ * if it needs special params, override this class.
+ * 
+ * @author midavis
+ *
+ */
 public class Entity {
+	public boolean isAlive = true;			//If set to false, this should be untracked
 	public final int id;
 	public final int type;
 	public int[] attributes  = new int[0];	//Dependent on the type of entity (eg.  HP)
@@ -44,5 +53,9 @@ public class Entity {
 		length += attributes.length;
 		length *= 4;	//int = 4 bytes
 		return length;
+	}
+	
+	public void update(Game g) {
+		//Static objects do nothing
 	}
 }

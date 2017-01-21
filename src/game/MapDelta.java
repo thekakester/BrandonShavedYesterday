@@ -7,6 +7,7 @@ public class MapDelta {
 	
 	private LinkedList<Delta> deltas = new LinkedList<Delta>();
 	
+	//TODO move this all to ClientDelta object
 	public byte[] serialize() {
 		//Convert this into bytes!
 		

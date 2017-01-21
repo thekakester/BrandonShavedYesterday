@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import engine.GameBase;
 import engine.Server;
+import entity.Entity;
+import entity.EntityType;
 
 public class Game extends GameBase {
 
@@ -21,6 +24,7 @@ public class Game extends GameBase {
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
+	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 
 	public Game() {
 
@@ -42,37 +46,47 @@ public class Game extends GameBase {
 		lastAddedEntityID = id;
 		return id;
 	}
-
+	
+	/**Add an entity to the game and update all references for subscribers
+	 * (Remove entities by setting "isAlive" to false)
+	 * @param e The entity to start tracking
+	 */
+	public void addEntity(Entity e) {
+		entities.put(e.id, e);
+		
+		//Add this to all the deltas
+		for (ClientDelta delta : clientDeltas.values()) {
+			delta.addEntity(e);
+		}
+	}
+	
 	public void updateEntity(int eid, int x, int y) {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
 			e.x = x;
 			e.y = y;
-		}
-	}
-
-	public byte[] serializeEntities() {
-
-		//Count the size in bytes of our entites
-		int size = 0;
-		for (Entity e : entities.values()) {
-			size += e.sizeInBytes();
-		}
-
-		//Add 2 more integers (8 bytes): ResponseType and entites.size();
-		size += 8;
-
-		ByteBuffer bb = ByteBuffer.allocate(size);
-		bb.putInt(ResponseType.ENTITY_UPDATE);
-		bb.putInt(entities.size());
-
-		for (Entity e : entities.values()) {
-			for (byte b : e.bytes()) {
-				bb.put(b);
+			
+			//Add this to all the deltas
+			for (ClientDelta delta : clientDeltas.values()) {
+				delta.addEntity(e);
 			}
 		}
-		return bb.array();
 	}
+	
+	public byte[] getClientDelta(int pid) {
+		if (!clientDeltas.containsKey(pid)) {
+			ClientDelta d = new ClientDelta();
+			clientDeltas.put(pid, d);
+			
+			//They don't know anything yet!  Tell them everything
+			for (Entity e : entities.values()) {
+				d.addEntity(e);
+			}
+		}
+		return clientDeltas.get(pid).getBytes();
+	}
+
+	
 
 	/**A client will routinely send us arguments.
 	 * @param key Often the command that is to be executed.  Eg "setplayerposition"
@@ -116,7 +130,7 @@ public class Game extends GameBase {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
 				byte[] response = new byte[0];
-				response = concat(response,serializeEntities());
+				response = concat(response,getClientDelta(pid));
 				response = concat(response,map.getDeltaAsBytes(pid));
 				return response;
 			}
