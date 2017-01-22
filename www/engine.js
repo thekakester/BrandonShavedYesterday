@@ -71,6 +71,8 @@ engine.drawImage = function(imageTag,x,y) {};
 /*Create and store a sprite object from a preloaded image
 * This can be accessed later using its tag.
 * The width/height is of the SPRITE, not the source image.
+* Last 2 params (xOffset and yOffset) are optional
+* That is how far to shift the entity left/up when drawing
 *
 * Example:
 * var tmp = engine.createSprite("mySprite","myImage",32,32);
@@ -82,7 +84,7 @@ engine.drawImage = function(imageTag,x,y) {};
 * Example (Drawing at position 100,50 ):
 * engine.drawSprite("mySprite",100,50);
 */
-engine.createSprite = function(spriteTag,imageTag,width,height){};
+engine.createSprite = function(spriteTag,imageTag,width,height,optionalXOffset,optionalYOffset){};
 
 /****TODO*****/
 engine.drawSprite = function(spriteTag,x,y){};
@@ -284,18 +286,23 @@ engine.drawImage = function (imageTag) {
 * Author: Mitch                                                                *
 *******************************************************************************/
 
-engine.createSprite = function(spriteTag, imageTag, width, height) {
-	var sprite = new engine.__Sprite(spriteTag,imageTag,width,height);
+engine.createSprite = function(spriteTag, imageTag, width, height,optionalXOffset,optionalYOffset) {
+	if (!optionalXOffset) { optionalXOffset = 0;}
+	if (!optionalYOffset) { optionalYOffset = 0;}
+	
+	var sprite = new engine.__Sprite(spriteTag,imageTag,width,height,optionalXOffset,optionalYOffset);
 	engine.__sprites[spriteTag] = sprite;
 	return sprite;	//Return a reference for the user's convenience
 }
 
-engine.__Sprite = function(spriteTag, imageTag, width, height) {
+engine.__Sprite = function(spriteTag, imageTag, width, height, xOffset,yOffset) {
 	this.__image = engine.__images[imageTag];
 	this.__width = width;
 	this.__height = height;
 	this.__frames = [];
 	this.__tag = spriteTag;
+	this.__xOffset = xOffset;
+	this.__yOffset = yOffset;
 	
 	//Check to make sure our image is real
 	if (this.__image == null || this.__image == undefined) {
@@ -309,12 +316,14 @@ engine.__Sprite.prototype = {
 	__image: null,
 	__width: 0,
 	__height: 0,
+	__xOffset: 0,
+	__yOffset: 0,
 	__frames: null,
 	__frame: 0,
 	__subFrame: 0,
 	draw: function(x, y) {
 		var f = this.__frames[this.__frame];
-		engine.__context.drawImage(this.__image,f.x,f.y,this.__width,this.__height,x,y,this.__width,this.__height);
+		engine.__context.drawImage(this.__image,f.x,f.y,this.__width,this.__height,x-this.__xOffset,y-this.__yOffset,this.__width,this.__height);
 	},
 	nextFrame: function() {
 		this.__subFrame++;

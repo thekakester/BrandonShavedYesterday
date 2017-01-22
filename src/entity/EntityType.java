@@ -30,6 +30,7 @@ public class EntityType {
 	public static final int MUSHROOM					= 24;
 	public static final int SPAWNER_CHICK				= 25;
 	public static final int CHICK						= 26;
+	public static final int TREE						= 27;
 
 	
 	//STATIC ENTITIES
@@ -70,6 +71,7 @@ public class EntityType {
 		STATIC_ENTITIES.add(EGG_BLUEORANGE);
 		STATIC_ENTITIES.add(SPAWNER_MUSHROOM);
 		STATIC_ENTITIES.add(SPAWNER_CHICK);
+		STATIC_ENTITIES.add(TREE);
 		
 		SPAWNERS.add(SPAWNER_MUSHROOM);
 		SPAWNERS.add(SPAWNER_CHICK);
@@ -91,6 +93,7 @@ public class EntityType {
 		COLLIDABLE_ENTITIES.add(WALL_PILLAR_TOP_RIGHTHALF);
 		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_LEFTHALF);
 		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_RIGHTHALF);
+		COLLIDABLE_ENTITIES.add(TREE);
 	}
 	
 

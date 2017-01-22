@@ -202,6 +202,8 @@ function begin_loadSprites() {
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,256);//Sprite(s): Chick Entity (up/dn/lf/rt, walking and idle)
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,64,0,32);	//Sprite: Tree (2blocks high)
+	tmp.addFrame(96,64,10);
 	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
