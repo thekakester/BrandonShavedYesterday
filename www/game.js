@@ -385,7 +385,7 @@ game.onServerRespond = function(response) {
 				for(var j = 0 ; j < length; j++){
 					message+= buffer.getChar();
 				}
-				appendMessage(message);
+				appendMessage(unescape(message));
 			}
 		}
 		

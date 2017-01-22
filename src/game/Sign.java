@@ -15,7 +15,7 @@ public class Sign {
 	public void addLine(String s) {
 		if (lineCount >= lines.length) { return; }
 		try {
-			lines[lineCount++] = URLEncoder.encode(s, "UTF-8");
+			lines[lineCount++] = URLEncoder.encode(s, "UTF-8").replace("+", "%20");
 		} catch (UnsupportedEncodingException e) {e.printStackTrace();}
 	}
 
