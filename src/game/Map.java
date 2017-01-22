@@ -10,28 +10,31 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
+import entity.EntityType;
+
 public class Map implements SerializableObject {
 	private final String mapFilename;
 	private int map[][];
 	private int[] unpassableTiles = {5,9};	//Water, lava
+	private Game game;
 	//Map player-entityID to a delta object
 	//Delta represents what's changed that they don't know about
-	private HashMap<Integer,MapDelta> deltas = new HashMap<Integer,MapDelta>();
-	
+
 	/**Default constructor.  Use this if you don't exclusively need the other
 	 * 
 	 * @param filename
 	 */
-	public Map(String filename) {
-		this(filename,false);
+	public Map(Game game, String filename) {
+		this(game,filename,false);
 	}
-	
+
 	/**If generateNew is set to true, a new map will be generated and saved to filename
 	 * 
 	 * @param filename
 	 * @param regenerate If set to true, a new map will always be generated.  Otherwise, it will only be generated if it doesn't exist
 	 */
-	public Map(String filename, boolean regenerate) {
+	public Map(Game game, String filename, boolean regenerate) {
+		this.game = game;
 		mapFilename = filename;
 		File f = new File(filename);
 		if (regenerate || !f.exists()) {
@@ -47,7 +50,7 @@ public class Map implements SerializableObject {
 			FileInputStream fis = new FileInputStream(file);
 			byte[] buf = new byte[(int)file.length()];
 			fis.read(buf);
-			
+
 			ByteBuffer buffer = ByteBuffer.wrap(buf);
 			int rows = buffer.getInt();
 			int cols = buffer.getInt();
@@ -73,7 +76,7 @@ public class Map implements SerializableObject {
 		try {
 			FileOutputStream fos = new FileOutputStream(new File(mapFilename));
 			fos.write(serialize());
-			
+
 			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -91,7 +94,7 @@ public class Map implements SerializableObject {
 		System.out.println("Generating a new map file");
 		map = new int[rows][cols];
 
-		
+
 		Random rand = new Random();
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < cols; c++) {
@@ -114,9 +117,9 @@ public class Map implements SerializableObject {
 		length += map.length * map[0].length;	//One int for each tile
 		length += 1;	//count of unpassable tiles
 		length += unpassableTiles.length;
-		
+
 		int bytesNeeded = length * 4;
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(bytesNeeded);
 		bb.putInt(map.length);
 		bb.putInt(map[0].length);
@@ -125,30 +128,45 @@ public class Map implements SerializableObject {
 				bb.putInt(val);
 			};
 		}
-		
+		return bb.array();
+	}
+
+	public int getNumRows() {
+		return map.length;
+	}
+
+	public int getNumCols() {
+		return map[0].length;
+	}
+
+	public byte[] getUnpassableTileIds() {
+		int length = unpassableTiles.length;
+		length += 1;
+
+		length += EntityType.COLLIDABLE_ENTITIES.size();
+		length += 1;
+		ByteBuffer bb = ByteBuffer.allocate(length * 4);
+
 		//UnpassableTiles
 		bb.putInt(unpassableTiles.length);
 		for (int tileID : unpassableTiles) {
 			bb.putInt(tileID);
 		}
-		
+
+		//Unpassable Entities
+		bb.putInt(EntityType.COLLIDABLE_ENTITIES.size());
+		for (int eid : EntityType.COLLIDABLE_ENTITIES) {
+			bb.putInt(eid);
+		}
 		return bb.array();
 	}
 
 	public void set(int row, int col, int tile) {
 		map[row][col] = tile;
-		
-		//Tell our deltas what happened
-		for (MapDelta d : deltas.values()) {
-			d.add(row, col, tile);
-		}
-	}
-	
-	public byte[] getDeltaAsBytes(int pid) {
-		return deltas.get(pid).serialize();	//Will throw an exception if they player is not subscribed for deltas
+		game.updateTile(row, col, tile);
 	}
 
-	public void subscribe(int pid) {
-		this.deltas.put(pid,new MapDelta());
+	public int getTileAt(int row, int col) {
+		return map[row][col];
 	}
 }

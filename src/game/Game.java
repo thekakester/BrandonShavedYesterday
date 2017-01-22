@@ -4,11 +4,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 
 import engine.GameBase;
 import engine.Server;
+import entity.Entity;
+import entity.EntityType;
+import entity.PlayerEntity;
 
 public class Game extends GameBase {
 
@@ -16,10 +23,12 @@ public class Game extends GameBase {
 	public static void main(String[] args) {new Server (new Game(),args);}
 
 	public final String MAP = "default";
-	
+
 	public Map map;
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
+	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
+	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 
 	public Game() {
 
@@ -42,36 +51,92 @@ public class Game extends GameBase {
 		return id;
 	}
 
-	public void updateEntity(int eid, int x, int y) {
+	/**Add an entity to the game and update all references for subscribers
+	 * (Remove entities by setting "isAlive" to false)
+	 * @param e The entity to start tracking
+	 */
+	public void addEntity(Entity e) {
+		entities.put(e.id, e);
+		
+		//Quicker way to discern between players
+		if (e.type == EntityType.PLAYER) {
+			players.put(e.id, (PlayerEntity)e);
+		}
+
+		//Add this to all the deltas
+		for (ClientDelta delta : clientDeltas.values()) {
+			delta.addEntity(e);
+		}
+	}
+
+	/**Mark this entity as updated so that clients learn about it
+	 * Example usage: move entity e up:
+	 * 		e.y--;				//Move it
+	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
+	 * 
+	 * @param eid The EID that got updated.
+	 */
+	public void updateEntity(int eid) {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
-			e.x = x;
-			e.y = y;
-		}
-	}
-
-	public byte[] serializeEntities() {
-
-		//Count the size in bytes of our entites
-		int size = 0;
-		for (Entity e : entities.values()) {
-			size += e.sizeInBytes();
-		}
-
-		//Add 2 more integers (8 bytes): ResponseType and entites.size();
-		size += 8;
-
-		ByteBuffer bb = ByteBuffer.allocate(size);
-		bb.putInt(ResponseType.ENTITY_UPDATE);
-		bb.putInt(entities.size());
-
-		for (Entity e : entities.values()) {
-			for (byte b : e.bytes()) {
-				bb.put(b);
+			
+			//Make sure this is added to deltas so we tell our clients
+			for (ClientDelta delta : clientDeltas.values()) {
+				delta.addEntity(e);
 			}
 		}
-		return bb.array();
 	}
+
+	public void deleteEntity(int eid) {
+		Entity e = entities.get(eid);
+		if (e != null) {
+			e.isAlive = false;				//Make sure the client removes it
+			//Update all the client deltas to reflect this
+			//Add this to all the deltas
+			for (ClientDelta delta : clientDeltas.values()) {
+				delta.addEntity(e);
+			}
+			if (e.type == EntityType.PLAYER) {
+				players.remove(e.id);
+			}
+		}
+		entities.remove(eid);
+	}
+	
+	/**update player deltas so they know a tile changed
+	 * 
+	 * @param row
+	 * @param col
+	 * @param type
+	 */
+	public void updateTile(int row, int col, int type) {
+		for (ClientDelta delta : clientDeltas.values()) {
+			delta.updateTile(row,col,type);
+		}
+	}
+
+	public byte[] getClientDelta(int pid) {
+		if (!clientDeltas.containsKey(pid)) {
+			ClientDelta d = new ClientDelta();
+			clientDeltas.put(pid, d);
+
+			//They don't know anything yet!  Tell them everything
+			for (Entity e : entities.values()) {
+				d.addEntity(e);
+			}
+			
+			//Tell them everything about the map
+			for (int row = 0; row < map.getNumRows(); row++) {
+				for (int col = 0; col < map.getNumCols(); col++) {
+					d.updateTile(row, col, map.getTileAt(row,col));
+				}
+			}
+			
+		}
+		return clientDeltas.get(pid).getBytes();
+	}
+
+
 
 	/**A client will routinely send us arguments.
 	 * @param key Often the command that is to be executed.  Eg "setplayerposition"
@@ -85,21 +150,29 @@ public class Game extends GameBase {
 				int pid = getNewEntityId();
 
 				//Add the entity for our player
-				entities.put(pid, new Entity(pid,EntityType.PLAYER));
+				addEntity(Entity.create(pid,EntityType.PLAYER));
 
-				//Subscribe this player to the deltas!
-				map.subscribe(pid);
-
-				return concat(intToBytes(pid),map.serialize());
+				//Response is 2 things: pid and map dimensions
+				ByteBuffer bb = ByteBuffer.allocate(4*3);
+				bb.putInt(pid);
+				bb.putInt(map.getNumRows());
+				bb.putInt(map.getNumCols());
+				return concat(bb.array(),map.getUnpassableTileIds());
 			}
 
-			if (key.equals("entity")) {
+			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
-				updateEntity(Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+				int eid = Integer.parseInt(args[0]);
+				int x = Integer.parseInt(args[1]);
+				int y = Integer.parseInt(args[2]);
+				Entity e = entities.get(eid);
+				e.x = x;
+				e.y = y;
+				updateEntity(eid);
 				return null;	//Nothing to say back
 			}
 
-			if (key.equals("map")) {
+			if (key.equalsIgnoreCase("map")) {
 				String[] args = value.split("\\|");
 				//Loop over the args
 				for (int i = 1; i+2 < args.length; i+=3) {
@@ -111,13 +184,42 @@ public class Game extends GameBase {
 				return null;	//nothing to say back!
 			}
 
-			if (key.equals("update")) {
+			if (key.equalsIgnoreCase("update")) {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
-				byte[] response = new byte[0];
-				response = concat(response,serializeEntities());
-				response = concat(response,map.getDeltaAsBytes(pid));
-				return response;
+				
+				((PlayerEntity)entities.get(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
+				
+				return getClientDelta(pid);
+			}
+
+			//Add an entity, or remove all if ID=0
+			if (key.equalsIgnoreCase("createEntity")) {
+				//Parse out the params
+				String[] args = value.split("\\|"); // type|x|y
+				//If type is 0, remove!
+				if(args[0].equals("0")) {
+					System.out.println("Deleting entities at " + args[1] + "," + args[2]);
+					int x = Integer.parseInt(args[1]);
+					int y = Integer.parseInt(args[2]);
+
+					//Delete everything in this spot
+					for (Entity e : entities.values()) {
+						if (EntityType.STATIC_ENTITIES.contains(e.type) && e.x == x && e.y == y) {
+							deleteEntity(e.id);	//Gets cleaned up by server
+						}
+					}
+					
+					return null;
+				}
+
+				//Get an ID and create the entity here
+				int id = getNewEntityId();
+				Entity e = Entity.create(id, Integer.parseInt(args[0]));
+				e.x = Integer.parseInt(args[1]);
+				e.y = Integer.parseInt(args[2]);
+				addEntity(e);
+				return null;	//The user will get the change with update
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -139,6 +241,11 @@ public class Game extends GameBase {
 		return combined;
 	}
 
+	@Override
+	public long delayBetweenRuns() {
+		return 300;
+	}
+
 	long lastSave = 0;	
 	@Override
 	public void run() {
@@ -148,6 +255,23 @@ public class Game extends GameBase {
 			save();
 			lastSave = System.currentTimeMillis();
 		}
+
+		//Get a set of all entity ids
+		//Avoid a concurrent modification exception
+		Integer[] eids = new Integer[entities.size()];
+		eids = entities.keySet().toArray(eids);
+		
+		for (int eid : eids) {
+			Entity e = entities.get(eid);
+			
+			//Ignore null entities
+			if (e==null) { entities.remove(eid); continue;}
+
+			e.update(this);
+			if (e.isAlive == false) {
+				deleteEntity(e.id);
+			}
+		}
 	}
 
 	/**Save the game
@@ -155,7 +279,7 @@ public class Game extends GameBase {
 	 */
 	public void save() {
 		map.save();	//Save the map
-		
+
 		//Save entities
 		System.out.println("Saving entities");
 		try {
@@ -177,7 +301,7 @@ public class Game extends GameBase {
 
 	public void load() {
 		//Set second argument to true to ALWAYS generate a new map file
-		map = new Map(MAP + ".map",false);
+		map = new Map(this,MAP + ".map",false);
 
 		//Load Entities
 		System.out.println("Loading entities");	
@@ -186,7 +310,7 @@ public class Game extends GameBase {
 			if (!entitiesFile.exists()) { entitiesFile.createNewFile(); }
 			Scanner scanner = new Scanner(entitiesFile);
 			int lineNum = 0;
-			
+
 			while (scanner.hasNextLine()) {
 				lineNum++;
 				String line = scanner.nextLine().trim();
@@ -195,7 +319,7 @@ public class Game extends GameBase {
 				try {
 					//Get a new entity ID
 					int id = getNewEntityId();
-					Entity e = new Entity(id, Integer.parseInt(data[0]));
+					Entity e = Entity.create(id, Integer.parseInt(data[0]));
 					e.y = Integer.parseInt(data[1]);	//ROW
 					e.x = Integer.parseInt(data[2]);	//Col
 					entities.put(id, e);
@@ -207,6 +331,10 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Collection<PlayerEntity> getPlayers() {
+		return players.values();
 	}
 
 }
