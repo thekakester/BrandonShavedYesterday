@@ -691,6 +691,19 @@ function paintGame() {
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
+		
+		//Draw the entity ID above every entity
+		engine.__context.fillStyle = "#fff";
+		engine.__context.font="12px Arial";
+		for (var id in game.entities) {
+			var e = game.entities[id];
+			var x = e.x;
+			var y = e.y
+			
+			engine.__context.fillText(id,(x*32)-offsetX,(y*32)-offsetY);	
+		}
+		
+		
 		//IDK why i chose 42, but go with it
 		engine.__context.fillStyle = "#000";
 		engine.__context.fillRect(0,0,engine.width,42*2);

@@ -290,7 +290,7 @@ public class Game extends GameBase {
 				//This includes static objects and non-moving things
 				//EG: PLAYER IS NOT STATIC, Nor ar enemies (but spawners are)
 				if (EntityType.STATIC_ENTITIES.contains(e.type)) {
-					pw.println(e.type + " " + e.y + " " + e.x);
+					pw.println(e.id + " " + e.type + " " + e.y + " " + e.x);
 				}
 			}
 			pw.close();
@@ -315,14 +315,14 @@ public class Game extends GameBase {
 				lineNum++;
 				String line = scanner.nextLine().trim();
 				String data[] = line.split(" ");
-				if (data.length < 3 || data[0].startsWith("#")) { continue; }
+				if (data.length < 4 || data[0].startsWith("#")) { continue; }
 				try {
 					//Get a new entity ID
-					int id = getNewEntityId();
-					Entity e = Entity.create(id, Integer.parseInt(data[0]));
-					e.y = Integer.parseInt(data[1]);	//ROW
-					e.x = Integer.parseInt(data[2]);	//Col
-					entities.put(id, e);
+					int eid = Integer.parseInt(data[0]);//getNewEntityId();
+					Entity e = Entity.create(eid, Integer.parseInt(data[1]));
+					e.y = Integer.parseInt(data[2]);	//ROW
+					e.x = Integer.parseInt(data[3]);	//Col
+					entities.put(eid, e);
 					System.out.println("Loaded entity: " + e);
 				} catch (Exception e) {
 					System.out.println("Failed to load line " + lineNum + " of entites: " + line);
