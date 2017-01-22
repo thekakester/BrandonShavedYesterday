@@ -17,6 +17,7 @@ game.debug.enabled = false;
 game.debug.selected = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
+game.debug.tweenBoost = 0;
 playerPath = null;
 
 /*******************************************************************************
@@ -586,6 +587,10 @@ function updateGame() {
 		console.log("Set debug mode to " + game.debug.enabled);
 	}
 	
+	
+	////////////////
+	////DEBUG STUFF
+	////////////////
 	if (game.debug.enabled) {
 		if (engine.isKeyPressed("Digit1")) {
 			game.debug.selected--;
@@ -607,6 +612,14 @@ function updateGame() {
 			game.debug.row++;
 			game.debug.row %= 2;
 			game.selected = 0;
+		}
+		if (engine.isKeyPressed("Digit7")) {
+			game.debug.tweenBoost-=.1;
+			if (game.debug.tweenBoost < 0) { game.debug.tweenBoost = 0; }
+		}
+		if (engine.isKeyPressed("Digit8")) {
+			game.debug.tweenBoost+=.1;
+			if (game.debug.tweenBoost > 1) { game.debug.tweenBoost = 1; }
 		}
 		
 		
@@ -717,6 +730,8 @@ function paintGame() {
 			var y = e.y
 			
 			engine.__context.fillText(id,(x*32)-offsetX,(y*32)-offsetY);	
+			e.tween += game.debug.tweenBoost;
+			if (e.tween > 1) {e.tween = 1;}
 		}
 		
 		
