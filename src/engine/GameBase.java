@@ -20,4 +20,12 @@ public abstract class GameBase {
 	public long delayBetweenRuns() {
 		return 100;	//Default delay 100ms
 	}
+	
+	/**Only override this if you want to see debug messages from the server
+	 * 
+	 * @return
+	 */
+	public boolean debugShowCommunication() {
+		return false;
+	}
 }

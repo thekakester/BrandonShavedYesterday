@@ -18,6 +18,8 @@ public class Map implements SerializableObject {
 	private int map[][];
 	private HashSet<Integer> unpassableTiles = new HashSet<Integer>();
 	private Game game;
+	int spawnRow,spawnCol;
+	
 	//Map player-entityID to a delta object
 	//Delta represents what's changed that they don't know about
 
@@ -58,7 +60,9 @@ public class Map implements SerializableObject {
 			ByteBuffer buffer = ByteBuffer.wrap(buf);
 			int rows = buffer.getInt();
 			int cols = buffer.getInt();
-			System.out.println("Map size: " + rows + " " + cols);
+			spawnRow = buffer.getInt();
+			spawnCol = buffer.getInt();
+			System.out.println("Map size: " + rows + " " + cols + "  Spawn (r,c): " + spawnRow + "," + spawnCol);
 
 			map = new int[rows][cols];
 
@@ -118,7 +122,7 @@ public class Map implements SerializableObject {
 	 */
 	@Override
 	public byte[] serialize() {
-		int length = 2;	//Width + height ints
+		int length = 4;	//Width + height + spawnRow + spawnCol ints
 		length += map.length * map[0].length;	//One int for each tile
 		length += 1;	//count of unpassable tiles
 		length += unpassableTiles.size();
@@ -128,6 +132,8 @@ public class Map implements SerializableObject {
 		ByteBuffer bb = ByteBuffer.allocate(bytesNeeded);
 		bb.putInt(map.length);
 		bb.putInt(map[0].length);
+		bb.putInt(spawnRow);
+		bb.putInt(spawnCol);
 		for (int[] row : map) {
 			for (int val : row) {
 				bb.putInt(val);

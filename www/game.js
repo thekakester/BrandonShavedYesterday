@@ -204,13 +204,12 @@ function begin_loadSprites() {
 	
 	
 	//ATTACK SPRITES
-	
-	begin_serverInit();
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
 	for (var atFrame = 0; atFrame < 6; atFrame++) {
 		tmp.addFrame(atFrame*32,0,1);
 	}
 	
+	begin_serverInit();
 }
 
 /**For every movable character, there is 8 sprites.
@@ -271,7 +270,7 @@ function begin_serverInit() {
 		var pid = buffer.getInt();
 		
 		//Set the player entity
-		game.player = new Entity(pid,1,10,10);	//Type 1: player
+		game.player = new Entity(pid,1,-100,-100);	//Type 1: player
 		game.entities[pid] = game.player;
 		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
@@ -380,8 +379,6 @@ game.onServerRespond = function(response) {
 				for (var j = 0; j < attributeLen; j++) {
 					attributes[j] = buffer.getInt();
 				}
-				
-				if (eid == game.player.id) { continue; }
 				
 				if (x == y && y == -1) {
 					//He dead

@@ -55,7 +55,9 @@ public class ServerThread extends Thread {
 			String arguments = data.length > 1 ? data[1] : "";
 
 			//Debug information
-			//System.out.println(address + " requesting: " + request);
+			if (this.game.debugShowCommunication()) {
+				System.out.println(address + " requesting: " + request);
+			}
 
 			//Check if the file they're requesting exists in our www directory
 			File f = new File("www" + filename);

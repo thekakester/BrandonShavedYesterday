@@ -36,7 +36,7 @@ public class Game extends GameBase {
 	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
 	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 	private HashMap<Integer,Sign> signs = new HashMap<Integer,Sign>();
-	
+
 	public Game() {
 
 
@@ -64,7 +64,7 @@ public class Game extends GameBase {
 	 */
 	public void addEntity(Entity e) {
 		entities.put(e.id, e);
-		
+
 		//Quicker way to discern between players
 		if (e.type == EntityType.PLAYER) {
 			players.put(e.id, (PlayerEntity)e);
@@ -86,9 +86,11 @@ public class Game extends GameBase {
 	public void updateEntity(int eid) {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
-			
+
 			//Make sure this is added to deltas so we tell our clients
 			for (ClientDelta delta : clientDeltas.values()) {
+				if (delta.pid == eid) { continue; }	//Don't tell player about themself
+				//System.out.println("Adding [" + eid + ", (" + e.x + "," + e.y + ")] to delta" + delta.pid);
 				delta.addEntity(e);
 			}
 		}
@@ -109,7 +111,7 @@ public class Game extends GameBase {
 		}
 		entities.remove(eid);
 	}
-	
+
 	/**update player deltas so they know a tile changed
 	 * 
 	 * @param row
@@ -124,21 +126,21 @@ public class Game extends GameBase {
 
 	public byte[] getClientDelta(int pid) {
 		if (!clientDeltas.containsKey(pid)) {
-			ClientDelta d = new ClientDelta();
+			ClientDelta d = new ClientDelta(pid);
 			clientDeltas.put(pid, d);
 
 			//They don't know anything yet!  Tell them everything
 			for (Entity e : entities.values()) {
 				d.addEntity(e);
 			}
-			
+
 			//Tell them everything about the map
 			for (int row = 0; row < map.getNumRows(); row++) {
 				for (int col = 0; col < map.getNumCols(); col++) {
 					d.updateTile(row, col, map.getTileAt(row,col));
 				}
 			}
-			
+
 		}
 		return clientDeltas.get(pid).getBytes();
 	}
@@ -157,9 +159,12 @@ public class Game extends GameBase {
 				int pid = getNewEntityId();
 
 				//Add the entity for our player
-				addEntity(Entity.create(pid,EntityType.PLAYER));
+				Entity player = Entity.create(pid,EntityType.PLAYER);
+				player.x = map.spawnCol;
+				player.y = map.spawnRow;
+				addEntity(player);
 
-				//Response is 2 things: pid and map dimensions
+				//Response is: pid and mapRows, mapCols
 				ByteBuffer bb = ByteBuffer.allocate(4*3);
 				bb.putInt(pid);
 				bb.putInt(map.getNumRows());
@@ -172,9 +177,11 @@ public class Game extends GameBase {
 				int eid = Integer.parseInt(args[0]);
 				int x = Integer.parseInt(args[1]);
 				int y = Integer.parseInt(args[2]);
+				if (x < 0 || y < 0) { return null; }	//Ignore negatives (usually spawn)
 				Entity e = entities.get(eid);
 				e.x = x;
 				e.y = y;
+
 				updateEntity(eid);
 				return null;	//Nothing to say back
 			}
@@ -194,9 +201,9 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("update")) {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
-				
+
 				((PlayerEntity)entities.get(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
-				
+
 				return getClientDelta(pid);
 			}
 
@@ -216,7 +223,7 @@ public class Game extends GameBase {
 							deleteEntity(e.id);	//Gets cleaned up by server
 						}
 					}
-					
+
 					return null;
 				}
 
@@ -228,19 +235,19 @@ public class Game extends GameBase {
 				addEntity(e);
 				return null;	//The user will get the change with update
 			}
-			
+
 			//Chat
 			if(key.equalsIgnoreCase("chat")){
 				for(ClientDelta d : clientDeltas.values()){
 					d.addChat(value);
 				}
 			}
-			
+
 			if (key.equalsIgnoreCase("sign")) {
 				//Only arg is eid of the sign
 				Sign sign = signs.get(Integer.parseInt(value));
 				if(sign == null) { return null;}
-				
+
 				return sign.getBytes();
 			}
 		} catch (Exception e) {
@@ -282,10 +289,10 @@ public class Game extends GameBase {
 		//Avoid a concurrent modification exception
 		Integer[] eids = new Integer[entities.size()];
 		eids = entities.keySet().toArray(eids);
-		
+
 		for (int eid : eids) {
 			Entity e = entities.get(eid);
-			
+
 			//Ignore null entities
 			if (e==null) { entities.remove(eid); continue;}
 
@@ -354,7 +361,7 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		//Load signs
 		filename = Game.MAP + ".signs";
 		System.out.println("Loading signs from " + filename);
@@ -379,14 +386,14 @@ public class Game extends GameBase {
 				try {
 					//Get the entity ID this ties to
 					int eid = Integer.parseInt(data[0]);
-					
+
 					//Get the remainder of the lines (up to 4)
 					Sign sign = new Sign();
 					for (int i = 0; i < 4; i++) {
 						if (i+1 >= data.length) { break; }
 						sign.addLine(data[i+1]);
 					}
-					
+
 					//Store this sign
 					signs.put(eid, sign);
 					System.out.println("Loaded sign for eid: " + eid + " with " + (data.length-1) + " lines");
@@ -397,11 +404,16 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public Collection<PlayerEntity> getPlayers() {
 		return players.values();
+	}
+	
+	@Override
+	public boolean debugShowCommunication() {
+		return this.players.size() < 2;	//2 or more players stop debug communication
 	}
 
 	//TODO update this for chunks

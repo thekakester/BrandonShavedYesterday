@@ -7,10 +7,15 @@ import entity.Entity;
 
 public class ClientDelta {
 
+	public ClientDelta(int pid) {
+		this.pid = pid;
+	}
+	
 	/**Call this whenever an entity changes.  Added, modified, or removed
 	 * 
 	 */
 	public void addEntity(Entity e) {
+		//System.out.println(pid + " Added delta: (" + e.id + ") " + e.x + "," + e.y);
 		this.changedEntities.add(e);
 	}
 
@@ -18,6 +23,7 @@ public class ClientDelta {
 	private ArrayList<Entity> changedEntities = new ArrayList<Entity>();
 	private ArrayList<MapDelta> changedMapTiles = new ArrayList<MapDelta>();
 	private int DEBUG_MAX_RESPONSESIZE = 500;
+	final int pid;
 
 	//Convert all our entity stuff 
 	public byte[] getBytes() {
