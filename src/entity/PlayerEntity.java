@@ -16,6 +16,12 @@ public class PlayerEntity extends Entity{
 		if (System.currentTimeMillis() - lastUpdate > 5000) {
 			System.out.println("Player " + id + " disconnected.");
 			g.deleteEntity(id);
+			
+			//Add a zombie in its place
+			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE);
+			zombie.x = x;
+			zombie.y = y;
+			g.addEntity(zombie);
 		}
 	}
 

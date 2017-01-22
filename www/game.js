@@ -235,6 +235,7 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence Post
 	tmp.addFrame(224,64,10);
 	
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"darkerCharacters",32,32,96,0);//Sprite(s): Zombie Entity (up/dn/lf/rt, walking and idle)
 	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack

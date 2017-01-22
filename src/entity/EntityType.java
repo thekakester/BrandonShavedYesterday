@@ -41,6 +41,7 @@ public class EntityType {
 	public static final int FENCE_FRONT					= 35;
 	public static final int FENCE_FRONT_RIGHT			= 36;
 	public static final int FENCE_POST					= 37;
+	public static final int ZOMBIE						= 38;
 
 	
 	//STATIC ENTITIES

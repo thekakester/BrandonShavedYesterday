@@ -32,6 +32,10 @@ public class Entity {
 			return new PlayerEntity(id, type);
 		}
 		
+		if (type == EntityType.ZOMBIE) {
+			return new ZombieEntity(id);
+		}
+		
 		//It didn't fit one of the special cases?
 		//Return a standard (static) entity
 		return new Entity(id, type);
