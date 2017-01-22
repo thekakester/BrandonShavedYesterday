@@ -9,6 +9,7 @@ game.map = {
 	}
 };
 game.collidableTiles = [];	//An array of unpassable tiles
+game.collidableEntities = [];//Array of entities that can't be walked on
 game.type = "menu";
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
@@ -226,8 +227,6 @@ function begin_serverInit() {
 		game.map.tile = []
 		for (var r = 0; r < game.map.rows; r++) {
 			game.map.tile[r] = [];
-			
-			
 			for (var c = 0; c < game.map.cols; c++) {
 				game.map.tile[r][c] = 5;		//Init to tile 5 (water)
 			}
@@ -239,6 +238,14 @@ function begin_serverInit() {
 		for (var i = 0; i < count; i++) {
 			game.collidableTiles[buffer.getInt()] = true;
 		}
+		
+		/* GET UNPASSABLE ENTITIES */
+		var count = buffer.getInt();
+		for (var i = 0; i < count; i++) {
+			game.collidableEntities[buffer.getInt()] = true;
+		}
+		
+		
 		
 		engine.enterGameLoop();	//Next step
 	});
@@ -758,6 +765,14 @@ function isPassable(row,col) {
 	if(col < 0 || row < 0 || col >= game.map.cols || row >= game.map.rows){
 		//Do not pass go, do not collect $200
 		return false;
+	}
+	
+	//Loop over entities to see if there's anything on this tile
+	for (var eid in game.entities) {
+		var e = game.entities[eid];
+		if (e.x == col && e.y == row && game.collidableEntities[e.type]) {
+			return false;
+		}
 	}
 
 	return !game.collidableTiles[game.map.tile[row][col]];
