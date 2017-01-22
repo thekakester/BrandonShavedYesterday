@@ -34,7 +34,8 @@ public class Game extends GameBase {
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
 	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
-
+	private HashMap<Integer,Sign> signs = new HashMap<Integer,Sign>();
+	
 	public Game() {
 
 
@@ -233,6 +234,14 @@ public class Game extends GameBase {
 					d.addChat(value);
 				}
 			}
+			
+			if (key.equalsIgnoreCase("sign")) {
+				//Only arg is eid of the sign
+				Sign sign = signs.get(Integer.parseInt(value));
+				if(sign == null) { return null;}
+				
+				return sign.getBytes();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -344,6 +353,50 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//Load signs
+		filename = Game.MAP + ".signs";
+		System.out.println("Loading signs from " + filename);
+		try {
+			File signsFile = new File(filename);
+			if (!signsFile.exists()) {
+				signsFile.createNewFile(); 
+				PrintWriter pw = new PrintWriter(signsFile);
+				pw.println("#Tab delimited, up to 5 parameters");
+				pw.println("#First: eid of sign");
+				pw.println("#Second-fifth: Text");
+				pw.close();
+			}
+			Scanner scanner = new Scanner(signsFile);
+			int lineNum = 0;
+
+			while (scanner.hasNextLine()) {
+				lineNum++;
+				String line = scanner.nextLine().trim();
+				String data[] = line.split("\t");
+				if (data.length < 2 || data[0].startsWith("#")) { continue; }
+				try {
+					//Get the entity ID this ties to
+					int eid = Integer.parseInt(data[0]);
+					
+					//Get the remainder of the lines (up to 4)
+					Sign sign = new Sign();
+					for (int i = 0; i < 4; i++) {
+						if (i+1 >= data.length) { break; }
+						sign.addLine(data[i+1]);
+					}
+					
+					//Store this sign
+					signs.put(eid, sign);
+					System.out.println("Loaded sign for eid: " + eid + " with " + (data.length-1) + " lines");
+				} catch (Exception e) {
+					System.out.println("Failed to load line " + lineNum + " of signs: " + line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public Collection<PlayerEntity> getPlayers() {

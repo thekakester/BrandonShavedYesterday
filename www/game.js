@@ -376,6 +376,19 @@ game.onServerRespond = function(response) {
 			}
 		}
 		
+		//Response 4: Sign
+		if (responseType == 4) {
+			var lines = buffer.getInt();
+			for (var i = 0; i < lines; i++) {
+				var length = buffer.getInt();
+				var message = "";
+				for(var j = 0 ; j < length; j++){
+					message+= buffer.getChar();
+				}
+				appendMessage(message);
+			}
+		}
+		
 	}
 }
 
@@ -586,6 +599,24 @@ function updateGame() {
 		game.debug.selected = 0;
 		game.debug.brushSize = 0;
 		console.log("Set debug mode to " + game.debug.enabled);
+	}
+	
+	if (engine.isKeyPressed("Space")) {
+		//TEMP: Check around you for a sign then call it!
+		for (var dCol = -1; dCol <=1; dCol++) {
+			for (var dRow = -1; dRow <=1; dRow++) {
+				var row = game.player.y + dRow;
+				var col = game.player.x + dCol;
+				
+				//Search for an entity here
+				for (var key in game.entities) {
+					var e = game.entities[key];
+					if (e.type == 2 && e.x == col && e.y == row) {	//EntityType.Sign is #2
+						game.appendMessage += "&sign=" + e.id;
+					}
+				}
+			}
+		}
 	}
 	
 	

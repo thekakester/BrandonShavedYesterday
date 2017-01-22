@@ -1,0 +1,4 @@
+#Tab delimited, up to 5 parameters
+#First: eid of sign
+#Second-fifth: Text
+137	This is a sign	it can have up to 4 lines	Don't write something too long	Or it might not fit
