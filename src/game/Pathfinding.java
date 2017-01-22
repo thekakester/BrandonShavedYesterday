@@ -1,7 +1,11 @@
 package game;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import entity.Entity;
@@ -13,7 +17,6 @@ public class Pathfinding {
 		public int x,y;
 		public Point from = null;
 		public int depth = 0;
-		public int type = 0;
 		public Point(int x, int y) {
 			this.x = x;
 			this.y = y;
@@ -45,6 +48,10 @@ public class Pathfinding {
 		//Swapping start and goal makes building the path easier
 		Point goal = new Point(startX,startY);
 		Point start = new Point(endX,endY);
+		
+		//Quick way out if goal (start) isnt passable
+		if (!isPassable(g, start)) { return new LinkedList<Byte>(); }
+		
 		if (start.equals(goal)) { return buildPath(goal); }
 
 		Queue<Point> queue = new LinkedList<Point>();
@@ -59,6 +66,7 @@ public class Pathfinding {
 			visited.add(p);
 
 			//Visit everything around this
+			List<Point> neighbors = new ArrayList<Point>(4);
 			for (int i = 0; i < 4; i++) {
 				int dX = i==0 ? -1 : i==1 ? 1 : 0;
 				int dY = i==2 ? -1 : i==3 ? 1 : 0;
@@ -66,8 +74,13 @@ public class Pathfinding {
 				Point neighbor = new Point(p.x + dX, p.y + dY);
 				neighbor.from = p;
 				neighbor.depth = p.depth+1;
-				neighbor.type = g.map.getTileAt(neighbor.y,neighbor.y);
+				neighbors.add(neighbor);
+			}
+			
+			//Shuffle to give random effect
+			Collections.shuffle(neighbors);
 				
+			for (Point neighbor : neighbors) {	
 				//If its passable, add it to the queue
 				if (neighbor.depth < maxDist && isPassable(g,neighbor)) {
 					if (neighbor.equals(goal)) {
