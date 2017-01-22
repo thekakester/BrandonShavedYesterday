@@ -10,16 +10,25 @@ public class MushroomEntity extends Entity {
 	
 	public MushroomEntity(int id, int x, int y) {
 		super(id, EntityType.MUSHROOM);
-		this.x = x;
-		this.y = y;
+		this.x = spawnX = x;
+		this.y = spawnY = y;
 	}
 	
 	private LinkedList<Byte> path = new LinkedList<Byte>();
+	private long lastTriggered = System.currentTimeMillis();
+	private int spawnX, spawnY;
 	
 	@Override
 	public void update(Game g) {
+		//If we're away from our spawn and it's been 5 seconds since we've been triggered, go home
+		if ((x != spawnX || y != spawnY) && System.currentTimeMillis() - lastTriggered > 5000) {
+			 path = Pathfinding.findPath(g, x, y, spawnX,spawnY, 3000);
+		}
+		
 		//Follow player if less than 5 blocks away
 		if (!path.isEmpty()) {
+			lastTriggered = System.currentTimeMillis();
+			
 			//Follow it until empty
 			byte b = path.removeFirst();
 			if (b==0) { y--; }
