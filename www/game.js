@@ -237,6 +237,30 @@ function begin_loadSprites() {
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"darkerCharacters",32,32,96,0);//Sprite(s): Zombie Entity (up/dn/lf/rt, walking and idle)
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Yellow
+	for (var i = 0; i < 4; i++) {
+		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
+		tmp.addFrame(224+(y*32),96,3);
+	}
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Blue
+	for (var i = 0; i < 4; i++) {
+		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
+		tmp.addFrame(224+(y*32),128,3);
+	}
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Red
+	for (var i = 0; i < 4; i++) {
+		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
+		tmp.addFrame(224+(y*32),160,3);
+	}
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Green
+	for (var i = 0; i < 4; i++) {
+		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
+		tmp.addFrame(224+(y*32),192,3);
+	}
+	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
 	for (var atFrame = 0; atFrame < 6; atFrame++) {

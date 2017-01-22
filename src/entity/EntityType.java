@@ -42,6 +42,10 @@ public class EntityType {
 	public static final int FENCE_FRONT_RIGHT			= 36;
 	public static final int FENCE_POST					= 37;
 	public static final int ZOMBIE						= 38;
+	public static final int TORCH_YELLOW				= 39;
+	public static final int TORCH_BLUE					= 40;
+	public static final int TORCH_RED					= 41;
+	public static final int TORCH_GREEN					= 42;
 
 	
 	//STATIC ENTITIES
@@ -93,6 +97,10 @@ public class EntityType {
 		STATIC_ENTITIES.add(FENCE_FRONT);
 		STATIC_ENTITIES.add(FENCE_FRONT_RIGHT);
 		STATIC_ENTITIES.add(FENCE_POST);
+		STATIC_ENTITIES.add(TORCH_YELLOW);
+		STATIC_ENTITIES.add(TORCH_BLUE);
+		STATIC_ENTITIES.add(TORCH_RED);
+		STATIC_ENTITIES.add(TORCH_GREEN);
 		
 		
 		SPAWNERS.add(SPAWNER_MUSHROOM);
@@ -126,6 +134,10 @@ public class EntityType {
 		COLLIDABLE_ENTITIES.add(FENCE_FRONT);
 		COLLIDABLE_ENTITIES.add(FENCE_FRONT_RIGHT);
 		COLLIDABLE_ENTITIES.add(FENCE_POST);
+		COLLIDABLE_ENTITIES.add(TORCH_YELLOW);
+		COLLIDABLE_ENTITIES.add(TORCH_BLUE);
+		COLLIDABLE_ENTITIES.add(TORCH_RED);
+		COLLIDABLE_ENTITIES.add(TORCH_GREEN);
 		
 	}
 	
