@@ -123,8 +123,7 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: NULL
 	tmp.addFrame(288,0,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player
-	tmp.addFrame(128,0,10);
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);		//Sprite(s): Player (up/dn/lf/rt, walking and idle)
 	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Sign
 	tmp.addFrame(0,0,10);
@@ -208,6 +207,50 @@ function begin_loadSprites() {
 	
 	begin_serverInit();
 }
+
+/**For every movable character, there is 8 sprites.
+Up walking, down walking, left walking, right walking, up idle, down idle, left idle, right idle.
+This is just a faster way of creating them.
+Arguments:
+	baseTag: The name of the sprite idle.  Eg "entity1"
+	imageTag: the source of this sprite.  Eg "characters"
+	width,height: Width and height of each frame
+	startX,startY: coordinates of top left of image.
+Image must be in form: 3 frames wide, 4 tall
+Row1: down(step1), down(idle), down(step2)
+Row2: left(step1), left(idle), left(step2)
+Row3: rigt(step1), rigt(idle), rigt(step2)
+Row4: up  (step1), up  (idle), up  (step2)
+Creates tags in format: <baseTag>_<direction>[_w]
+Example: entity1_2_w is entity 1's left walking animation
+Example: entity2_0 is entity 2's up idle
+*/
+function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY) {
+	var duration = 3;
+	//Row order = down, left, right, up
+
+	//WALKING & IDLE ANIMATIONS
+	for (var row = 0; row < 4; row++) {
+		var direction = (row + 1) % 4;	//Converts from order of spritesheet to our order (u/d/l/r);
+		var yOff = row * height;
+		
+		//WALKING
+		var tmp = engine.createSprite(baseTag+"_" + direction + "_w",imageTag,width,height);//Down
+		for (var i = 0; i < 4; i++) {
+			var xOff = i;
+			if (xOff == 3) { xOff = 1; }	//Back to inbetween
+			xOff*=width;
+			tmp.addFrame(startX+xOff,startY+yOff,duration)
+		}
+		
+		//IDLE
+		var tmp = engine.createSprite(baseTag+"_" + direction,imageTag,width,height);//Down
+		tmp.addFrame(startX+width,startY+yOff,duration);
+	}
+}
+
+var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player down idle
+	tmp.addFrame(128,0,10);
 
 function begin_serverInit() {
 	//Async Load map
@@ -728,7 +771,7 @@ function paintGame() {
 		var x = tween(e.oldX,e.x,e.tween);
 		var y = tween(e.oldY,e.y,e.tween);
 		
-		engine.drawSprite("entity" + e.type,(x*32)-offsetX,(y*32)-offsetY);	
+		engine.drawSprite(getSpriteTag(e),(x*32)-offsetX,(y*32)-offsetY);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
 	}
@@ -864,7 +907,36 @@ function move(xMovement, yMovement){
 		
 		game.player.set("x",playerX);
 		game.player.set("y",playerY);
+		
+		//set direction
+		if (game.player.oldY > game.player.y) {game.player.direction = 0;}
+		else if (game.player.oldY < game.player.y) {game.player.direction = 1;}
+		else if (game.player.oldX > game.player.x) {game.player.direction = 2;}
+		else {game.player.direction = 3;}
 	}
+}
+
+/**Gets the sprite tag for the entity specified.
+This handles rotation (eg, left sprite if walking left)
+This also works for sprites that do not have direction.*/
+function getSpriteTag(entity) {
+	var baseTag = "entity" + entity.type;
+	
+	//Directions (walking)
+	var directionTag = baseTag + "_" + entity.direction + "_w";
+	if (engine.containsSprite(directionTag)) {
+		return directionTag;
+	}
+	
+	//Directions (idle)
+	directionTag = baseTag + "_" + entity.direction;
+	if (engine.containsSprite(directionTag)) {
+		return directionTag;
+	}
+	
+	//There's a chance this entity won't have any special sprites
+	//Just return the basic if we made it this far. (eg: "entity2")
+	return baseTag;
 }
 
 //Returns true if there is a tile at position [row][col] and it is a passable tile
@@ -898,6 +970,8 @@ Entity.prototype = {
 	tween: 1,
 	oldX: 0,
 	oldY: 0,
+	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
+	idle: false,		//if false, animation commences
 	name: "unnamed",
 	delta: [],
 	sprite: null,

@@ -87,6 +87,9 @@ engine.createSprite = function(spriteTag,imageTag,width,height){};
 /****TODO*****/
 engine.drawSprite = function(spriteTag,x,y){};
 
+/****TODO*****/
+engine.containsSprite = function(spriteTag){};
+
 /*Returns true if a key is pressed.  False otherwise
 * keycode is the default javascript keycode convention.
 * Example:
@@ -344,6 +347,10 @@ engine.__Frame.prototype = {
 
 engine.drawSprite = function (spriteTag,x,y) {
 	engine.__sprites[spriteTag].draw(x,y);
+}
+
+engine.containsSprite = function(spriteTag) {
+	return engine.__sprites[spriteTag] != undefined;
 }
 
 /*******************************************************************************
