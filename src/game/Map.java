@@ -41,6 +41,8 @@ public class Map implements SerializableObject {
 		mapFilename = filename;
 		unpassableTiles.add(5);//water
 		unpassableTiles.add(9);//lava
+		unpassableTiles.add(15);//Dark Water
+		unpassableTiles.add(19);//Maisma
 		
 		File f = new File(filename);
 		if (regenerate || !f.exists()) {

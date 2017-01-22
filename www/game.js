@@ -205,6 +205,37 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,64,0,32);	//Sprite: Tree (2blocks high)
 	tmp.addFrame(96,64,10);
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back left
+	tmp.addFrame(128,64,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back
+	tmp.addFrame(160,64,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back right
+	tmp.addFrame(192,64,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence left
+	tmp.addFrame(128,96,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence center
+	tmp.addFrame(160,96,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence right
+	tmp.addFrame(192,96,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front left
+	tmp.addFrame(128,128,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front
+	tmp.addFrame(160,128,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front right
+	tmp.addFrame(192,128,10);
+	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence Post
+	tmp.addFrame(224,64,10);
+	
+	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
 	for (var atFrame = 0; atFrame < 6; atFrame++) {

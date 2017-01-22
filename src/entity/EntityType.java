@@ -31,6 +31,16 @@ public class EntityType {
 	public static final int SPAWNER_CHICK				= 25;
 	public static final int CHICK						= 26;
 	public static final int TREE						= 27;
+	public static final int FENCE_BACK_LEFT				= 28;
+	public static final int FENCE_BACK					= 29;
+	public static final int FENCE_BACK_RIGHT			= 30;
+	public static final int FENCE_LEFT					= 31;
+	public static final int FENCE_CENTER				= 32;
+	public static final int FENCE_RIGHT					= 33;
+	public static final int FENCE_FRONT_LEFT			= 34;
+	public static final int FENCE_FRONT					= 35;
+	public static final int FENCE_FRONT_RIGHT			= 36;
+	public static final int FENCE_POST					= 37;
 
 	
 	//STATIC ENTITIES
@@ -72,6 +82,17 @@ public class EntityType {
 		STATIC_ENTITIES.add(SPAWNER_MUSHROOM);
 		STATIC_ENTITIES.add(SPAWNER_CHICK);
 		STATIC_ENTITIES.add(TREE);
+		STATIC_ENTITIES.add(FENCE_BACK_LEFT);
+		STATIC_ENTITIES.add(FENCE_BACK);
+		STATIC_ENTITIES.add(FENCE_BACK_RIGHT);
+		STATIC_ENTITIES.add(FENCE_LEFT);
+		STATIC_ENTITIES.add(FENCE_CENTER);
+		STATIC_ENTITIES.add(FENCE_RIGHT);
+		STATIC_ENTITIES.add(FENCE_FRONT_LEFT);
+		STATIC_ENTITIES.add(FENCE_FRONT);
+		STATIC_ENTITIES.add(FENCE_FRONT_RIGHT);
+		STATIC_ENTITIES.add(FENCE_POST);
+		
 		
 		SPAWNERS.add(SPAWNER_MUSHROOM);
 		SPAWNERS.add(SPAWNER_CHICK);
@@ -94,6 +115,17 @@ public class EntityType {
 		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_LEFTHALF);
 		COLLIDABLE_ENTITIES.add(WALL_PILLAR_BOT_RIGHTHALF);
 		COLLIDABLE_ENTITIES.add(TREE);
+		COLLIDABLE_ENTITIES.add(FENCE_BACK_LEFT);
+		COLLIDABLE_ENTITIES.add(FENCE_BACK);
+		COLLIDABLE_ENTITIES.add(FENCE_BACK_RIGHT);
+		COLLIDABLE_ENTITIES.add(FENCE_LEFT);
+		COLLIDABLE_ENTITIES.add(FENCE_CENTER);
+		COLLIDABLE_ENTITIES.add(FENCE_RIGHT);
+		COLLIDABLE_ENTITIES.add(FENCE_FRONT_LEFT);
+		COLLIDABLE_ENTITIES.add(FENCE_FRONT);
+		COLLIDABLE_ENTITIES.add(FENCE_FRONT_RIGHT);
+		COLLIDABLE_ENTITIES.add(FENCE_POST);
+		
 	}
 	
 
