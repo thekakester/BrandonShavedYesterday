@@ -252,6 +252,10 @@ function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY) {
 		var tmp = engine.createSprite(baseTag+"_" + direction,imageTag,width,height);//Down
 		tmp.addFrame(startX+width,startY+yOff,duration);
 	}
+	
+	//DEFAULT ANIMATION
+	var tmp = engine.createSprite(baseTag,imageTag,width,height);//Down
+	tmp.addFrame(startX+width,startY,duration);
 }
 
 var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player down idle
@@ -381,7 +385,8 @@ game.onServerRespond = function(response) {
 				
 				if (x == y && y == -1) {
 					//He dead
-					game.entities[eid] = undefined;
+					delete game.entities[eid];
+					continue;
 				}
 				
 				var e = game.entities[eid];
