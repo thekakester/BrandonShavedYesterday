@@ -123,7 +123,7 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: NULL
 	tmp.addFrame(288,0,10);
 	
-	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);		//Sprite(s): Player (up/dn/lf/rt, walking and idle)
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
 	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Sign
 	tmp.addFrame(0,0,10);
@@ -195,8 +195,7 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Mushroom Spawn
 	tmp.addFrame(0,288,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Mushroom Enemy
-	tmp.addFrame(0,256,10);
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,0,256);//Sprite(s): Mushroom Entity (up/dn/lf/rt, walking and idle)
 	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Chick Spawn
 	tmp.addFrame(32,288,10);
@@ -392,6 +391,7 @@ game.onServerRespond = function(response) {
 				e.x = x;
 				e.y = y;
 				e.type = type;
+				calculateDirection(e);
 			}
 		}
 		
@@ -909,11 +909,20 @@ function move(xMovement, yMovement){
 		game.player.set("y",playerY);
 		
 		//set direction
-		if (game.player.oldY > game.player.y) {game.player.direction = 0;}
-		else if (game.player.oldY < game.player.y) {game.player.direction = 1;}
-		else if (game.player.oldX > game.player.x) {game.player.direction = 2;}
-		else {game.player.direction = 3;}
+		calculateDirection(game.player);
 	}
+}
+
+/**Calculate which direction the entity is facing
+by using oldX, oldY, x, and y.
+if they're at the same place, keep the old direction
+*/
+function calculateDirection(entity) {
+	if (entity.oldY > entity.y) {entity.direction = 0;}
+	else if (entity.oldY < entity.y) {entity.direction = 1;}
+	else if (entity.oldX > entity.x) {entity.direction = 2;}
+	else if (entity.oldX < entity.x) {entity.direction = 3;}
+	//If none of the above are met, keep whatever direction used to be
 }
 
 /**Gets the sprite tag for the entity specified.
