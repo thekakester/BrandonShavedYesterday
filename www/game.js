@@ -363,7 +363,15 @@ game.onServerRespond = function(response) {
 		
 		//Response 3: Chat
 		if (responseType == 3) {
-			
+			var count = buffer.getInt();
+			for (var i = 0; i < count; i++) {
+				var length = buffer.getInt();
+				var message = "";
+				for(var j = 0 ; j < length; j++){
+					message+= buffer.getChar();
+				}
+				appendMessage(message);
+			}
 		}
 		
 	}
@@ -473,7 +481,7 @@ function updateTerminal() {
 	}
 	
 	if (engine.isKeyPressed("Enter")) {
-		tPrint(engine.keyboardBuffer)
+		tPrint(engine.keyboardBuffer);
 		queuelikeAdd(terminalCommandBuffer,terminalCommandBufferMaxSize,engine.keyboardBuffer);
 		execute(engine.keyboardBuffer);
 		engine.keyboardBuffer = "";
@@ -638,6 +646,11 @@ function updateGame() {
 		}
 	}
 	
+	if(engine.isKeyPressed("Enter")){
+		game.appendMessage += "&chat=" + escape(engine.keyboardBuffer);
+		engine.keyboardBuffer = "";
+	}
+	
 	//Deprecated.  Handled on server now
 	//playerPath = findPath(game.player.x,game.player.y,48,64);
 }
@@ -688,6 +701,9 @@ function paintGame() {
 		}
 		engine.__context.stroke();
 	}*/
+	engine.recordKeyboard(true);
+	engine.__context.fillStyle = "#FFF";
+	engine.__context.fillText(engine.keyboardBuffer,10,engine.height - 30);
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {

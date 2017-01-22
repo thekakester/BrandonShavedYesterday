@@ -221,6 +221,13 @@ public class Game extends GameBase {
 				addEntity(e);
 				return null;	//The user will get the change with update
 			}
+			
+			//Chat
+			if(key.equalsIgnoreCase("chat")){
+				for(ClientDelta d : clientDeltas.values()){
+					d.addChat(value);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
