@@ -1,8 +1,10 @@
 package entity;
 
 import java.lang.management.GarbageCollectorMXBean;
+import java.util.LinkedList;
 
 import game.Game;
+import game.Pathfinding;
 
 public class MushroomEntity extends Entity {
 	
@@ -12,9 +14,22 @@ public class MushroomEntity extends Entity {
 		this.y = y;
 	}
 	
+	private LinkedList<Byte> path = new LinkedList<Byte>();
+	
 	@Override
 	public void update(Game g) {
 		//Follow player if less than 5 blocks away
+		if (!path.isEmpty()) {
+			//Follow it until empty
+			byte b = path.removeFirst();
+			if (b==0) { y--; }
+			else if (b==1) { y++; }
+			else if (b==2) { x--; }
+			else if (b==3) { x++; }
+			g.updateEntity(id);
+			return;
+		}
+		
 		
 		//Closest player
 		PlayerEntity closestPlayer = null;
@@ -30,23 +45,12 @@ public class MushroomEntity extends Entity {
 		}
 		
 		if (closestPlayer == null) {return;}
-		if (closestDist < 1) { return; }
-		if (closestDist > 6*6) { return; }	//6 squared
 		
-		//Move toward them
-		int dX = closestPlayer.x - x;
-		int dY = closestPlayer.y - y;
+		//if we're closer than 6 tiles, follow them
+		if (closestDist > 6*6) { return;}
 		
-		//Move with whatever is the furthest
-		if (Math.abs(dY) > Math.abs(dX)) {
-			//Move with y
-			y += dY / Math.abs(dY);	//Snaps value to -1 or 1.  Yay math
-		} else {
-			//Move with x value
-			x += dX / Math.abs(dX);	//Snaps value to -1 or 1.  Yay math
-		}
-		
-		g.updateEntity(id);
+		//Get a path to the closest player
+		path = Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -401,6 +402,17 @@ public class Game extends GameBase {
 
 	public Collection<PlayerEntity> getPlayers() {
 		return players.values();
+	}
+
+	//TODO update this for chunks
+	public HashSet<Entity> getEntitiesAt(int x, int y) {
+		HashSet<Entity> set = new HashSet<Entity>();
+		for (Entity e : entities.values()) {
+			if (e.x == x && e.y == y) {
+				set.add(e);
+			}
+		}
+		return set;
 	}
 
 }

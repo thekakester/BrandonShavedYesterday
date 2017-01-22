@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -15,7 +16,7 @@ import entity.EntityType;
 public class Map implements SerializableObject {
 	private final String mapFilename;
 	private int map[][];
-	private int[] unpassableTiles = {5,9};	//Water, lava
+	private HashSet<Integer> unpassableTiles = new HashSet<Integer>();
 	private Game game;
 	//Map player-entityID to a delta object
 	//Delta represents what's changed that they don't know about
@@ -36,6 +37,9 @@ public class Map implements SerializableObject {
 	public Map(Game game, String filename, boolean regenerate) {
 		this.game = game;
 		mapFilename = filename;
+		unpassableTiles.add(5);//water
+		unpassableTiles.add(9);//lava
+		
 		File f = new File(filename);
 		if (regenerate || !f.exists()) {
 			generateNewMap(200,200,false);	//YOU CAN MODIFY THIS!  (change the map type)
@@ -117,7 +121,7 @@ public class Map implements SerializableObject {
 		int length = 2;	//Width + height ints
 		length += map.length * map[0].length;	//One int for each tile
 		length += 1;	//count of unpassable tiles
-		length += unpassableTiles.length;
+		length += unpassableTiles.size();
 
 		int bytesNeeded = length * 4;
 
@@ -141,7 +145,7 @@ public class Map implements SerializableObject {
 	}
 
 	public byte[] getUnpassableTileIds() {
-		int length = unpassableTiles.length;
+		int length = unpassableTiles.size();
 		length += 1;
 
 		length += EntityType.COLLIDABLE_ENTITIES.size();
@@ -149,7 +153,7 @@ public class Map implements SerializableObject {
 		ByteBuffer bb = ByteBuffer.allocate(length * 4);
 
 		//UnpassableTiles
-		bb.putInt(unpassableTiles.length);
+		bb.putInt(unpassableTiles.size());
 		for (int tileID : unpassableTiles) {
 			bb.putInt(tileID);
 		}
@@ -169,5 +173,12 @@ public class Map implements SerializableObject {
 
 	public int getTileAt(int row, int col) {
 		return map[row][col];
+	}
+
+	public boolean isTilePassable(int row, int col) {
+		if (row < 0 || row >= map.length || col < 0 || col >= map[row].length) {
+			return false;
+		}
+		return !unpassableTiles.contains(map[row][col]);
 	}
 }
