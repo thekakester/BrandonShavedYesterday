@@ -11,6 +11,7 @@ game.map = {
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
 game.type = "menu";
+game.ping = 0;
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
 game.debug.enabled = false;
@@ -416,11 +417,14 @@ game.sendMessage = function() {
 	
 	//Last call is always update.  This asks for what has changed
 	message += "&update=" + game.player.id;
+	
+	game.pingStart = new Date().getTime();
 	return message;
 	
 }
 
 game.onServerRespond = function(response) {
+	game.ping = new Date().getTime()-game.pingStart;
 	var buffer = ByteBuffer.wrap(response);
 	while (true) {
 		var responseType = buffer.getInt();
@@ -952,6 +956,12 @@ function paintGame() {
 		for (var i =0 ; i < game.uniqueEntityIDs; i++) {
 			engine.drawSprite("entity" + i,(i*(32+5) + 5)-xOffset,5+42);
 		}
+		
+		//Draw ping time
+		engine.__context.fillStyle  = "#000";
+		engine.__context.fillRect(0,42*2,150,42);
+		engine.__context.fillStyle  = "#fff";
+		engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
 	}
 }
 
