@@ -30,6 +30,7 @@ game.init = function () {
 	engine.preloadImage("assets/objects.png","objects");
 	engine.preloadImage("assets/darkerTiles.png","darkerTiles");
 	engine.preloadImage("assets/darkerCharacters.png","darkerCharacters");
+	engine.preloadImage("assets/items.png","items");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
 
 }
@@ -137,7 +138,6 @@ function begin_loadSprites() {
 		tmp.addFrame((xTmp++)*32,32,4);
 	}
 	
-	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall top back left
 	tmp.addFrame(0,64,10);
 	
@@ -203,7 +203,14 @@ function begin_loadSprites() {
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,256);//Sprite(s): Chick Entity (up/dn/lf/rt, walking and idle)
 	
 	
+	//ATTACK SPRITES
+	
 	begin_serverInit();
+	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
+	for (var atFrame = 0; atFrame < 6; atFrame++) {
+		tmp.addFrame(atFrame*32,0,1);
+	}
+	
 }
 
 /**For every movable character, there is 8 sprites.
@@ -661,6 +668,8 @@ function updateGame() {
 		}
 	}
 	
+	game.player.attacking = engine.isKeyDown("Space");
+	
 	
 	////////////////
 	////DEBUG STUFF
@@ -773,6 +782,10 @@ function paintGame() {
 		engine.drawSprite(getSpriteTag(e),(x*32)-offsetX,(y*32)-offsetY);	
 		e.tween+=0.2;
 		if (e.tween > 1) {e.tween = 1;}
+	}
+	
+	if (game.player.attacking) {
+		engine.drawSprite("attack0",((game.player.x+1)*32)-offsetX,(game.player.y*32)-offsetY);
 	}
 	
 	//Draw our path
@@ -981,6 +994,7 @@ Entity.prototype = {
 	oldX: 0,
 	oldY: 0,
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
+	attacking: false,
 	idle: false,		//if false, animation commences
 	name: "unnamed",
 	delta: [],
