@@ -764,6 +764,22 @@ function paintGame() {
 			engine.drawSprite("tile" + i,(i*(32+5) + 5)-xOffset,5);
 		}
 		
+		
+		//Draw what we're about to edit
+		//NOTE:  THIS IS JUST DRAWING!  MAY DIFFER FROM ACTUAL
+		for (var colOffset = -game.debug.brushSize; colOffset <= game.debug.brushSize; colOffset++) {
+			for (var rowOffset = -game.debug.brushSize; rowOffset <= game.debug.brushSize; rowOffset++) {
+				var row = game.player.y + rowOffset;
+				var col = game.player.x + colOffset;
+				var x = (col * 32) - offsetX;
+				var y = (row * 32) - offsetY;
+				engine.__context.fillStyle  = "rgba(255, 255, 255, 0.2)";
+				engine.__context.fillRect(x,y,32,32);
+				
+			}
+		}
+		
+		
 		//ENTITY STUFF
 		//Draw tiles at the top for level editor
 		for (var i =0 ; i < game.uniqueEntityIDs; i++) {
