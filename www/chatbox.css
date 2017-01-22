@@ -1,63 +1,76 @@
-
+.nodisp {
+	display: none;
+}
 
 .scrollcontainer {
 	float:left;
-	width:500px;
+	width:30%;
 }
 
 .scrollcontainer > *{
 	
 	background-size: 100%;
     background-repeat: no-repeat;
-   
-    height:60px;
+    margin:auto;
     position: relative;
 }
 
 .scrolltop {
 	
-	background-image: url("top.png");
+	background-image: url("assets/top.png");
 	background-position: center top;
 }
 
 .scrollbottom {
-    background-image: url("top.png");
+    background-image: url("assets/top.png");
 	background-position: center bottom;
 	
 }
 
 .scrollcontent {
-    background-image: url("mid.png");
+    background-image: url("assets/mid.png");
 	background-position: center;
 	background-repeat: repeat-y;
 	background-size:68%;
-	margin: -1% 0 -1% 0;
 	z-index:-1;
 
 }
 
 .chatbox {
 
-	width: auto;
+	width: 64%;
 	height: inherit;
 	overflow: auto;
+	margin: auto;
+	font-family: celticFont;
+	
+}
+
+@font-face {
+	font-family: "murderFont";
+	src:url("assets/murderFont.ttf");
+}
+
+@font-face {
+	font-family: "celticFont";
+	src:url("assets/celticFont.ttf");
 }
 
 .chatbox .moving {
 	
 }
 
-.chatbox > .name {
-	color: lightblue;
+.chatbox .name {
+	color: #148;
 }
 
-.chatbox > .message {
-	color: black;
+.chatbox .message {
+
 }
 
-.chatbox > .timestamp {
-	color: yellow;
-	float: right;
+.chatbox .timestamp {
+	
+	color: #654;
 }
 
 canvas {
