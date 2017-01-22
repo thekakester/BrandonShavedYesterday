@@ -18,6 +18,7 @@ game.debug.selected = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
 game.debug.tweenBoost = 0;
+game.debug.circleFill = false;
 playerPath = null;
 
 /*******************************************************************************
@@ -621,6 +622,9 @@ function updateGame() {
 			game.debug.tweenBoost+=.1;
 			if (game.debug.tweenBoost > 1) { game.debug.tweenBoost = 1; }
 		}
+		if (engine.isKeyPressed("Digit9")) {
+			game.debug.circleFill = !game.debug.circleFill;
+		}
 		
 		
 		
@@ -649,10 +653,16 @@ function updateGame() {
 						var row = game.player.y + yOffset;
 						var col = game.player.x + xOffset;
 						
-						//Avoid out of bounds
 						if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
-						game.map.tile[row][col] = selectedID;
-						game.map.delta[row + "|" + col + "|" + selectedID] = true;
+						
+						//Distance calculation
+						var distSqrd = (xOffset*xOffset)+(yOffset*yOffset);
+						var radSqrd = game.debug.brushSize * game.debug.brushSize;
+						if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
+						if (!game.debug.circleFill || distSqrd <= radSqrd) {
+							game.map.tile[row][col] = selectedID;
+							game.map.delta[row + "|" + col + "|" + selectedID] = true;
+						}
 					}
 				}
 			}
@@ -767,15 +777,21 @@ function paintGame() {
 		
 		//Draw what we're about to edit
 		//NOTE:  THIS IS JUST DRAWING!  MAY DIFFER FROM ACTUAL
+		engine.__context.fillStyle  = "rgba(255, 0, 0, 0.2)";
 		for (var colOffset = -game.debug.brushSize; colOffset <= game.debug.brushSize; colOffset++) {
 			for (var rowOffset = -game.debug.brushSize; rowOffset <= game.debug.brushSize; rowOffset++) {
 				var row = game.player.y + rowOffset;
 				var col = game.player.x + colOffset;
 				var x = (col * 32) - offsetX;
 				var y = (row * 32) - offsetY;
-				engine.__context.fillStyle  = "rgba(255, 255, 255, 0.2)";
-				engine.__context.fillRect(x,y,32,32);
 				
+				//Distance calculation
+				var distSqrd = (colOffset*colOffset)+(rowOffset*rowOffset);
+				var radSqrd = game.debug.brushSize * game.debug.brushSize;
+				if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
+				if (!game.debug.circleFill || distSqrd <= radSqrd) {
+					engine.__context.fillRect(x,y,32,32);
+				}
 			}
 		}
 		
