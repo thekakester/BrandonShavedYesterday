@@ -65,27 +65,27 @@ public class ClientDelta {
 		bb.putInt(ResponseType.MAP_UPDATE);
 
 		//Debug stuff.  Limit the number of tile updates we can send at a time
-		int tilesToSend = DEBUG_MAX_RESPONSESIZE;
-		if (changedMapTiles.size() < tilesToSend) {
-			tilesToSend = changedMapTiles.size();
-		}
+		//int tilesToSend = DEBUG_MAX_RESPONSESIZE;
+		//if (changedMapTiles.size() < tilesToSend) {
+		//	tilesToSend = changedMapTiles.size();
+		//}
 
 		//Number of tiles we're sending
-		bb.putInt(tilesToSend);
+		bb.putInt(changedMapTiles.size());
 
 
-		for (int i = 0; i < tilesToSend; i++) {
+		for (int i = 0; i < changedMapTiles.size(); i++) {
 			MapDelta d = changedMapTiles.get(i);
 			bb.putInt(d.row);
 			bb.putInt(d.col);
 			bb.putInt(d.type);
 		}
 
-		//changedMapTiles.clear();
+		changedMapTiles.clear();
 		//Clear what we sent
-		for (int i = 0; i < tilesToSend; i++) {
-			changedMapTiles.remove(0);
-		}
+		//for (int i = 0; i < tilesToSend; i++) {
+		//	changedMapTiles.remove(0);
+		//}
 		
 		bb.putInt(ResponseType.CHAT);
 		bb.putInt(undeliveredChatMessages.size());

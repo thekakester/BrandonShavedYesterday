@@ -38,7 +38,7 @@ public class Map implements SerializableObject {
 		mapFilename = filename;
 		File f = new File(filename);
 		if (regenerate || !f.exists()) {
-			generateNewMap(100,100,true);	//YOU CAN MODIFY THIS!  (change the map type)
+			generateNewMap(1000,1000,false);	//YOU CAN MODIFY THIS!  (change the map type)
 		}
 		load();
 	}
@@ -94,6 +94,7 @@ public class Map implements SerializableObject {
 		System.out.println("Generating a new map file");
 		map = new int[rows][cols];
 
+		
 
 		Random rand = new Random();
 		for (int r = 0; r < rows; r++) {
