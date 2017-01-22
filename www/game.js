@@ -650,7 +650,7 @@ function updateGame() {
 						var col = game.player.x + xOffset;
 						
 						//Avoid out of bounds
-						if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
+						if (row < 0 || row >= engine.height-1 || col < 0 || col >= engine.width-1) { continue; }
 						game.map.tile[row][col] = selectedID;
 						game.map.delta[row + "|" + col + "|" + selectedID] = true;
 					}
