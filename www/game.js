@@ -923,9 +923,11 @@ function getSpriteTag(entity) {
 	var baseTag = "entity" + entity.type;
 	
 	//Directions (walking)
-	var directionTag = baseTag + "_" + entity.direction + "_w";
-	if (engine.containsSprite(directionTag)) {
-		return directionTag;
+	if (entity.tween < 1) {
+		var directionTag = baseTag + "_" + entity.direction + "_w";
+		if (engine.containsSprite(directionTag)) {
+			return directionTag;
+		}
 	}
 	
 	//Directions (idle)
