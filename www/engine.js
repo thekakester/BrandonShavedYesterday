@@ -440,6 +440,9 @@ ByteBuffer.prototype = {
 	getByte: function() {
 		return this.__data[this.__index++];
 	},
+	getChar: function() {
+		return String.fromCharCode((this.__data[this.__index++] << 8) | (this.__data[this.__index++]));
+	}
 }
 
 

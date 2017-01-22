@@ -40,7 +40,8 @@
 
 	width: 64%;
 	height: inherit;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	margin: auto;
 	font-family: celticFont;
 	
@@ -65,7 +66,8 @@
 }
 
 .chatbox .message {
-
+	font-family: verdana;
+	font-size: 10;
 }
 
 .chatbox .timestamp {

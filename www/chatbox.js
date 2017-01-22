@@ -29,3 +29,8 @@ function formatChatBox(){
 	
 	$("#ScrollContainer").removeClass("nodisp");
 }
+
+function appendMessage(value){
+	var message = '<p ><span class="message">'+value+'</span></p>';
+	$("#ChatBox").append(message)
+}
