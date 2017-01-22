@@ -670,8 +670,8 @@ function updateGame() {
 
 function paintGame() {
 	//Offset everything by the player's position
-	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 7) * 32);
-	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 7) * 32);
+	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 12) * 32);
+	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 9) * 32);
 	
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
