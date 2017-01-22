@@ -200,8 +200,7 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Chick Spawn
 	tmp.addFrame(32,288,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Chick Enemy
-	tmp.addFrame(128,320,10);
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,256);//Sprite(s): Chick Entity (up/dn/lf/rt, walking and idle)
 	
 	
 	begin_serverInit();
