@@ -46,6 +46,8 @@ public class EntityType {
 	public static final int TORCH_BLUE					= 40;
 	public static final int TORCH_RED					= 41;
 	public static final int TORCH_GREEN					= 42;
+	public static final int SPAWNER_ROBOT				= 43;
+	public static final int ROBOT						= 44;
 
 	
 	//STATIC ENTITIES
@@ -101,10 +103,12 @@ public class EntityType {
 		STATIC_ENTITIES.add(TORCH_BLUE);
 		STATIC_ENTITIES.add(TORCH_RED);
 		STATIC_ENTITIES.add(TORCH_GREEN);
+		STATIC_ENTITIES.add(SPAWNER_ROBOT);
 		
 		
 		SPAWNERS.add(SPAWNER_MUSHROOM);
 		SPAWNERS.add(SPAWNER_CHICK);
+		SPAWNERS.add(SPAWNER_ROBOT);
 		
 		COLLIDABLE_ENTITIES.add(SIGN);
 		COLLIDABLE_ENTITIES.add(WALL_BACK_TOP_LEFT);

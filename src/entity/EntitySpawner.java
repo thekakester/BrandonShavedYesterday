@@ -31,6 +31,9 @@ public class EntitySpawner extends Entity{
 		if (type == EntityType.SPAWNER_CHICK) {
 			return new ChickEntity(id,this.x,this.y);
 		}
+		if (type == EntityType.SPAWNER_ROBOT) {
+			return new RobotEntity(id,this.x,this.y);
+		}
 		
 		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
 	}

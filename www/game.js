@@ -261,6 +261,11 @@ function begin_loadSprites() {
 		tmp.addFrame(224+(y*32),192,3);
 	}
 	
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Robot Spawn
+	tmp.addFrame(64,288,10);
+	
+	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",64,64,384,0,16,32);//Sprite(s): Robot Entity (up/dn/lf/rt, walking and idle)
+	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
 	for (var atFrame = 0; atFrame < 6; atFrame++) {
@@ -287,7 +292,10 @@ Creates tags in format: <baseTag>_<direction>[_w]
 Example: entity1_2_w is entity 1's left walking animation
 Example: entity2_0 is entity 2's up idle
 */
-function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY) {
+function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY,optionalXOffset,optionalYOffset) {
+	if (!optionalXOffset) { optionalXOffset = 0;}
+	if (!optionalYOffset) { optionalYOffset = 0;}
+	
 	var duration = 3;
 	//Row order = down, left, right, up
 
@@ -297,7 +305,7 @@ function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY) {
 		var yOff = row * height;
 		
 		//WALKING
-		var tmp = engine.createSprite(baseTag+"_" + direction + "_w",imageTag,width,height);//Down
+		var tmp = engine.createSprite(baseTag+"_" + direction + "_w",imageTag,width,height,optionalXOffset,optionalYOffset);//Down
 		for (var i = 0; i < 4; i++) {
 			var xOff = i;
 			if (xOff == 3) { xOff = 1; }	//Back to inbetween
@@ -306,17 +314,14 @@ function createWalkingAnimSprites(baseTag,imageTag,width,height,startX,startY) {
 		}
 		
 		//IDLE
-		var tmp = engine.createSprite(baseTag+"_" + direction,imageTag,width,height);//Down
+		var tmp = engine.createSprite(baseTag+"_" + direction,imageTag,width,height,optionalXOffset,optionalYOffset);//Down
 		tmp.addFrame(startX+width,startY+yOff,duration);
 	}
 	
 	//DEFAULT ANIMATION
-	var tmp = engine.createSprite(baseTag,imageTag,width,height);//Down
+	var tmp = engine.createSprite(baseTag,imageTag,width,height,optionalXOffset,optionalYOffset);//Down
 	tmp.addFrame(startX+width,startY,duration);
 }
-
-var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"characters",32,32);	//Sprite: Player down idle
-	tmp.addFrame(128,0,10);
 
 function begin_serverInit() {
 	//Async Load map
