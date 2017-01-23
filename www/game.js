@@ -711,6 +711,27 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pink Egg
 	tmp.addFrame(grid[1] +cell[3],grid[3]+cell[1],10);
 	
+	//VILLAGE - E5, F5
+	for(var i = 0;  i < 6;  i ++){  //Sprite: Blue Bldg
+		for(var j = 0;  j < 6; j++){
+			if(j == 5 && (i != 2 && i != 3))continue;
+			var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); 
+			tmp.addFrame(grid[4] +cell[i],grid[4]+cell[j],10);
+		}
+	}
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Clover
+	tmp.addFrame(grid[5] +cell[1],grid[4]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Weeds
+	tmp.addFrame(grid[5] +cell[2],grid[4]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Bush
+	tmp.addFrame(grid[5] +cell[3],grid[4]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Bush
+	tmp.addFrame(grid[5] +cell[4],grid[4]+cell[0],10);
+	
 	
 	
 	//ATTACK SPRITES
