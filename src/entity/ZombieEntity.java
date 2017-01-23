@@ -18,16 +18,16 @@ public class ZombieEntity extends Entity {
 	public void update(Game g) {
 		
 		//Follow player if less than 5 blocks away
-		if (!path.isEmpty()) {
+		if (!getPath().isEmpty()) {
 			lastTriggered = System.currentTimeMillis();
 			
-			//Follow it until empty
-			byte b = path.removeFirst();
-			if (b==0) { y--; }
-			else if (b==1) { y++; }
-			else if (b==2) { x--; }
-			else if (b==3) { x++; }
-			g.updateEntity(id);
+//			//Follow it until empty
+//			byte b = path.removeFirst();
+//			if (b==0) { y--; }
+//			else if (b==1) { y++; }
+//			else if (b==2) { x--; }
+//			else if (b==3) { x++; }
+//			g.updateEntity(id);
 			return;
 		}
 		
@@ -51,7 +51,8 @@ public class ZombieEntity extends Entity {
 		if (closestDist > 20*20) { return;}
 		
 		//Get a path to the closest player
-		path = Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30);
+		setPath(Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30));
+		g.updateEntity(id);
 	}
 
 }

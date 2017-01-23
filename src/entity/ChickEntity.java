@@ -16,7 +16,7 @@ public class ChickEntity extends Entity {
 	@Override
 	public void update(Game g) {
 		
-		if (path.isEmpty()) {
+		if (getPath().isEmpty()) {
 			//Closest player
 			PlayerEntity closestPlayer = null;
 			double closestDist = Double.MAX_VALUE;
@@ -39,20 +39,20 @@ public class ChickEntity extends Entity {
 			int goalY = y + (y-closestPlayer.y);
 			
 			//path to this
-			path = Pathfinding.findPath(g, x, y, goalX, goalY, 6);
+			setPath(Pathfinding.findPath(g, x, y, goalX, goalY, 6));
 		}
 		
 		//Avoid player if less than 3 blocks away
-		if (!path.isEmpty()) {
-			//Follow it until empty
-			byte b = path.removeFirst();
-			if (b==0) { y--; }
-			else if (b==1) { y++; }
-			else if (b==2) { x--; }
-			else if (b==3) { x++; }
-			g.updateEntity(id);
-			return;
-		}
+//		if (!getPath().isEmpty()) {
+//			//Follow it until empty
+//			byte b = path.removeFirst();
+//			if (b==0) { y--; }
+//			else if (b==1) { y++; }
+//			else if (b==2) { x--; }
+//			else if (b==3) { x++; }
+//			g.updateEntity(id);
+//			return;
+//		}
 
 
 	
