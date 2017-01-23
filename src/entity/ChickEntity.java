@@ -15,6 +15,7 @@ public class ChickEntity extends Entity {
 
 	@Override
 	public void update(Game g) {
+		super.update(g);
 		
 		if (getPath().isEmpty()) {
 			//Closest player
@@ -40,6 +41,7 @@ public class ChickEntity extends Entity {
 			
 			//path to this
 			setPath(Pathfinding.findPath(g, x, y, goalX, goalY, 6));
+			g.updateEntity(id);
 		}
 		
 		//Avoid player if less than 3 blocks away

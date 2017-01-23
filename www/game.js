@@ -1193,7 +1193,9 @@ function updateGame() {
 	game.player.attacking = engine.isKeyDown("Space");
 	
 	//Update the positions of all the entities based on elapsed time
+	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
 	var tilesPerSecond = 6;	//Speed of entities
+	var millisecondsPerTile = 1000/tilesPerSecond;
 	for (var eid in game.entities) {
 		var e = game.entities[eid];
 		if (e.path.length == 0) { 
@@ -1204,34 +1206,30 @@ function updateGame() {
 		//What is the total elapsed time since this path was started
 		//(server offset + time since it told us that)
 		var timeElapsed = e.timeElapsedOnServer + (new Date().getTime()-e.lastUpdate);
-		timeElapsed /= 1000;	//Convert to seconds
 		//How many tiles have we traveled since the beginning of the path
-		var tilesTraveled = tilesPerSecond * timeElapsed;
-				
+		var tilesTraveled = timeElapsed / millisecondsPerTile;
 		
-		var lastTile = Math.floor(tilesTraveled);	//Most recent tile fully reached
-		if (lastTile >= e.path.length-1) { lastTile=e.path.length-2; }	//Not allowed to be very last tile in path
-		var nextTile = lastTile+1;					//We're somewhere between lastTile and this
-		var tween = timeElapsed - (nextTile*(1/tilesPerSecond));	//time since this tile (note that last tile is too far back)
-		tween *= tilesPerSecond;								//Percentage
-		tween = tween > 1 ? 1 : tween;							//Max out at 1
-		console.log("Time elapse: " + tween);
+		//If we've traveled past our last tile, truncate it
+		if (tilesTraveled > e.path.length) { tilesTraveled = e.path.length; }
+		
+		var mostRecentTile = Math.floor(tilesTraveled);	//Most recent tile fully reached
+		var tween = tilesTraveled - mostRecentTile;	//time since this tile (note that last tile is too far back)
 		
 		//Calculate where we're supposed to be by looping through the path
 		var dX = 0; var dY = 0;
 		var startX = e.x; var startY = e.y;	//This must be initialized if path.length = 1
 		var endX = 0; var endY = 0;
-		for (var i = 0; i <= nextTile; i++) {
+		for (var i = 0; i <= mostRecentTile; i++) {
 			if (e.path[i] == 0) { dY--; }
 			else if (e.path[i] == 1) { dY++; }
 			else if (e.path[i] == 2) { dX--; }
 			else if (e.path[i] == 3) { dX++; }
 			
 			//Set the poisitin when we're ready
-			if (i == lastTile) {
+			if (i == mostRecentTile-1) {
 				startX = dX+e.x;	startY = dY+e.y;
 			}
-			if (i == nextTile) {
+			if (i == mostRecentTile) {
 				endX = dX+e.x;	endY = dY+e.y;
 			}
 		}
@@ -1241,7 +1239,7 @@ function updateGame() {
 		e.tweenY = (endY * tween) + (startY*(1-tween));
 		
 		//If we're completely done, update x and allow movement again
-		if (tween == 1 && nextTile == e.path.length - 1) {
+		if (tilesTraveled == e.path.length) {
 			e.x = endX;
 			e.y = endY;
 			e.path = [];

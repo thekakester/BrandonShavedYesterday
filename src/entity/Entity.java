@@ -98,7 +98,37 @@ public class Entity {
 	}
 	
 	public void update(Game g) {
-		//Static objects do nothing
+		if (path.isEmpty()) { return; }
+		
+		//Update x and y based on our path
+		long timeElapsed = System.currentTimeMillis() - pathStartTime;
+		
+		
+		//WARNING: THis must be exactly the same as the client!
+		int tilesPerSecond = 6;
+		float millisecondsPerTile = 1000f/tilesPerSecond;
+		//How many tiles have we completely gone over?
+		//Note that path[-1] is where we currently are.  We're not starting at path[0]
+		float tilesPast = timeElapsed / millisecondsPerTile;
+		
+		if (tilesPast > path.size()) { tilesPast = path.size(); }
+	
+		
+		int mostRecentTile = (int)tilesPast;
+		float tween = tilesPast-mostRecentTile;
+		
+		
+		//Update our position up to our last fully met tile
+		for (int i = 0; i < mostRecentTile; i++) {
+			int direction = path.removeFirst();
+			if (direction == 0) { this.y--; }
+			if (direction == 1) { this.y++; }
+			if (direction == 2) { this.x--;}
+			if (direction == 3) { this.x++; }
+		}
+		
+		//Update our start time to
+		pathStartTime += (int)(mostRecentTile * millisecondsPerTile);
 	}
 	
 	protected void setPath(LinkedList<Byte> path) {

@@ -19,9 +19,11 @@ public class RobotEntity extends Entity {
 	
 	@Override
 	public void update(Game g) {
+		super.update(g);
 		//If we're away from our spawn and it's been 5 seconds since we've been triggered, go home
 		if ((x != spawnX || y != spawnY) && System.currentTimeMillis() - lastTriggered > 5000) {
 			 setPath(Pathfinding.findPath(g, x, y, spawnX,spawnY, 3000));
+			 g.updateEntity(id);
 		}
 		
 		//Follow player if less than 5 blocks away
@@ -59,6 +61,7 @@ public class RobotEntity extends Entity {
 		
 		//Get a path to the closest player
 		setPath(Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30));
+		g.updateEntity(id);
 	}
 
 }
