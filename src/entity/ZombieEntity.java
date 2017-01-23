@@ -16,6 +16,7 @@ public class ZombieEntity extends Entity {
 	
 	@Override
 	public void update(Game g) {
+		super.update(g);
 		
 		//Follow player if less than 5 blocks away
 		if (!getPath().isEmpty()) {
@@ -51,6 +52,7 @@ public class ZombieEntity extends Entity {
 		if (closestDist > 20*20) { return;}
 		
 		//Get a path to the closest player
+		System.out.println("RECALC PATH");
 		setPath(Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30));
 		g.updateEntity(id);
 	}
