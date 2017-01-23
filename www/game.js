@@ -16,6 +16,7 @@ game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sen
 game.debug = {};
 game.debug.enabled = false;
 game.debug.selected = 0;
+game.debug.speedBoost = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
 game.debug.circleFill = false;
@@ -1194,8 +1195,7 @@ function updateGame() {
 	
 	//Update the positions of all the entities based on elapsed time
 	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
-	var tilesPerSecond = 6;	//Speed of entities
-	var millisecondsPerTile = 1000.0/tilesPerSecond;
+	var defaultTPS = 6;	//Speed of entities
 	for (var eid in game.entities) {
 		var e = game.entities[eid];
 		if (e.path.isEmpty()) { 
@@ -1203,6 +1203,11 @@ function updateGame() {
 			e.tweenY = e.y;
 			continue;
 		}
+		
+		var tilesPerSecond = defaultTPS;
+		if (game.debug.enabled && game.player.id == e.id) {tilesPerSecond += game.debug.speedBoost; }
+		var millisecondsPerTile = 1000.0/tilesPerSecond;
+		
 		//What is the total elapsed time since this path was started
 		//(server offset + time since it told us that)
 		var timeElapsed = e.timeElapsedOnServer + (new Date().getTime()-e.lastUpdate);
@@ -1281,6 +1286,14 @@ function updateGame() {
 			game.debug.row++;
 			game.debug.row %= 2;
 			game.selected = 0;
+		}
+		if (engine.isKeyPressed("Digit7")) {
+			game.debug.speedBoost-=2;
+			if (game.debug.speedBoost < 0) { game.debug.speedBoost = 0;}
+		}
+		if (engine.isKeyPressed("Digit8")) {
+			game.debug.speedBoost+=2;
+			if (game.debug.speedBoost > 24) { game.debug.speedBoost = 24;}
 		}
 		if (engine.isKeyPressed("Digit9")) {
 			game.debug.circleFill = !game.debug.circleFill;
