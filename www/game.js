@@ -447,9 +447,9 @@ game.onServerRespond = function(response) {
 				}
 				
 				var pathLen = buffer.getInt();
-				var path = [];
+				var path = new Queue();
 				for (var j = 0; j < pathLen; j++) {
-					path[j] = buffer.getByte();
+					path.enqueue(buffer.getByte());
 				}
 				
 				var timeElapsed = buffer.getInt();
@@ -748,10 +748,10 @@ function updateGame() {
 	//Update the positions of all the entities based on elapsed time
 	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
 	var tilesPerSecond = 6;	//Speed of entities
-	var millisecondsPerTile = 1000/tilesPerSecond;
+	var millisecondsPerTile = 1000.0/tilesPerSecond;
 	for (var eid in game.entities) {
 		var e = game.entities[eid];
-		if (e.path.length == 0) { 
+		if (e.path.isEmpty()) { 
 			e.tweenX = e.x;
 			e.tweenY = e.y;
 			continue;
@@ -763,40 +763,46 @@ function updateGame() {
 		var tilesTraveled = timeElapsed / millisecondsPerTile;
 		
 		//If we've traveled past our last tile, truncate it
-		if (tilesTraveled > e.path.length) { tilesTraveled = e.path.length; }
+		if (tilesTraveled > e.path.getLength) { tilesTraveled = e.path.getLength(); }
 		
 		var mostRecentTile = Math.floor(tilesTraveled);	//Most recent tile fully reached
 		var tween = tilesTraveled - mostRecentTile;	//time since this tile (note that last tile is too far back)
 		
 		//Calculate where we're supposed to be by looping through the path
 		var dX = 0; var dY = 0;
-		var startX = e.x; var startY = e.y;	//This must be initialized if path.length = 1
+		
 		var endX = 0; var endY = 0;
-		for (var i = 0; i <= mostRecentTile; i++) {
-			if (e.path[i] == 0) { dY--; }
-			else if (e.path[i] == 1) { dY++; }
-			else if (e.path[i] == 2) { dX--; }
-			else if (e.path[i] == 3) { dX++; }
+		for (var i = 0; i < mostRecentTile; i++) {
+			var direction = e.path.dequeue();
 			
-			//Set the poisitin when we're ready
-			if (i == mostRecentTile-1) {
-				startX = dX+e.x;	startY = dY+e.y;
-			}
-			if (i == mostRecentTile) {
-				endX = dX+e.x;	endY = dY+e.y;
-			}
+			if (direction == 0) { dY--; }
+			else if (direction == 1) { dY++; }
+			else if (direction == 2) { dX--; }
+			else if (direction == 3) { dX++; }
 		}
 		
-		//Now get the next tile position
-		e.tweenX = (endX * tween) + (startX*(1-tween));
-		e.tweenY = (endY * tween) + (startY*(1-tween));
+		//We've COMPLETELY moved dX and dY
+		e.x += dX;
+		e.y += dY;
 		
-		//If we're completely done, update x and allow movement again
-		if (tilesTraveled == e.path.length) {
-			e.x = endX;
-			e.y = endY;
-			e.path = [];
+		//Init end to start in case this is the last node
+		var endX = e.x; var endY = e.y;
+		
+		//Whats the next tile
+		if (!e.path.isEmpty()) {
+			var direction = e.path.peek();
+			if (direction == 0) { endY--; }
+			else if (direction == 1) { endY++; }
+			else if (direction == 2) { endX--; }
+			else if (direction == 3) { endX++; }
 		}
+		
+		//Tween to get our in-between movement to the next tile
+		e.tweenX = (endX * tween) + (e.x*(1-tween));
+		e.tweenY = (endY * tween) + (e.y*(1-tween));
+		
+		//Update the lastUpdated time
+		e.lastUpdate += mostRecentTile * millisecondsPerTile;
 		
 	}
 	////////////////
@@ -928,13 +934,17 @@ function paintGame() {
 			engine.__context.strokeStyle="#00f";
 			engine.__context.beginPath();
 			engine.__context.moveTo((x*32)-offsetX+16,(y*32)-offsetY+16);
-			for (var i in e.path) {
-				if (e.path[i] == 0) {y--;}
-				if (e.path[i] == 1) {y++;}
-				if (e.path[i] == 2) {x--;}
-				if (e.path[i] == 3) {x++;}
+			var newPath = new Queue();
+			while (!e.path.isEmpty()) {
+				var direction = e.path.dequeue();
+				newPath.enqueue(direction);
+				if (direction == 0) {y--;}
+				if (direction == 1) {y++;}
+				if (direction == 2) {x--;}
+				if (direction == 3) {x++;}
 				engine.__context.lineTo((x*32)-offsetX+16,(y*32)-offsetY+16);
 			}
+			e.path = newPath;
 			engine.__context.stroke();
 		}
 		
@@ -1006,10 +1016,23 @@ function paintGame() {
 
 
 function move(xMovement, yMovement){
-	if (game.player.path.length > 0) { return; }
 	var moved = false;
+	
 	var playerX = game.player.x;
 	var playerY = game.player.y;
+	
+	//If they've already got a path of length >= 1, we will look to replace the second part
+	//Pretend that we just finished walking and queue the next step
+	if (game.player.path.getLength() > 0) {
+		var direction = game.player.path.peek();
+		if (direction == 0) {playerY--;}
+		if (direction == 1) {playerY++;}
+		if (direction == 2) {playerX--;}
+		if (direction == 3) {playerX++;}
+	}
+	
+	var prevX = playerX;
+	var prevY = playerY;
 	
 	//Player can walk anywhere in debug mode
 	if (game.debug.enabled) {
@@ -1028,17 +1051,22 @@ function move(xMovement, yMovement){
 	if (moved) {
 		//Create a path
 		var direction = 0;
-		if (playerY < game.player.y) { direction = 0;}
-		else if (playerY > game.player.y) { direction = 1;}
-		else if (playerX < game.player.x) { direction = 2;}
-		else if (playerX > game.player.x) { direction = 3;}
+		if (playerY < prevY) { direction = 0;}
+		else if (playerY > prevY) { direction = 1;}
+		else if (playerX < prevX) { direction = 2;}
+		else if (playerX > prevX) { direction = 3;}
 		
 		//add this as our path
-		game.player.path = [];
-		game.player.path[0] = direction;
-		game.player.direction = direction;
+		var newPath = new Queue();
+		if (game.player.path.getLength() > 0) {
+			newPath.enqueue(game.player.path.peek());
+		} else {
+			game.player.lastUpdate = new Date().getTime();
+		}
+		newPath.enqueue(direction);
+		game.player.path = newPath;
 		game.player.timeElapsedOnServer = 0;
-		game.player.lastUpdate = new Date().getTime();
+		
 		//game.player.set("x",playerX);
 		//game.player.set("y",playerY);
 	}
@@ -1101,7 +1129,7 @@ Entity.prototype = {
 	tweenY: 0,		//Calculated by path
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
 	attacking: false,
-	path: [],
+	path: new Queue(),
 	timeElapsedOnServer: 0,
 	lastUpdate: 0,		//Time in javascript time since last server update
 	idle: false,		//if false, animation stops
