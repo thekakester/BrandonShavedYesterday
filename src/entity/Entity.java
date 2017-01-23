@@ -17,7 +17,8 @@ public class Entity {
 	public final int type;
 	public int[] attributes  = new int[0];	//Dependent on the type of entity (eg.  HP)
 	public int x,y;
-	public LinkedList<Byte> path = new LinkedList<Byte>();
+	private long pathStartTime = 0;			//When was the path created
+	private LinkedList<Byte> path = new LinkedList<Byte>();
 	
 	/**Create and return an entity based on its type
 	 * 
@@ -75,11 +76,18 @@ public class Entity {
 			bb.put(b);
 		}
 		
+		//Elapsed time since path created
+		bb.putInt(getPathElapsedTime());
+		
 		return bb.array();
 	}
 
+	private int getPathElapsedTime() {
+		return (int)(System.currentTimeMillis() - pathStartTime);
+	}
+
 	public int sizeInBytes() {
-		int length = 6;	//ID, type,x,y,attributes.length,path.length
+		int length = 7;	//ID, type,x,y,attributes.length,path.length,elapsedTimeSincePathCreated
 		length += attributes.length;
 		length *= 4;	//int = 4 bytes
 		
@@ -91,5 +99,14 @@ public class Entity {
 	
 	public void update(Game g) {
 		//Static objects do nothing
+	}
+	
+	protected void setPath(LinkedList<Byte> path) {
+		this.path = path;
+		this.pathStartTime = System.currentTimeMillis();
+	}
+	
+	protected LinkedList<Byte> getPath() {
+		return path;
 	}
 }

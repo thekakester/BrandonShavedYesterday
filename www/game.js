@@ -18,7 +18,6 @@ game.debug.enabled = false;
 game.debug.selected = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
-game.debug.tweenBoost = 0;
 game.debug.circleFill = false;
 playerPath = null;
 
@@ -453,6 +452,8 @@ game.onServerRespond = function(response) {
 					path[j] = buffer.getByte();
 				}
 				
+				var timeElapsed = buffer.getInt();
+				
 				if (x == y && y == -1) {
 					//He dead
 					delete game.entities[eid];
@@ -467,13 +468,11 @@ game.onServerRespond = function(response) {
 					//console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
 				}
 				e.path = path;
-				e.oldX = tween(e.oldX,e.x,e.tween);
-				e.oldY = tween(e.oldY,e.y,e.tween);
-				e.tween = 0;
+				e.timeElapsedOnServer = timeElapsed;
+				e.lastUpdate = new Date().getTime();
 				e.x = x;
 				e.y = y;
 				e.type = type;
-				calculateDirection(e);
 			}
 		}
 		
@@ -746,7 +745,62 @@ function updateGame() {
 	
 	game.player.attacking = engine.isKeyDown("Space");
 	
-	
+	//Update the positions of all the entities based on elapsed time
+	var tilesPerSecond = 6;	//Speed of entities
+	for (var eid in game.entities) {
+		var e = game.entities[eid];
+		if (e.path.length == 0) { 
+			e.tweenX = e.x;
+			e.tweenY = e.y;
+			continue;
+		}
+		//What is the total elapsed time since this path was started
+		//(server offset + time since it told us that)
+		var timeElapsed = e.timeElapsedOnServer + (new Date().getTime()-e.lastUpdate);
+		timeElapsed /= 1000;	//Convert to seconds
+		//How many tiles have we traveled since the beginning of the path
+		var tilesTraveled = tilesPerSecond * timeElapsed;
+				
+		
+		var lastTile = Math.floor(tilesTraveled);	//Most recent tile fully reached
+		if (lastTile >= e.path.length-1) { lastTile=e.path.length-2; }	//Not allowed to be very last tile in path
+		var nextTile = lastTile+1;					//We're somewhere between lastTile and this
+		var tween = timeElapsed - (nextTile*(1/tilesPerSecond));	//time since this tile (note that last tile is too far back)
+		tween *= tilesPerSecond;								//Percentage
+		tween = tween > 1 ? 1 : tween;							//Max out at 1
+		console.log("Time elapse: " + tween);
+		
+		//Calculate where we're supposed to be by looping through the path
+		var dX = 0; var dY = 0;
+		var startX = e.x; var startY = e.y;	//This must be initialized if path.length = 1
+		var endX = 0; var endY = 0;
+		for (var i = 0; i <= nextTile; i++) {
+			if (e.path[i] == 0) { dY--; }
+			else if (e.path[i] == 1) { dY++; }
+			else if (e.path[i] == 2) { dX--; }
+			else if (e.path[i] == 3) { dX++; }
+			
+			//Set the poisitin when we're ready
+			if (i == lastTile) {
+				startX = dX+e.x;	startY = dY+e.y;
+			}
+			if (i == nextTile) {
+				endX = dX+e.x;	endY = dY+e.y;
+			}
+		}
+		
+		//Now get the next tile position
+		e.tweenX = (endX * tween) + (startX*(1-tween));
+		e.tweenY = (endY * tween) + (startY*(1-tween));
+		
+		//If we're completely done, update x and allow movement again
+		if (tween == 1 && nextTile == e.path.length - 1) {
+			e.x = endX;
+			e.y = endY;
+			e.path = [];
+		}
+		
+	}
 	////////////////
 	////DEBUG STUFF
 	////////////////
@@ -771,14 +825,6 @@ function updateGame() {
 			game.debug.row++;
 			game.debug.row %= 2;
 			game.selected = 0;
-		}
-		if (engine.isKeyPressed("Digit7")) {
-			game.debug.tweenBoost-=.1;
-			if (game.debug.tweenBoost < 0) { game.debug.tweenBoost = 0; }
-		}
-		if (engine.isKeyPressed("Digit8")) {
-			game.debug.tweenBoost+=.1;
-			if (game.debug.tweenBoost > 1) { game.debug.tweenBoost = 1; }
 		}
 		if (engine.isKeyPressed("Digit9")) {
 			game.debug.circleFill = !game.debug.circleFill;
@@ -838,8 +884,8 @@ function updateGame() {
 
 function paintGame() {
 	//Offset everything by the player's position
-	var offsetX = Math.floor((tween(game.player.oldX,game.player.x,game.player.tween) - 12) * 32);
-	var offsetY = Math.floor((tween(game.player.oldY,game.player.y,game.player.tween) - 9) * 32);
+	var offsetX = Math.floor((game.player.tweenX - 12) * 32);
+	var offsetY = Math.floor((game.player.tweenY - 9) * 32);
 	
 	for (var r = 0; r < game.map.rows; r++) {
 		for (var c = 0; c < game.map.cols; c++) {
@@ -852,40 +898,16 @@ function paintGame() {
 	
 	for (var id in game.entities) {
 		var e = game.entities[id];
-		var x = tween(e.oldX,e.x,e.tween);
-		var y = tween(e.oldY,e.y,e.tween);
+		var x = e.tweenX;
+		var y = e.tweenY;
 		
 		engine.drawSprite(getSpriteTag(e),(x*32)-offsetX,(y*32)-offsetY);	
-		e.tween+=0.2;
-		if (e.tween > 1) {e.tween = 1;}
 	}
 	
 	if (game.player.attacking) {
 		engine.drawSprite("attack0",((game.player.x+1)*32)-offsetX,(game.player.y*32)-offsetY);
 	}
-	
-	//Draw our path
-	/*DEBUG PATHFINDING STUFF
-	if (playerPath != null) {
-		engine.__context.beginPath();
-		engine.__context.moveTo(0,0);
-		var prevNode = null;
-		for (var node in playerPath) {
-			node = playerPath[node];
-			var x = (node.x*32) + 16;
-			x-=offsetX;
-			var y = (node.y*32) + 16;
-			y-=offsetY;
-			if (prevNode != null) {
-				//Draw a line from here
-				engine.__context.lineTo(x,y);
-			} else {
-				engine.__context.moveTo(x,y);
-			}
-			prevNode = node;
-		}
-		engine.__context.stroke();
-	}*/
+
 	engine.recordKeyboard(true);
 	engine.__context.fillStyle = "#FFF";
 	engine.__context.fillText(engine.keyboardBuffer,10,engine.height - 30);
@@ -903,8 +925,6 @@ function paintGame() {
 			var y = e.y
 			
 			engine.__context.fillText(id,(x*32)-offsetX,(y*32)-offsetY);	
-			e.tween += game.debug.tweenBoost;
-			if (e.tween > 1) {e.tween = 1;}
 			
 			//Draw the path
 			engine.__context.strokeStyle="#00f";
@@ -988,8 +1008,7 @@ function paintGame() {
 
 
 function move(xMovement, yMovement){
-	if (game.player.tween < 1) { return; }
-	
+	if (game.player.path.length > 0) { return; }
 	var moved = false;
 	var playerX = game.player.x;
 	var playerY = game.player.y;
@@ -998,7 +1017,7 @@ function move(xMovement, yMovement){
 	if (game.debug.enabled) {
 		playerX += xMovement;
 		playerY += yMovement;
-		moved = true;
+		moved = xMovement != 0 || yMovement != 0;
 	} else {
 		//Try moving x first
 		if (xMovement != 0 && isPassable(playerY, playerX + xMovement)) {
@@ -1009,28 +1028,22 @@ function move(xMovement, yMovement){
 	}
 	
 	if (moved) {
-		game.player.oldX = game.player.x;
-		game.player.oldY = game.player.y;
-		game.player.tween = 0;
+		//Create a path
+		var direction = 0;
+		if (playerY < game.player.y) { direction = 0;}
+		else if (playerY > game.player.y) { direction = 1;}
+		else if (playerX < game.player.x) { direction = 2;}
+		else if (playerX > game.player.x) { direction = 3;}
 		
-		game.player.set("x",playerX);
-		game.player.set("y",playerY);
-		
-		//set direction
-		calculateDirection(game.player);
+		//add this as our path
+		game.player.path = [];
+		game.player.path[0] = direction;
+		game.player.direction = direction;
+		game.player.timeElapsedOnServer = 0;
+		game.player.lastUpdate = new Date().getTime();
+		//game.player.set("x",playerX);
+		//game.player.set("y",playerY);
 	}
-}
-
-/**Calculate which direction the entity is facing
-by using oldX, oldY, x, and y.
-if they're at the same place, keep the old direction
-*/
-function calculateDirection(entity) {
-	if (entity.oldY > entity.y) {entity.direction = 0;}
-	else if (entity.oldY < entity.y) {entity.direction = 1;}
-	else if (entity.oldX > entity.x) {entity.direction = 2;}
-	else if (entity.oldX < entity.x) {entity.direction = 3;}
-	//If none of the above are met, keep whatever direction used to be
 }
 
 /**Gets the sprite tag for the entity specified.
@@ -1040,7 +1053,7 @@ function getSpriteTag(entity) {
 	var baseTag = "entity" + entity.type;
 	
 	//Directions (walking)
-	if (entity.tween < 1) {
+	if (!entity.idle) {
 		var directionTag = baseTag + "_" + entity.direction + "_w";
 		if (engine.containsSprite(directionTag)) {
 			return directionTag;
@@ -1086,13 +1099,14 @@ Entity.prototype = {
 	y: 0,
 	id: 0,
 	type: 0,
-	tween: 1,
-	oldX: 0,
-	oldY: 0,
+	tweenX: 0,
+	tweenY: 0,		//Calculated by path
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
 	attacking: false,
 	path: [],
-	idle: false,		//if false, animation commences
+	timeElapsedOnServer: 0,
+	lastUpdate: 0,		//Time in javascript time since last server update
+	idle: false,		//if false, animation stops
 	name: "unnamed",
 	delta: [],
 	sprite: null,
@@ -1104,12 +1118,6 @@ function Entity(id,type,x,y) {
 	this.type = type;
 	this.x = x;
 	this.y = y;
-}
-
-function tween(oldVal,newVal,tweenAmount) {
-	tweenAmount = tweenAmount > 1 ? 1 : tweenAmount;
-	tweenAmount = tweenAmount < 0 ? 0 : tweenAmount;
-	return ((1-tweenAmount)*oldVal) + (tweenAmount * newVal);
 }
 
 //Queue implementation, 3rd party minified
