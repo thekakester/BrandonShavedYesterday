@@ -31,6 +31,7 @@ game.init = function () {
 	engine.preloadImage("assets/objects.png","objects");
 	engine.preloadImage("assets/darkerTiles.png","darkerTiles");
 	engine.preloadImage("assets/darkerCharacters.png","darkerCharacters");
+	engine.preloadImage("assets/objectFull.png","everything")
 	engine.preloadImage("assets/items.png","items");
 	engine.onImagesLoaded(function() { begin_loadSprites(); });
 
@@ -127,145 +128,591 @@ function begin_loadSprites() {
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Sign
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Sign
 	tmp.addFrame(0,0,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Gravestone
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Gravestone
 	tmp.addFrame(32,0,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Gem
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Gem
 	var xTmp = 0;
 	for (var i = 0; i < 8; i++) {	//Load the 8 frames, all to the right of eachother
 		tmp.addFrame((xTmp++)*32,32,4);
 	}
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall top back left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall top back left
 	tmp.addFrame(0,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall top back right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall top back right
 	tmp.addFrame(32,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall bot back left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall bot back left
 	tmp.addFrame(0,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall bot back right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall bot back right
 	tmp.addFrame(32,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall left
 	tmp.addFrame(0,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall right
 	tmp.addFrame(32,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front top left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall front top left
 	tmp.addFrame(0,160,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front top right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall front top right
 	tmp.addFrame(32,160,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front bot left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall front bot left
 	tmp.addFrame(0,192,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall front bot right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall front bot right
 	tmp.addFrame(32,192,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall norm Top
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall norm Top
 	tmp.addFrame(64,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall norm
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall norm
 	tmp.addFrame(64,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar top left half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall Pillar top left half
 	tmp.addFrame(64,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar bottom left half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall Pillar bottom left half
 	tmp.addFrame(64,160,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar top right half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall Pillar top right half
 	tmp.addFrame(96,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Wall Pillar bottom right half
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Wall Pillar bottom right half
 	tmp.addFrame(96,160,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Egg Yellow
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Egg Yellow
 	tmp.addFrame(256,32,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Egg Blue-Orange
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Egg Blue-Orange
 	tmp.addFrame(288,32,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Mushroom Spawn
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Mushroom Spawn
 	tmp.addFrame(0,288,10);
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,0,256);//Sprite(s): Mushroom Entity (up/dn/lf/rt, walking and idle)
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Chick Spawn
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Chick Spawn
 	tmp.addFrame(32,288,10);
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,256);//Sprite(s): Chick Entity (up/dn/lf/rt, walking and idle)
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,64,0,32);	//Sprite: Tree (2blocks high)
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,64,0,32);	//Sprite: Tree (2blocks high)
 	tmp.addFrame(96,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence back left
 	tmp.addFrame(128,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence back
 	tmp.addFrame(160,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence back right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence back right
 	tmp.addFrame(192,64,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence left
 	tmp.addFrame(128,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence center
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence center
 	tmp.addFrame(160,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence right
 	tmp.addFrame(192,96,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front left
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence front left
 	tmp.addFrame(128,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence front
 	tmp.addFrame(160,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence front right
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence front right
 	tmp.addFrame(192,128,10);
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Fence Post
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Fence Post
 	tmp.addFrame(224,64,10);
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"darkerCharacters",32,32,96,0);//Sprite(s): Zombie Entity (up/dn/lf/rt, walking and idle)
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Yellow
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Torch Yellow
 	for (var i = 0; i < 4; i++) {
 		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
 		tmp.addFrame(224+(y*32),96,3);
 	}
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Blue
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Torch Blue
 	for (var i = 0; i < 4; i++) {
 		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
 		tmp.addFrame(224+(y*32),128,3);
 	}
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Red
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Torch Red
 	for (var i = 0; i < 4; i++) {
 		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
 		tmp.addFrame(224+(y*32),160,3);
 	}
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Torch Green
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Torch Green
 	for (var i = 0; i < 4; i++) {
 		var y = i < 3 ? i : 1;	//Frames 0-1-2-1
 		tmp.addFrame(224+(y*32),192,3);
 	}
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: Robot Spawn
+	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Robot Spawn
 	tmp.addFrame(64,288,10);
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",64,64,384,0,16,32);//Sprite(s): Robot Entity (up/dn/lf/rt, walking and idle)
+	
+	//ARRAY DECLARATIONS  -- to make math easier
+	var grid = [0,320,640,960,1280,1600,1920,2240,2560,2880];
+	var cell = [0,32,64,96,128,160,192,224,256,288];
+	
+	
+	//ITEM SPRITES 
+		//Block A 2
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Teal Potion
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Potion
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Potion
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Yellow Potion
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Green Potion
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: White Potion
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[0],10);
+	
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Black Potion
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Purple Potion
+	tmp.addFrame(grid[0] +cell[7],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Cyan Potion
+	tmp.addFrame(grid[0] +cell[8],grid[1]+cell[0],10);
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Meat
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Wheat
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[1],10);
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Apple
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Bread
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Potato
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: White Flower
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Onion
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Purple Flower
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Leeks
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[2],10);
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pink Flower
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Beats
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Flower
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Carrot
+	tmp.addFrame(grid[0] +cell[7],grid[1]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Sword
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Battle Axe
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Dagger
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Arrow
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Cane
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pole
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Bow
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Spear
+	tmp.addFrame(grid[0] +cell[7],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pick Axe
+	tmp.addFrame(grid[0] +cell[8],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: SledgeHammer
+	tmp.addFrame(grid[0] +cell[9],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Bludgeon
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Spiked Bludgeon
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Flail
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Sceptre
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Axe
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: War Hammer
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Royal Sceptre
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Helmet
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Horny Helmet
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Mohawk Helmet
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Mage Hat
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Grey Mage Hat
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Mage Hat
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Apprentice Hat
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: ChestPlate
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gilded ChestPlate
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Chainmail
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Armor
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Grey Mage Robe
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Mage Robe
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Mage Robe
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Leather Body
+	tmp.addFrame(grid[0] +cell[7],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Studded Body
+	tmp.addFrame(grid[0] +cell[8],grid[1]+cell[6],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: PlateLegs
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[7],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gilded PlateLegs
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[7],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Sexy Legs
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[7],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Boots
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[7],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Boots
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[7],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Shield
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Good Shield
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blood Shield
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gray Shield
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Wooden Shield
+	tmp.addFrame(grid[0] +cell[4],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: KiteShield
+	tmp.addFrame(grid[0] +cell[5],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Round Shield
+	tmp.addFrame(grid[0] +cell[6],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gold Amulet
+	tmp.addFrame(grid[0] +cell[0],grid[1]+cell[9],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Amulet
+	tmp.addFrame(grid[0] +cell[1],grid[1]+cell[9],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gold Unstrung Amulet
+	tmp.addFrame(grid[0] +cell[2],grid[1]+cell[9],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Unstrung Amulet
+	tmp.addFrame(grid[0] +cell[3],grid[1]+cell[9],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Key
+	tmp.addFrame(grid[0] +cell[8],grid[1]+cell[9],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Grey Key
+	tmp.addFrame(grid[0] +cell[9],grid[1]+cell[9],10);
+	
+	//Block B 2
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Urn
+	tmp.addFrame(grid[1] +cell[2],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Vase
+	tmp.addFrame(grid[1] +cell[3],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Mineral Water
+	tmp.addFrame(grid[1] +cell[4],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Water
+	tmp.addFrame(grid[1] +cell[5],grid[1]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Big Fish
+	tmp.addFrame(grid[1] +cell[1],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Salmon
+	tmp.addFrame(grid[1] +cell[2],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Fish
+	tmp.addFrame(grid[1] +cell[3],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Lobster
+	tmp.addFrame(grid[1] +cell[4],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Dead Salmon
+	tmp.addFrame(grid[1] +cell[5],grid[1]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Short Sword
+	tmp.addFrame(grid[1] +cell[0],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Short Flail
+	tmp.addFrame(grid[1] +cell[1],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Fishing Pole
+	tmp.addFrame(grid[1] +cell[2],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Short BattleAxe
+	tmp.addFrame(grid[1] +cell[3],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Halberd
+	tmp.addFrame(grid[1] +cell[4],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Scimitar
+	tmp.addFrame(grid[1] +cell[5],grid[1]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Book
+	tmp.addFrame(grid[1] +cell[3],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Book
+	tmp.addFrame(grid[1] +cell[4],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Black Book
+	tmp.addFrame(grid[1] +cell[5],grid[1]+cell[8],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gold Key
+	tmp.addFrame(grid[1] +cell[0],grid[1]+cell[9],10);
+	
+	
+	//BLOCK A3
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: One Die
+	tmp.addFrame(grid[0] +cell[0],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Two Die
+	tmp.addFrame(grid[0] +cell[1],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Three Die
+	tmp.addFrame(grid[0] +cell[2],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Four Die
+	tmp.addFrame(grid[0] +cell[3],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Five Die
+	tmp.addFrame(grid[0] +cell[4],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Six Die
+	tmp.addFrame(grid[0] +cell[5],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Small Die
+	tmp.addFrame(grid[0] +cell[6],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blank Die
+	tmp.addFrame(grid[0] +cell[7],grid[2]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Unlit Candle
+	tmp.addFrame(grid[0] +cell[0],grid[2]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Candle Flicker
+	tmp.addFrame(grid[0] +cell[1],grid[2]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[2],grid[2]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Fireball
+	tmp.addFrame(grid[0] +cell[3],grid[2]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[3],grid[2]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",64,64); //Sprite: Explosion
+	tmp.addFrame(grid[0] +cell[4],grid[2]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[6],grid[2]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[8],grid[2]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[4],grid[2]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[6],grid[2]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[8],grid[2]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Unlit Wall Candle
+	tmp.addFrame(grid[0] +cell[0],grid[2]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Wall Candle
+	tmp.addFrame(grid[0] +cell[1],grid[2]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[2],grid[2]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Unlit Wall Torch
+	tmp.addFrame(grid[0] +cell[0],grid[2]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Wall Torch
+	tmp.addFrame(grid[0] +cell[1],grid[2]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[2],grid[2]+cell[4],10);
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Bubble Ray
+	tmp.addFrame(grid[0] +cell[3],grid[2]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[3],grid[2]+cell[5],10);
+	
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Unlit Lantern
+	tmp.addFrame(grid[0] +cell[0],grid[2]+cell[5],10);
+	
+
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Lantern
+	tmp.addFrame(grid[0] +cell[1],grid[2]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[2],grid[2]+cell[5],10);
+	
+	//BLOCK A4 - All Crystals Plus Eggs
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Yellow Gem
+	tmp.addFrame(grid[0] +cell[0],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[1],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[2],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[3],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[4],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[5],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[6],grid[3]+cell[1],10);
+	tmp.addFrame(grid[0] +cell[7],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pink Gem
+	tmp.addFrame(grid[0] +cell[0],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[1],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[2],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[3],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[4],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[5],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[6],grid[3]+cell[2],10);
+	tmp.addFrame(grid[0] +cell[7],grid[3]+cell[2],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Green Gem
+	tmp.addFrame(grid[0] +cell[0],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[1],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[2],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[3],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[4],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[5],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[6],grid[3]+cell[3],10);
+	tmp.addFrame(grid[0] +cell[7],grid[3]+cell[3],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Gray Gem
+	tmp.addFrame(grid[0] +cell[0],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[1],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[2],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[3],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[4],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[5],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[6],grid[3]+cell[4],10);
+	tmp.addFrame(grid[0] +cell[7],grid[3]+cell[4],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Orange Gem
+	tmp.addFrame(grid[0] +cell[0],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[1],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[2],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[3],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[4],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[5],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[6],grid[3]+cell[5],10);
+	tmp.addFrame(grid[0] +cell[7],grid[3]+cell[5],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Mucus Egg
+	tmp.addFrame(grid[0] +cell[8],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Purple Egg
+	tmp.addFrame(grid[0] +cell[9],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Spotted Egg
+	tmp.addFrame(grid[0] +cell[8],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Mountain Egg
+	tmp.addFrame(grid[0] +cell[9],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Striped Egg
+	tmp.addFrame(grid[1] +cell[0],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Green Yellow Egg
+	tmp.addFrame(grid[1] +cell[1],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Yellw Egg
+	tmp.addFrame(grid[1] +cell[2],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Wavy Egg
+	tmp.addFrame(grid[1] +cell[3],grid[3]+cell[0],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Magma Egg
+	tmp.addFrame(grid[1] +cell[0],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: RedEgg
+	tmp.addFrame(grid[1] +cell[1],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Blue Egg
+	tmp.addFrame(grid[1] +cell[2],grid[3]+cell[1],10);
+	
+	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Pink Egg
+	tmp.addFrame(grid[1] +cell[3],grid[3]+cell[1],10);
+	
+	
 	
 	//ATTACK SPRITES
 	var tmp = engine.createSprite("attack0","items",32,32);	//Sprite: Default Attack
