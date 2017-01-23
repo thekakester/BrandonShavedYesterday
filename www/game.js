@@ -447,6 +447,12 @@ game.onServerRespond = function(response) {
 					attributes[j] = buffer.getInt();
 				}
 				
+				var pathLen = buffer.getInt();
+				var path = [];
+				for (var j = 0; j < pathLen; j++) {
+					path[j] = buffer.getByte();
+				}
+				
 				if (x == y && y == -1) {
 					//He dead
 					delete game.entities[eid];
@@ -460,6 +466,7 @@ game.onServerRespond = function(response) {
 					e = game.entities[eid];
 					//console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
 				}
+				e.path = path;
 				e.oldX = tween(e.oldX,e.x,e.tween);
 				e.oldY = tween(e.oldY,e.y,e.tween);
 				e.tween = 0;
@@ -886,7 +893,8 @@ function paintGame() {
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
 		
-		//Draw the entity ID above every entity
+		
+		//Draw the entity ID above every entity (and paths)
 		engine.__context.fillStyle = "#fff";
 		engine.__context.font="12px Arial";
 		for (var id in game.entities) {
@@ -897,6 +905,19 @@ function paintGame() {
 			engine.__context.fillText(id,(x*32)-offsetX,(y*32)-offsetY);	
 			e.tween += game.debug.tweenBoost;
 			if (e.tween > 1) {e.tween = 1;}
+			
+			//Draw the path
+			engine.__context.strokeStyle="#00f";
+			engine.__context.beginPath();
+			engine.__context.moveTo((x*32)-offsetX+16,(y*32)-offsetY+16);
+			for (var i in e.path) {
+				if (e.path[i] == 0) {y--;}
+				if (e.path[i] == 1) {y++;}
+				if (e.path[i] == 2) {x--;}
+				if (e.path[i] == 3) {x++;}
+				engine.__context.lineTo((x*32)-offsetX+16,(y*32)-offsetY+16);
+			}
+			engine.__context.stroke();
 		}
 		
 		
@@ -1070,6 +1091,7 @@ Entity.prototype = {
 	oldY: 0,
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
 	attacking: false,
+	path: [],
 	idle: false,		//if false, animation commences
 	name: "unnamed",
 	delta: [],

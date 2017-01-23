@@ -12,7 +12,6 @@ public class ZombieEntity extends Entity {
 		super(id, EntityType.ZOMBIE);
 	}
 	
-	private LinkedList<Byte> path = new LinkedList<Byte>();
 	private long lastTriggered = System.currentTimeMillis();
 	
 	@Override

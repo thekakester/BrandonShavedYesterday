@@ -7,7 +7,6 @@ import game.Game;
 import game.Pathfinding;
 
 public class ChickEntity extends Entity {
-	private LinkedList<Byte> path = new LinkedList<Byte>();
 	public ChickEntity(int id, int x, int y) {
 		super(id, EntityType.CHICK);
 		this.x = x;

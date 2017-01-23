@@ -14,7 +14,6 @@ public class RobotEntity extends Entity {
 		this.y = spawnY = y;
 	}
 	
-	private LinkedList<Byte> path = new LinkedList<Byte>();
 	private long lastTriggered = System.currentTimeMillis();
 	private int spawnX, spawnY;
 	

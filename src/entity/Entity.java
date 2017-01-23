@@ -1,6 +1,7 @@
 package entity;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 
 import game.Game;
 
@@ -16,6 +17,7 @@ public class Entity {
 	public final int type;
 	public int[] attributes  = new int[0];	//Dependent on the type of entity (eg.  HP)
 	public int x,y;
+	public LinkedList<Byte> path = new LinkedList<Byte>();
 	
 	/**Create and return an entity based on its type
 	 * 
@@ -68,13 +70,22 @@ public class Entity {
 			bb.putInt(attributes[i]);
 		}
 		
+		bb.putInt(path.size());
+		for (Byte b : path) {
+			bb.put(b);
+		}
+		
 		return bb.array();
 	}
 
 	public int sizeInBytes() {
-		int length = 5;	//ID, type,x,y,attributes.length
+		int length = 6;	//ID, type,x,y,attributes.length,path.length
 		length += attributes.length;
 		length *= 4;	//int = 4 bytes
+		
+		//Path is in bytes, not int so we add it after multiplying by 4
+		length += path.size();
+		
 		return length;
 	}
 	
