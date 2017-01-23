@@ -1219,8 +1219,9 @@ function updateGame() {
 		var dX = 0; var dY = 0;
 		
 		var endX = 0; var endY = 0;
+		var direction = 0;
 		for (var i = 0; i < mostRecentTile; i++) {
-			var direction = e.path.dequeue();
+			direction = e.path.dequeue();
 			
 			if (direction == 0) { dY--; }
 			else if (direction == 1) { dY++; }
@@ -1237,16 +1238,20 @@ function updateGame() {
 		
 		//Whats the next tile
 		if (!e.path.isEmpty()) {
-			var direction = e.path.peek();
+			e.idle = false;
+			direction = e.path.peek();
 			if (direction == 0) { endY--; }
 			else if (direction == 1) { endY++; }
 			else if (direction == 2) { endX--; }
 			else if (direction == 3) { endX++; }
+		} else {
+			e.idle = true;
 		}
 		
 		//Tween to get our in-between movement to the next tile
 		e.tweenX = (endX * tween) + (e.x*(1-tween));
 		e.tweenY = (endY * tween) + (e.y*(1-tween));
+		e.direction = direction;	//The last direction we tried
 		
 		//Update the lastUpdated time
 		e.lastUpdate += mostRecentTile * millisecondsPerTile;
@@ -1579,7 +1584,7 @@ Entity.prototype = {
 	path: new Queue(),
 	timeElapsedOnServer: 0,
 	lastUpdate: 0,		//Time in javascript time since last server update
-	idle: false,		//if false, animation stops
+	idle: true,			//if false, animation starts
 	name: "unnamed",
 	delta: [],
 	sprite: null,
