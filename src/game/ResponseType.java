@@ -6,4 +6,5 @@ public class ResponseType {
 	public static final int CHAT = 3;
 	public static final int SIGN = 4;
 	public static final int ATTACKING_ENTITIES = 5;
+	public static final int DEAD_ENTITIES = 6;
 }

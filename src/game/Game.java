@@ -207,6 +207,16 @@ public class Game extends GameBase {
 				return getClientDelta(pid);
 			}
 			
+			//DEAD
+			if (key.equalsIgnoreCase("d")) {
+				int eid = Integer.parseInt(value);
+				for(ClientDelta d : clientDeltas.values()){
+					d.addDeadEntity(eid);
+				}
+				//Mark it as dead
+				entities.get(eid).isAlive = false;
+			}
+			
 			if (key.equalsIgnoreCase("attack")) {
 				int eid = Integer.parseInt(value);
 				for(ClientDelta d : clientDeltas.values()){

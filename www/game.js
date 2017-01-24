@@ -992,6 +992,17 @@ game.onServerRespond = function(response) {
 			}
 		}
 		
+		//Response 6: Dead entities
+		if (responseType == 6) {
+			var entities = buffer.getInt();
+			for (var i = 0; i < entities; i++) {
+				var eid = buffer.getInt();
+				//This entitiy is dead
+				delete game.entities[eid];
+				console.log("Entity " + eid + " died");
+			}
+		}
+		
 	}
 }
 
@@ -1241,9 +1252,10 @@ function updateGame() {
 			for (var eid in game.entities) {
 				if (eid == game.player.id) { continue; }
 				var e = game.entities[eid];
-				if (Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY)) {
+				if (Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
 					//He ded
 					e.dead = true;
+					game.appendMessage="&d=" + eid;	//Tell server
 				}
 			}
 		}

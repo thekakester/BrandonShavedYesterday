@@ -11,7 +11,7 @@ public class ClientDelta {
 	public ClientDelta(int pid) {
 		this.pid = pid;
 	}
-	
+
 	/**Call this whenever an entity changes.  Added, modified, or removed
 	 * 
 	 */
@@ -24,6 +24,7 @@ public class ClientDelta {
 	private ArrayList<Entity> changedEntities = new ArrayList<Entity>();
 	private ArrayList<MapDelta> changedMapTiles = new ArrayList<MapDelta>();
 	private HashSet<Integer> attackingEntities = new HashSet<Integer>();
+	private HashSet<Integer> deadEntities = new HashSet<Integer>();
 	private int DEBUG_MAX_RESPONSESIZE = 500;
 	final int pid;
 
@@ -44,18 +45,22 @@ public class ClientDelta {
 		//Count size of our map deltas
 		size += 8;		//Add 2 integers (8bytes): ResponseType and tiles.size()
 		size += changedMapTiles.size() * (3*4);	//Each delta is 3 ints (row,col,type)
-		
+
 		//This is chat
 		size += 8; //add 2 integers (8bytes): ResponseType and messages.length
 		size += undeliveredChatMessages.size()*4; //Add Length Int for every message
 		for(String s : undeliveredChatMessages ){
 			size+= s.length()*2;
 		}
-		
+
 		//Add entities that are attacking
 		size += 8;	//Add 2 integers(8 bytes) ResponseType and attackingEntities.length
 		size += 4 * attackingEntities.size();
-		
+
+		//Add entities that are dead
+		size += 8;	//Add 2 integers(8 bytes) ResponseType and attackingEntities.length
+		size += 4 * deadEntities.size();
+
 		ByteBuffer bb = ByteBuffer.allocate(size);
 
 		/**************
@@ -99,7 +104,7 @@ public class ClientDelta {
 		//for (int i = 0; i < tilesToSend; i++) {
 		//	changedMapTiles.remove(0);
 		//}
-		
+
 		bb.putInt(ResponseType.CHAT);
 		bb.putInt(undeliveredChatMessages.size());
 		for(String s : undeliveredChatMessages){
@@ -108,9 +113,9 @@ public class ClientDelta {
 				bb.putChar(c);
 			}
 		}
-		
+
 		undeliveredChatMessages.clear();
-		
+
 		//ADD ATTACKING ENTITIES
 		bb.putInt(ResponseType.ATTACKING_ENTITIES);
 		bb.putInt(attackingEntities.size());
@@ -118,7 +123,15 @@ public class ClientDelta {
 			bb.putInt(eid);
 		}
 		attackingEntities.clear();
-		
+
+		//ADD ATTACKING ENTITIES
+		bb.putInt(ResponseType.DEAD_ENTITIES);
+		bb.putInt(deadEntities.size());
+		for (int eid : deadEntities) {
+			bb.putInt(eid);
+		}
+		deadEntities.clear();
+
 		return bb.array();
 
 	}
@@ -131,9 +144,13 @@ public class ClientDelta {
 		// TODO Auto-generated method stub
 		undeliveredChatMessages.add(value);
 	}
-	
+
 	public void addAttackingEntity(int eid) {
 		if (eid == this.pid) { return; }	//Dont add for ourself
 		attackingEntities.add(eid);
+	}
+
+	public void addDeadEntity(int eid) {
+		deadEntities.add(eid);
 	}
 }

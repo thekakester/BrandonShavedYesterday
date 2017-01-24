@@ -61,7 +61,9 @@ public class MushroomEntity extends Entity {
 		if (closestDist > 6*6) { return;}
 		
 		//Get a path to the closest player
-		setPath(Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30));
+		LinkedList<Byte> path = Pathfinding.findPath(g, x, y, closestPlayer.x,closestPlayer.y, 30);
+		path.removeLast();
+		setPath(path);
 		g.updateEntity(id);
 	}
 
