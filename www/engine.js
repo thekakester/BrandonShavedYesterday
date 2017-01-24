@@ -89,8 +89,29 @@ engine.createSprite = function(spriteTag,imageTag,width,height,optionalXOffset,o
 /****TODO*****/
 engine.drawSprite = function(spriteTag,x,y){};
 
+/***TODO***/
+//Warning: Slow compared to drawSprite().  Use sparingly
+engine.drawSpriteRotated = function(spriteTag,x,y,rotationRadians,pivotX,pivotY){};
+
 /****TODO*****/
 engine.containsSprite = function(spriteTag){};
+
+/*Create a temporary instance of a sprite that starts at the beginning
+* of the animation and deletes itself after the animation completes.
+* This method is fast and can be called on the fly, but it is unwise
+* to create too many instances as it will slow down overall sprite performance
+
+* destTag: The sprite tag of this instance.  Used like any other sprite tag
+* sourceTag: The sprite to "clone".
+* Example:
+* engine.createSpriteInstance("myInstanceID","attackSprite");
+* ...
+* paint() {
+	//Eventually does nothing when the animation completes
+*	engine.drawSprite("myInstanceID");
+* }
+*/
+engine.createSpriteInstance = function(destTag,sourceTag){};
 
 /*Returns true if a key is pressed.  False otherwise
 * keycode is the default javascript keycode convention.
@@ -297,6 +318,7 @@ engine.createSprite = function(spriteTag, imageTag, width, height,optionalXOffse
 
 engine.__Sprite = function(spriteTag, imageTag, width, height, xOffset,yOffset) {
 	this.__image = engine.__images[imageTag];
+	this.__tag = spriteTag;
 	this.__width = width;
 	this.__height = height;
 	this.__frames = [];
@@ -314,6 +336,7 @@ engine.__Sprite = function(spriteTag, imageTag, width, height, xOffset,yOffset) 
 
 engine.__Sprite.prototype = {
 	__image: null,
+	__tag: "",
 	__width: 0,
 	__height: 0,
 	__xOffset: 0,
@@ -321,6 +344,7 @@ engine.__Sprite.prototype = {
 	__frames: null,
 	__frame: 0,
 	__subFrame: 0,
+	__deleteAfterLoops: -1,	//Set to a positive number to remove after X loops
 	draw: function(x, y) {
 		var f = this.__frames[this.__frame];
 		engine.__context.drawImage(this.__image,f.x,f.y,this.__width,this.__height,x-this.__xOffset,y-this.__yOffset,this.__width,this.__height);
@@ -332,6 +356,14 @@ engine.__Sprite.prototype = {
 			this.__frame++;
 			if(this.__frame >= this.__frames.length) {
 				this.__frame = 0;
+				//Are we tracking this for deletion?
+				if (this.__deleteAfterLoops > 0) {
+					this.__deleteAfterLoops--;
+					if (this.__deleteAfterLoops <= 0) {
+						//Delete it!
+						delete engine.__sprites[this.__tag];
+					}
+				}
 			}
 		}
 	},
@@ -355,12 +387,38 @@ engine.__Frame.prototype = {
 }
 
 engine.drawSprite = function (spriteTag,x,y) {
-	engine.__sprites[spriteTag].draw(x,y);
+	var sprite = engine.__sprites[spriteTag];
+	if (sprite) {sprite.draw(x,y)};
+}
+
+engine.drawSpriteRotated = function (spriteTag,x,y,rotationRadians,pivotX,pivotY) {
+	engine.__context.save();
+	//Adjust by pivot
+	engine.__context.translate(x+pivotX,y+pivotY);
+	engine.__context.rotate(rotationRadians);
+	engine.__sprites[spriteTag].draw(-pivotX,-pivotY);
+	engine.__context.restore();
 }
 
 engine.containsSprite = function(spriteTag) {
 	return engine.__sprites[spriteTag] != undefined;
 }
+
+engine.createSpriteInstance = function(destTag,sourceTag){
+	//Copy all the params from the source sprite to this sprite
+	var src = engine.__sprites[sourceTag];
+	var instance = {};	//Clone to this
+	for (var key in src) {
+		instance[key] = src[key];
+	}
+	
+	//Reset the animation
+	instance.__frame = instance.__subFrame = 0;
+	instance.__deleteAfterLoops = 1;	//Allow one loop
+	instance.__tag = destTag;
+	
+	engine.__sprites[destTag] = instance;
+};
 
 /*******************************************************************************
 * Section: Keyboard input                                                      *

@@ -1212,7 +1212,13 @@ function updateGame() {
 		}
 	}
 	
-	game.player.attacking = engine.isKeyDown("Space");
+	//If the player isn't attackng (no attack sprite running)
+	//allow them to attack
+	if (!engine.containsSprite("inst_att_"+game.player.id)) {
+		if (engine.isKeyDown("Space")) {
+			startAttackSprite(game.player);
+		}
+	}
 	
 	//Update the positions of all the entities based on elapsed time
 	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
@@ -1388,14 +1394,18 @@ function paintGame() {
 	
 	for (var id in game.entities) {
 		var e = game.entities[id];
-		var x = e.tweenX;
-		var y = e.tweenY;
+		var x = (e.tweenX*32)-offsetX;
+		var y = (e.tweenY*32)-offsetY;
 		
-		engine.drawSprite(getSpriteTag(e),(x*32)-offsetX,(y*32)-offsetY);	
-	}
-	
-	if (game.player.attacking) {
-		engine.drawSprite("attack0",((game.player.x+1)*32)-offsetX,(game.player.y*32)-offsetY);
+		engine.drawSprite(getSpriteTag(e),x,y);	
+		
+		if (e.direction == 0) {y-=32;}
+		else if (e.direction == 1) { y += 32; }
+		else if (e.direction == 2) { x -= 32; }
+		else if (e.direction == 3) { x += 32; }
+		
+		//Draws the attack sprite if it exists
+		engine.drawSprite("inst_att_" + e.id,x,y);
 	}
 
 	engine.recordKeyboard(true);
@@ -1558,6 +1568,11 @@ function move(xMovement, yMovement){
 	}
 }
 
+/**Start the attack animation for this entitt*/
+function startAttackSprite(eid) {
+	engine.createSpriteInstance("inst_att_" + eid.id,"attack0");
+}
+
 /**Gets the sprite tag for the entity specified.
 This handles rotation (eg, left sprite if walking left)
 This also works for sprites that do not have direction.*/
@@ -1614,7 +1629,6 @@ Entity.prototype = {
 	tweenX: 0,
 	tweenY: 0,		//Calculated by path
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
-	attacking: false,
 	path: new Queue(),
 	timeElapsedOnServer: 0,
 	lastUpdate: 0,		//Time in javascript time since last server update
