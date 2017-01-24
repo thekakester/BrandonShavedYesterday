@@ -78,3 +78,7 @@
 canvas {
 	float: left;
 }
+
+body {
+	overflow: hidden;
+}
