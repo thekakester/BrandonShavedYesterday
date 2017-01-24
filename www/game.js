@@ -982,6 +982,15 @@ game.onServerRespond = function(response) {
 			}
 		}
 		
+		//Response 5: Attacking entities
+		if (responseType == 5) {
+			var entities = buffer.getInt();
+			for (var i = 0; i < entities; i++) {
+				var eid = buffer.getInt();
+				startAttackSprite(eid);
+			}
+		}
+		
 	}
 }
 
@@ -1216,7 +1225,8 @@ function updateGame() {
 	//allow them to attack
 	if (!engine.containsSprite("inst_att_"+game.player.id)) {
 		if (engine.isKeyDown("Space")) {
-			startAttackSprite(game.player);
+			startAttackSprite(game.player.id);
+			game.appendMessage="&attack="+game.player.id;
 		}
 	}
 	
@@ -1570,7 +1580,7 @@ function move(xMovement, yMovement){
 
 /**Start the attack animation for this entitt*/
 function startAttackSprite(eid) {
-	engine.createSpriteInstance("inst_att_" + eid.id,"attack0");
+	engine.createSpriteInstance("inst_att_" + eid,"attack0");
 }
 
 /**Gets the sprite tag for the entity specified.

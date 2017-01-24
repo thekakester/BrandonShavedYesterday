@@ -206,6 +206,13 @@ public class Game extends GameBase {
 
 				return getClientDelta(pid);
 			}
+			
+			if (key.equalsIgnoreCase("attack")) {
+				int eid = Integer.parseInt(value);
+				for(ClientDelta d : clientDeltas.values()){
+					d.addAttackingEntity(eid);
+				}
+			}
 
 			//Add an entity, or remove all if ID=0
 			if (key.equalsIgnoreCase("createEntity")) {
