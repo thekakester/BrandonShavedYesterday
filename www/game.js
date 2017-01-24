@@ -1573,6 +1573,14 @@ function move(xMovement, yMovement){
 	var prevX = playerX;
 	var prevY = playerY;
 	
+	//If we're less than halfway there (distance < 0.5)
+	//then quit. (distsqrd < 0.5*0.5)
+	if (game.player.path.getLength() > 0) {
+		var dX = (game.player.x-game.player.tweenX);
+		var dY = (game.player.y-game.player.tweenY);
+		if ((dX*dX)+(dY*dY) < 0.25) { return; }
+	}
+	
 	//Player can walk anywhere in debug mode
 	if (game.debug.enabled) {
 		playerX += xMovement;
