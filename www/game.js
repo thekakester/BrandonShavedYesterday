@@ -936,6 +936,7 @@ game.onServerRespond = function(response) {
 					e = game.entities[eid];
 					//console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
 				}
+				
 				e.path = path;
 				e.timeElapsedOnServer = timeElapsed;
 				e.lastUpdate = new Date().getTime();
@@ -1227,6 +1228,24 @@ function updateGame() {
 		if (engine.isKeyDown("Space")) {
 			startAttackSprite(game.player.id);
 			game.appendMessage="&attack="+game.player.id;
+			
+			//Check if they're hitting anything
+			var attackX = game.player.tweenX;
+			var attackY = game.player.tweenY;
+			if (game.player.direction == 0) { attackY--; }
+			else if (game.player.direction == 1) { attackY++; }
+			else if (game.player.direction == 2) { attackX--; }
+			else if (game.player.direction == 3) { attackX++; }
+			
+			//Colliding if x and y are within 1 of eachother
+			for (var eid in game.entities) {
+				if (eid == game.player.id) { continue; }
+				var e = game.entities[eid];
+				if (Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY)) {
+					//He ded
+					e.dead = true;
+				}
+			}
 		}
 	}
 	
@@ -1299,6 +1318,7 @@ function updateGame() {
 		e.lastUpdate += mostRecentTile * millisecondsPerTile;
 		
 	}
+	
 	////////////////
 	////DEBUG STUFF
 	////////////////
@@ -1404,6 +1424,7 @@ function paintGame() {
 	
 	for (var id in game.entities) {
 		var e = game.entities[id];
+		if (e.dead) { continue; }
 		var x = (e.tweenX*32)-offsetX;
 		var y = (e.tweenY*32)-offsetY;
 		
@@ -1639,6 +1660,7 @@ Entity.prototype = {
 	tweenX: 0,
 	tweenY: 0,		//Calculated by path
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
+	dead: false,	//If true, treat it like its gone
 	path: new Queue(),
 	timeElapsedOnServer: 0,
 	lastUpdate: 0,		//Time in javascript time since last server update
