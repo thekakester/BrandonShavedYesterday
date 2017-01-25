@@ -126,7 +126,7 @@ public class Pathfinding {
 
 		//Check if an entity is in the way
 		for (Entity e : g.getEntitiesAt(neighbor.x,neighbor.y)) {
-			if (EntityType.COLLIDABLE_ENTITIES.contains(e.type)) {
+			if (e.definition.collidable) {
 				return false;
 			}
 		}

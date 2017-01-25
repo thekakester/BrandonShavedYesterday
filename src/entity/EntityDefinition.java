@@ -4,10 +4,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class EntityDefinition {
-	final int type,width,height,animationDuration;
-	final boolean collidable, saveable;
-	final String srcImageTag;
-	ArrayList<Sprite> sprites = new ArrayList<Sprite>();
+	public final int type;
+	private final int width,height,animationDuration;
+	public final boolean collidable, saveable;
+	private final String srcImageTag;
+	private final ArrayList<Sprite> sprites = new ArrayList<Sprite>();
+	public final String name;
+	public boolean isSpawner;
 	
 	/**Default constructor.
 	 * 
@@ -30,6 +33,7 @@ public class EntityDefinition {
 		this.width = width;
 		this.height = height;
 		this.animationDuration = animationDuration;
+		this.name = name;
 		
 		Sprite defaultSprite = new Sprite("entity" + typeID,animationDuration,width,height);
 		defaultSprite.addFrame(firstFrameX, firstFrameY);

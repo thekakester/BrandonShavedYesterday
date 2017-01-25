@@ -240,7 +240,7 @@ public class Game extends GameBase {
 
 					//Delete everything in this spot
 					for (Entity e : entities.values()) {
-						if (EntityType.STATIC_ENTITIES.contains(e.type) && e.x == x && e.y == y) {
+						if (/**TODO EntityType.STATIC_ENTITIES.contains(e.type) &&*/ e.x == x && e.y == y) {
 							deleteEntity(e.id);	//Gets cleaned up by server
 						}
 					}
@@ -339,7 +339,7 @@ public class Game extends GameBase {
 				//If it is an UNCHANGING entity, save it
 				//This includes static objects and non-moving things
 				//EG: PLAYER IS NOT STATIC, Nor ar enemies (but spawners are)
-				if (EntityType.STATIC_ENTITIES.contains(e.type)) {
+				if (e.definition.saveable) {
 					pw.println(e.id + " " + e.type + " " + e.y + " " + e.x);
 				}
 			}

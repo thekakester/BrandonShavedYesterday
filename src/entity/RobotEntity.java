@@ -9,7 +9,7 @@ import game.Pathfinding;
 public class RobotEntity extends Entity {
 	
 	public RobotEntity(int id, int x, int y) {
-		super(id, EntityType.ROBOT);
+		super(id, EntityType.ROBOT_ENTITY);
 		this.x = spawnX = x;
 		this.y = spawnY = y;
 	}

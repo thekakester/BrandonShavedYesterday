@@ -25,13 +25,13 @@ public class EntitySpawner extends Entity{
 	private Entity createEntity(Game g) {
 		int id = g.getNewEntityId();
 		
-		if (type == EntityType.SPAWNER_MUSHROOM) {
+		if (type == EntityType.MUSHROOM_SPAWN) {
 			return new MushroomEntity(id,this.x,this.y);
 		}
-		if (type == EntityType.SPAWNER_CHICK) {
+		if (type == EntityType.CHICK_SPAWN) {
 			return new ChickEntity(id,this.x,this.y);
 		}
-		if (type == EntityType.SPAWNER_ROBOT) {
+		if (type == EntityType.ROBOT_SPAWN) {
 			return new RobotEntity(id,this.x,this.y);
 		}
 		

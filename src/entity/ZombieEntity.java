@@ -9,7 +9,7 @@ import game.Pathfinding;
 public class ZombieEntity extends Entity {
 	
 	public ZombieEntity(int id) {
-		super(id, EntityType.ZOMBIE);
+		super(id, EntityType.ZOMBIE_ENEMY);
 	}
 	
 	private long lastTriggered = System.currentTimeMillis();

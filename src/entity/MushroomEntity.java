@@ -9,7 +9,7 @@ import game.Pathfinding;
 public class MushroomEntity extends EntityWithBehavior {
 
 	public MushroomEntity(int id, int x, int y) {
-		super(id, EntityType.MUSHROOM);
+		super(id, EntityType.MUSHROOM_ENEMY);
 		this.x = spawnX = x;
 		this.y = spawnY = y;
 	}

@@ -18,7 +18,7 @@ public class PlayerEntity extends Entity{
 			g.deleteEntity(id);
 			
 			//Add a zombie in its place
-			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE);
+			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE_ENEMY);
 			zombie.x = x;
 			zombie.y = y;
 			g.addEntity(zombie);

@@ -1,5 +1,7 @@
 package entity;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -7,9 +9,52 @@ import java.util.ArrayList;
  * 
  * @author midavis
  *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *   HEY YOU!
+ *   If you modify this file, make sure to run
+ *   the main method of this class to re-generate EntityType.java!
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 public class EntityManager {
-	ArrayList<EntityDefinition> definitions = new ArrayList<EntityDefinition>();
+	public static void main(String[] args) {
+		System.out.println("Generating java definition file");
+		EntityManager manager = new EntityManager();
+		try {manager.generateEntityTypeJavaFile();}
+		catch (Exception e) {e.printStackTrace();}
+	}
+
+	public static ArrayList<EntityDefinition> definitions = new ArrayList<EntityDefinition>();
 
 	public EntityManager() {
 		int typeID = 0;
@@ -32,614 +77,292 @@ public class EntityManager {
 		int[] cell = {0,32,64,96,128,160,192,224,256,288};
 
 		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration,name)
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,	"null"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, normal,	"player"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, normal,"player"));
 		last().useWalkingAnimation(96,0);
-		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 0, width, height, normal,		"sign"));
-		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 0, width, height, normal,		"gravestone"));
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 0, 32, width, height, 4,		"gem"));
-		for (int frame = 1; frame < 8; frame++) {	//Add remaining frames
-			last().addFrame(32*frame, 32);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 0, width, height, normal,"sign"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 0, width, height, normal,"Gravestone"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 64, width, height, normal,"Wall top back left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 64, width, height, normal,"Wall top back right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 96, width, height, normal,"Wall bot back left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 96, width, height, normal,"Wall bot back right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 128, width, height, normal,"Wall left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 128, width, height, normal,"Wall right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 160, width, height, normal,"Wall front top left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 160, width, height, normal,"Wall front top right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 192, width, height, normal,"Wall front bot left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 32, 192, width, height, normal,"Wall front bot right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 64, 64, width, height, normal,"Wall norm Top"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 64, 96, width, height, normal,"Wall norm"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 64, 128, width, height, normal,"Wall Pillar top left half"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 64, 160, width, height, normal,"Wall Pillar bottom left half"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 128, width, height, normal,"Wall Pillar top right half"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 160, width, height, normal,"Wall Pillar bottom right half"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", 256, 32, width, height, normal,"Egg Yellow"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", 288, 32, width, height, normal,"Egg Blue-Orange"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 0, 288, width, height, normal,"Mushroom Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 0, 256, width, height, normal,"Mushroom Enemy"));
+		last().useWalkingAnimation(0,256);
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Chick Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 256, width, height, normal,"Chick Entity"));
+		last().useWalkingAnimation(96,256);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 64, width, height, normal,"Tree"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 128, 64, width, height, normal,"Fence back left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 160, 64, width, height, normal,"Fence back"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 192, 64, width, height, normal,"Fence back right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 128, 96, width, height, normal,"Fence left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 160, 96, width, height, normal,"Fence center"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 192, 96, width, height, normal,"Fence right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 128, 128, width, height, normal,"Fence front left"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 160, 128, width, height, normal,"Fence front"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 192, 128, width, height, normal,"Fence front right"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 64, width, height, normal,"Fence Post"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "darkerCharacters", 96, 0, width, height, normal,"Zombie Enemy"));
+		last().useWalkingAnimation(96,0);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 96, width, height, normal,"Torch Yellow"));
+		last().addFrame(224+32, 96);
+		last().addFrame(224+64, 96);
+		last().addFrame(224+32, 96);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 128, width, height, normal,"Torch Blue"));
+		last().addFrame(224+32, 128);
+		last().addFrame(224+64, 128);
+		last().addFrame(224+32, 128);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 160, width, height, normal,"Torch Red"));
+		last().addFrame(224+32, 160);
+		last().addFrame(224+64, 160);
+		last().addFrame(224+32, 160);
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 192, width, height, normal,"Torch Green"));
+		last().addFrame(224+32, 192);
+		last().addFrame(224+64, 192);
+		last().addFrame(224+32, 192);
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 64, 288, width, height, normal,"Robot Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width, height, normal,"Robot Entity"));
+		last().useWalkingAnimation(384,0);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[0], width, height, normal,"Teal Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[0], width, height, normal,"Red Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[0], width, height, normal,"Blue Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[0], width, height, normal,"Yellow Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[0], width, height, normal,"Green Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[0], width, height, normal,"White Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[0], width, height, normal,"Black Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[7], grid[1]+cell[0], width, height, normal,"Purple Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[1]+cell[0], width, height, normal,"Cyan Potion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[1], width, height, normal,"Meat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[1], width, height, normal,"Wheat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[1], width, height, normal,"Apple"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[1], width, height, normal,"Bread"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[1], width, height, normal,"Potato"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[2], width, height, normal,"White Flower"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[2], width, height, normal,"Onion"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[2], width, height, normal,"Purple Flower"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[2], width, height, normal,"Leeks"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[2], width, height, normal,"Pink Flower"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[2], width, height, normal,"Beats"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[2], width, height, normal,"Blue Flower"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[7], grid[1]+cell[2], width, height, normal,"Carrot"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[3], width, height, normal,"Sword"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[3], width, height, normal,"Battle Axe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[3], width, height, normal,"Dagger"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[3], width, height, normal,"Arrow"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[3], width, height, normal,"Cane"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[3], width, height, normal,"Pole"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[3], width, height, normal,"Bow"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[7], grid[1]+cell[3], width, height, normal,"Spear"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[1]+cell[3], width, height, normal,"Pick Axe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[9], grid[1]+cell[3], width, height, normal,"SledgeHammer"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[4], width, height, normal,"Bludgeon"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[4], width, height, normal,"Spiked Bludgeon"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[4], width, height, normal,"Flail"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[4], width, height, normal,"Sceptre"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[4], width, height, normal,"Axe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[4], width, height, normal,"War Hammer"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[4], width, height, normal,"Royal Sceptre"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[5], width, height, normal,"Helmet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[5], width, height, normal,"Horny Helmet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[5], width, height, normal,"Mohawk Helmet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[5], width, height, normal,"Blue Mage Hat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[5], width, height, normal,"Grey Mage Hat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[5], width, height, normal,"Red Mage Hat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[5], width, height, normal,"Apprentice Hat"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[6], width, height, normal,"ChestPlate"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[6], width, height, normal,"Gilded ChestPlate"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[6], width, height, normal,"Chainmail"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[6], width, height, normal,"Red Armor"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[6], width, height, normal,"Grey Mage Robe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[6], width, height, normal,"Blue Mage Robe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[6], width, height, normal,"Red Mage Robe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[7], grid[1]+cell[6], width, height, normal,"Leather Body"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[1]+cell[6], width, height, normal,"Studded Body"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[7], width, height, normal,"PlateLegs"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[7], width, height, normal,"Gilded PlateLegs"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[7], width, height, normal,"Sexy Legs"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[7], width, height, normal,"Red Boots"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[7], width, height, normal,"Boots"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[8], width, height, normal,"Red Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[8], width, height, normal,"Good Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[8], width, height, normal,"Blood Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[8], width, height, normal,"Gray Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[1]+cell[8], width, height, normal,"Wooden Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[1]+cell[8], width, height, normal,"KiteShield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[1]+cell[8], width, height, normal,"Round Shield"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[9], width, height, normal,"Gold Amulet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[9], width, height, normal,"Amulet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[1]+cell[9], width, height, normal,"Gold Unstrung Amulet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[1]+cell[9], width, height, normal,"Unstrung Amulet"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[1]+cell[9], width, height, normal,"Red Key"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[9], grid[1]+cell[9], width, height, normal,"Grey Key"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[1]+cell[0], width, height, normal,"Urn"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[1]+cell[0], width, height, normal,"Vase"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[4], grid[1]+cell[0], width, height, normal,"Mineral Water"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[5], grid[1]+cell[0], width, height, normal,"Water"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[1], grid[1]+cell[1], width, height, normal,"Big Fish"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[1]+cell[1], width, height, normal,"Salmon"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[1]+cell[1], width, height, normal,"Blue Fish"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[4], grid[1]+cell[1], width, height, normal,"Lobster"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[5], grid[1]+cell[1], width, height, normal,"Dead Salmon"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[0], grid[1]+cell[3], width, height, normal,"Short Sword"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[1], grid[1]+cell[3], width, height, normal,"Short Flail"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[1]+cell[3], width, height, normal,"Fishing Pole"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[1]+cell[3], width, height, normal,"Short BattleAxe"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[4], grid[1]+cell[3], width, height, normal,"Halberd"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[5], grid[1]+cell[3], width, height, normal,"Scimitar"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[1]+cell[8], width, height, normal,"Blue Book"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[4], grid[1]+cell[8], width, height, normal,"Red Book"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[5], grid[1]+cell[8], width, height, normal,"Black Book"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[0], grid[1]+cell[9], width, height, normal,"Gold Key"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[2]+cell[1], width, height, normal,"One Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[2]+cell[1], width, height, normal,"Two Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[2], grid[2]+cell[1], width, height, normal,"Three Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[2]+cell[1], width, height, normal,"Four Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[2]+cell[1], width, height, normal,"Five Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[5], grid[2]+cell[1], width, height, normal,"Six Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[6], grid[2]+cell[1], width, height, normal,"Small Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[7], grid[2]+cell[1], width, height, normal,"Blank Die"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[2]+cell[2], width, height, normal,"Unlit Candle"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[2]+cell[2], width, height, normal,"Candle Flicker"));
+		last().addFrame(grid[0]+cell[2],grid[2]+cell[2]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[2]+cell[2], width, height, normal,"Fireball"));
+		last().addFrame(grid[0]+cell[3],grid[2]+cell[3]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[4], grid[2]+cell[2], width, height, normal,"Explosion"));
+		last().addFrame(grid[0]+cell[6],grid[2]+cell[2]);
+		last().addFrame(grid[0]+cell[8],grid[2]+cell[2]);
+		last().addFrame(grid[0]+cell[4],grid[2]+cell[4]);
+		last().addFrame(grid[0]+cell[6],grid[2]+cell[4]);
+		last().addFrame(grid[0]+cell[8],grid[2]+cell[4]);
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[0], grid[2]+cell[3], width, height, normal,"Unlit Wall Candle"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[1], grid[2]+cell[3], width, height, normal,"Wall Candle"));
+		last().addFrame(grid[0]+cell[2],grid[2]+cell[3]);
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[0], grid[2]+cell[4], width, height, normal,"Unlit Wall Torch"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[1], grid[2]+cell[4], width, height, normal,"Wall Torch"));
+		last().addFrame(grid[0]+cell[2],grid[2]+cell[4]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[3], grid[2]+cell[4], width, height, normal,"Bubble Ray"));
+		last().addFrame(grid[0]+cell[3],grid[2]+cell[5]);
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[0], grid[2]+cell[5], width, height, normal,"Unlit Lantern"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[1], grid[2]+cell[5], width, height, normal,"Lantern"));
+		last().addFrame(grid[0]+cell[2],grid[2]+cell[5]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[0], width, height, normal,"Blue Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[0]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[0]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[1], width, height, normal,"Yellow Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[1]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[1]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[2], width, height, normal,"Pink Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[2]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[2]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[3], width, height, normal,"Green Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[3]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[3]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[4], width, height, normal,"Gray Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[4]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[4]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[3]+cell[5], width, height, normal,"Orange Gem"));
+		last().addFrame(grid[0]+cell[1],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[2],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[3],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[4],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[5],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[6],grid[3]+cell[5]);
+		last().addFrame(grid[0]+cell[7],grid[3]+cell[5]);
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[3]+cell[0], width, height, normal,"Mucus Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[9], grid[3]+cell[1], width, height, normal,"Purple Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[8], grid[3]+cell[0], width, height, normal,"Spotted Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[9], grid[3]+cell[1], width, height, normal,"Mountain Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[0], grid[3]+cell[0], width, height, normal,"Striped Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[1], grid[3]+cell[0], width, height, normal,"Green Yellow Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[3]+cell[0], width, height, normal,"Yellw Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[3]+cell[0], width, height, normal,"Wavy Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[0], grid[3]+cell[1], width, height, normal,"Magma Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[1], grid[3]+cell[1], width, height, normal,"RedEgg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[3]+cell[1], width, height, normal,"Blue Egg"));
+		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[3]+cell[1], width, height, normal,"Pink Egg"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[1], grid[4]+cell[0], width, height, normal,"Clover"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[2], grid[4]+cell[0], width, height, normal,"Weeds"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[3], grid[4]+cell[0], width, height, normal,"Blue Bush"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[4], grid[4]+cell[0], width, height, normal,"Red Bush"));
+		//add(new EntityDefinition(typeID++, collide, save,  "everything", grid[4]+cell[i], grid[4]+cell[j], width, height, normal,"Blue Building"));
+
+
+	}
+	
+	//-------------------------------DO NOT MODIFY BELOW------------------------------
+	
+	/**Generate EntityType.java!
+	 * Run this whenever you change something above
+	 * @throws Exception
+	 */
+	private void generateEntityTypeJavaFile() throws Exception {
+		//Generates EntityManager.java based on the names
+		PrintWriter pw = new PrintWriter("src/entity/EntityType.java");
+		pw.println("/*This class is automatically generated by EntityManager.java");
+		pw.println("* Do not modify manually! */");
+		pw.println("package entity;");
+		pw.println("import java.util.HashSet;");
+		pw.println("public class EntityType {");
+		for (EntityDefinition d : definitions) {
+			String name = d.name.replace(" ", "_").replace("-","").toUpperCase();
+			pw.printf("\tpublic static final int %s = %d;\n",name,d.type);
+			System.out.println("Generated: " + name + " = " + d.type);
 		}
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 0, 64, width, height, normal,	"wall top back left"));
-
-/*
-		add(typeID++,"objects",32,32);	"NULL
-		"288,0,10);
-
-		//createWalkingAnimSprites(typeID++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
-
-		game.uniqueEntityIDs+=2;
-		// add(typeID++,"everything",32,32);	"Sign
-		//"0,0,10);
-
-		add(typeID++,"everything",32,32);	"Gravestone
-		"32,0,10);
-
-		add(typeID++,"everything",32,32);	"Gem
-		var xTmp = 0;
-		for (var i = 0; i < 8; i++) {	//Load the 8 frames, all to the right of eachother
-			"(xTmp++)*32,32,4);
-		}
-
-		add(typeID++,"everything",32,32);	"Wall top back left
-		"0,64,10);
-
-		add(typeID++,"everything",32,32);	"Wall top back right
-		"32,64,10);
-
-		add(typeID++,"everything",32,32);	"Wall bot back left
-		"0,96,10);
-
-		add(typeID++,"everything",32,32);	"Wall bot back right
-		"32,96,10);
-
-		add(typeID++,"everything",32,32);	"Wall left
-		"0,128,10);
-
-		add(typeID++,"everything",32,32);	"Wall right
-		"32,128,10);
-
-		add(typeID++,"everything",32,32);	"Wall front top left
-		"0,160,10);
-
-		add(typeID++,"everything",32,32);	"Wall front top right
-		"32,160,10);
-
-		add(typeID++,"everything",32,32);	"Wall front bot left
-		"0,192,10);
-
-		add(typeID++,"everything",32,32);	"Wall front bot right
-		"32,192,10);
-
-		add(typeID++,"everything",32,32);	"Wall norm Top
-		"64,64,10);
-
-		add(typeID++,"everything",32,32);	"Wall norm
-		"64,96,10);
-
-		add(typeID++,"everything",32,32);	"Wall Pillar top left half
-		"64,128,10);
-
-		add(typeID++,"everything",32,32);	"Wall Pillar bottom left half
-		"64,160,10);
-
-		add(typeID++,"everything",32,32);	"Wall Pillar top right half
-		"96,128,10);
-
-		add(typeID++,"everything",32,32);	"Wall Pillar bottom right half
-		"96,160,10);
-
-		add(typeID++,"everything",32,32);	"Egg Yellow
-		"256,32,10);
-
-		add(typeID++,"everything",32,32);	"Egg Blue-Orange
-		"288,32,10);*/
-
-		add(new EntityDefinition(typeID++,collide,save,"everything",0,288,width,height,normal,"Mushroom Spawn"));
-		last().useWalkingAnimation(0,288);
-
-		/*add(typeID++,"everything",32,32);	"Chick Spawn
-		"32,288,10);
-
-		createWalkingAnimSprites(typeID++,"characters",32,32,96,256);//Sprite(s): Chick Entity (up/dn/lf/rt, walking and idle)
-
-		add(typeID++,"everything",32,64,0,32);	"Tree (2blocks high)
-		"96,64,10);
-
-		add(typeID++,"everything",32,32);	"Fence back left
-		"128,64,10);
-
-		add(typeID++,"everything",32,32);	"Fence back
-		"160,64,10);
-
-		add(typeID++,"everything",32,32);	"Fence back right
-		"192,64,10);
-
-		add(typeID++,"everything",32,32);	"Fence left
-		"128,96,10);
-
-		add(typeID++,"everything",32,32);	"Fence center
-		"160,96,10);
-
-		add(typeID++,"everything",32,32);	"Fence right
-		"192,96,10);
-
-		add(typeID++,"everything",32,32);	"Fence front left
-		"128,128,10);
-
-		add(typeID++,"everything",32,32);	"Fence front
-		"160,128,10);
-
-		add(typeID++,"everything",32,32);	"Fence front right
-		"192,128,10);
-
-		add(typeID++,"everything",32,32);	"Fence Post
-		"224,64,10);
-
-		createWalkingAnimSprites(typeID++,"darkerCharacters",32,32,96,0);//Sprite(s): Zombie Entity (up/dn/lf/rt, walking and idle)
-
-		add(typeID++,"everything",32,32);	"Torch Yellow
-		for (var i = 0; i < 4; i++) {
-			var y = i < 3 ? i : 1;	//Frames 0-1-2-1
-			"224+(y*32),96,3);
-		}
-
-		add(typeID++,"everything",32,32);	"Torch Blue
-		for (var i = 0; i < 4; i++) {
-			var y = i < 3 ? i : 1;	//Frames 0-1-2-1
-			"224+(y*32),128,3);
-		}
-
-		add(typeID++,"everything",32,32);	"Torch Red
-		for (var i = 0; i < 4; i++) {
-			var y = i < 3 ? i : 1;	//Frames 0-1-2-1
-			"224+(y*32),160,3);
-		}
-
-		add(typeID++,"everything",32,32);	"Torch Green
-		for (var i = 0; i < 4; i++) {
-			var y = i < 3 ? i : 1;	//Frames 0-1-2-1
-			"224+(y*32),192,3);
-		}
-
-		add(typeID++,"everything",32,32);	"Robot Spawn
-		"64,288,10);
-
-		createWalkingAnimSprites(typeID++,"characters",64,64,384,0,16,32);//Sprite(s): Robot Entity (up/dn/lf/rt, walking and idle)
-
-
-
-
-		//ITEM SPRITES 
-		//Block A 2
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Teal Potion
-		"grid[0] +cell[0],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Potion
-		"grid[0] +cell[1],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Potion
-		"grid[0] +cell[2],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Yellow Potion
-		"grid[0] +cell[3],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Green Potion
-		"grid[0] +cell[4],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "White Potion
-		"grid[0] +cell[5],grid[1]+cell[0],10);
-
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Black Potion
-		"grid[0] +cell[6],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Purple Potion
-		"grid[0] +cell[7],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Cyan Potion
-		"grid[0] +cell[8],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Meat
-		"grid[0] +cell[0],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Wheat
-		"grid[0] +cell[1],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Apple
-		"grid[0] +cell[2],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Bread
-		"grid[0] +cell[3],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Potato
-		"grid[0] +cell[4],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "White Flower
-		"grid[0] +cell[0],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Onion
-		"grid[0] +cell[1],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Purple Flower
-		"grid[0] +cell[2],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Leeks
-		"grid[0] +cell[3],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Pink Flower
-		"grid[0] +cell[4],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Beats
-		"grid[0] +cell[5],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Flower
-		"grid[0] +cell[6],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Carrot
-		"grid[0] +cell[7],grid[1]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Sword
-		"grid[0] +cell[0],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Battle Axe
-		"grid[0] +cell[1],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Dagger
-		"grid[0] +cell[2],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Arrow
-		"grid[0] +cell[3],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Cane
-		"grid[0] +cell[4],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Pole
-		"grid[0] +cell[5],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Bow
-		"grid[0] +cell[6],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Spear
-		"grid[0] +cell[7],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Pick Axe
-		"grid[0] +cell[8],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "SledgeHammer
-		"grid[0] +cell[9],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Bludgeon
-		"grid[0] +cell[0],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Spiked Bludgeon
-		"grid[0] +cell[1],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Flail
-		"grid[0] +cell[2],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Sceptre
-		"grid[0] +cell[3],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Axe
-		"grid[0] +cell[4],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "War Hammer
-		"grid[0] +cell[5],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Royal Sceptre
-		"grid[0] +cell[6],grid[1]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Helmet
-		"grid[0] +cell[0],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Horny Helmet
-		"grid[0] +cell[1],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Mohawk Helmet
-		"grid[0] +cell[2],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Mage Hat
-		"grid[0] +cell[3],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Grey Mage Hat
-		"grid[0] +cell[4],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Mage Hat
-		"grid[0] +cell[5],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Apprentice Hat
-		"grid[0] +cell[6],grid[1]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "ChestPlate
-		"grid[0] +cell[0],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gilded ChestPlate
-		"grid[0] +cell[1],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Chainmail
-		"grid[0] +cell[2],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Armor
-		"grid[0] +cell[3],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Grey Mage Robe
-		"grid[0] +cell[4],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Mage Robe
-		"grid[0] +cell[5],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Mage Robe
-		"grid[0] +cell[6],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Leather Body
-		"grid[0] +cell[7],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Studded Body
-		"grid[0] +cell[8],grid[1]+cell[6],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "PlateLegs
-		"grid[0] +cell[0],grid[1]+cell[7],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gilded PlateLegs
-		"grid[0] +cell[1],grid[1]+cell[7],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Sexy Legs
-		"grid[0] +cell[2],grid[1]+cell[7],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Boots
-		"grid[0] +cell[3],grid[1]+cell[7],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Boots
-		"grid[0] +cell[4],grid[1]+cell[7],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Shield
-		"grid[0] +cell[0],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Good Shield
-		"grid[0] +cell[1],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blood Shield
-		"grid[0] +cell[2],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gray Shield
-		"grid[0] +cell[3],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Wooden Shield
-		"grid[0] +cell[4],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "KiteShield
-		"grid[0] +cell[5],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Round Shield
-		"grid[0] +cell[6],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gold Amulet
-		"grid[0] +cell[0],grid[1]+cell[9],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Amulet
-		"grid[0] +cell[1],grid[1]+cell[9],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gold Unstrung Amulet
-		"grid[0] +cell[2],grid[1]+cell[9],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Unstrung Amulet
-		"grid[0] +cell[3],grid[1]+cell[9],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Key
-		"grid[0] +cell[8],grid[1]+cell[9],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Grey Key
-		"grid[0] +cell[9],grid[1]+cell[9],10);
-
-		//Block B 2
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Urn
-		"grid[1] +cell[2],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Vase
-		"grid[1] +cell[3],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Mineral Water
-		"grid[1] +cell[4],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Water
-		"grid[1] +cell[5],grid[1]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Big Fish
-		"grid[1] +cell[1],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Salmon
-		"grid[1] +cell[2],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Fish
-		"grid[1] +cell[3],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Lobster
-		"grid[1] +cell[4],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Dead Salmon
-		"grid[1] +cell[5],grid[1]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Short Sword
-		"grid[1] +cell[0],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Short Flail
-		"grid[1] +cell[1],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Fishing Pole
-		"grid[1] +cell[2],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Short BattleAxe
-		"grid[1] +cell[3],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Halberd
-		"grid[1] +cell[4],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Scimitar
-		"grid[1] +cell[5],grid[1]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Book
-		"grid[1] +cell[3],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Book
-		"grid[1] +cell[4],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Black Book
-		"grid[1] +cell[5],grid[1]+cell[8],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gold Key
-		"grid[1] +cell[0],grid[1]+cell[9],10);
-
-
-		//BLOCK A3
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "One Die
-		"grid[0] +cell[0],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Two Die
-		"grid[0] +cell[1],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Three Die
-		"grid[0] +cell[2],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Four Die
-		"grid[0] +cell[3],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Five Die
-		"grid[0] +cell[4],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Six Die
-		"grid[0] +cell[5],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Small Die
-		"grid[0] +cell[6],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blank Die
-		"grid[0] +cell[7],grid[2]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Unlit Candle
-		"grid[0] +cell[0],grid[2]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Candle Flicker
-		"grid[0] +cell[1],grid[2]+cell[2],10);
-		"grid[0] +cell[2],grid[2]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Fireball
-		"grid[0] +cell[3],grid[2]+cell[2],10);
-		"grid[0] +cell[3],grid[2]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",64,64); "Explosion
-		"grid[0] +cell[4],grid[2]+cell[2],10);
-		"grid[0] +cell[6],grid[2]+cell[2],10);
-		"grid[0] +cell[8],grid[2]+cell[2],10);
-		"grid[0] +cell[4],grid[2]+cell[4],10);
-		"grid[0] +cell[6],grid[2]+cell[4],10);
-		"grid[0] +cell[8],grid[2]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Unlit Wall Candle
-		"grid[0] +cell[0],grid[2]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Wall Candle
-		"grid[0] +cell[1],grid[2]+cell[3],10);
-		"grid[0] +cell[2],grid[2]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Unlit Wall Torch
-		"grid[0] +cell[0],grid[2]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Wall Torch
-		"grid[0] +cell[1],grid[2]+cell[4],10);
-		"grid[0] +cell[2],grid[2]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Bubble Ray
-		"grid[0] +cell[3],grid[2]+cell[4],10);
-		"grid[0] +cell[3],grid[2]+cell[5],10);
-
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Unlit Lantern
-		"grid[0] +cell[0],grid[2]+cell[5],10);
-
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Lantern
-		"grid[0] +cell[1],grid[2]+cell[5],10);
-		"grid[0] +cell[2],grid[2]+cell[5],10);
-
-		//BLOCK A4 - All Crystals Plus Eggs
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Yellow Gem
-		"grid[0] +cell[0],grid[3]+cell[1],10);
-		"grid[0] +cell[1],grid[3]+cell[1],10);
-		"grid[0] +cell[2],grid[3]+cell[1],10);
-		"grid[0] +cell[3],grid[3]+cell[1],10);
-		"grid[0] +cell[4],grid[3]+cell[1],10);
-		"grid[0] +cell[5],grid[3]+cell[1],10);
-		"grid[0] +cell[6],grid[3]+cell[1],10);
-		"grid[0] +cell[7],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Pink Gem
-		"grid[0] +cell[0],grid[3]+cell[2],10);
-		"grid[0] +cell[1],grid[3]+cell[2],10);
-		"grid[0] +cell[2],grid[3]+cell[2],10);
-		"grid[0] +cell[3],grid[3]+cell[2],10);
-		"grid[0] +cell[4],grid[3]+cell[2],10);
-		"grid[0] +cell[5],grid[3]+cell[2],10);
-		"grid[0] +cell[6],grid[3]+cell[2],10);
-		"grid[0] +cell[7],grid[3]+cell[2],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Green Gem
-		"grid[0] +cell[0],grid[3]+cell[3],10);
-		"grid[0] +cell[1],grid[3]+cell[3],10);
-		"grid[0] +cell[2],grid[3]+cell[3],10);
-		"grid[0] +cell[3],grid[3]+cell[3],10);
-		"grid[0] +cell[4],grid[3]+cell[3],10);
-		"grid[0] +cell[5],grid[3]+cell[3],10);
-		"grid[0] +cell[6],grid[3]+cell[3],10);
-		"grid[0] +cell[7],grid[3]+cell[3],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Gray Gem
-		"grid[0] +cell[0],grid[3]+cell[4],10);
-		"grid[0] +cell[1],grid[3]+cell[4],10);
-		"grid[0] +cell[2],grid[3]+cell[4],10);
-		"grid[0] +cell[3],grid[3]+cell[4],10);
-		"grid[0] +cell[4],grid[3]+cell[4],10);
-		"grid[0] +cell[5],grid[3]+cell[4],10);
-		"grid[0] +cell[6],grid[3]+cell[4],10);
-		"grid[0] +cell[7],grid[3]+cell[4],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Orange Gem
-		"grid[0] +cell[0],grid[3]+cell[5],10);
-		"grid[0] +cell[1],grid[3]+cell[5],10);
-		"grid[0] +cell[2],grid[3]+cell[5],10);
-		"grid[0] +cell[3],grid[3]+cell[5],10);
-		"grid[0] +cell[4],grid[3]+cell[5],10);
-		"grid[0] +cell[5],grid[3]+cell[5],10);
-		"grid[0] +cell[6],grid[3]+cell[5],10);
-		"grid[0] +cell[7],grid[3]+cell[5],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Mucus Egg
-		"grid[0] +cell[8],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Purple Egg
-		"grid[0] +cell[9],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Spotted Egg"grid[0] +cell[8],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Mountain Egg"grid[0] +cell[9],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Striped Egg"grid[1] +cell[0],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Green Yellow Egg"grid[1] +cell[1],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Yellw Egg"grid[1] +cell[2],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Wavy Egg"grid[1] +cell[3],grid[3]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Magma Egg"grid[1] +cell[0],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "RedEgg"grid[1] +cell[1],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Egg"grid[1] +cell[2],grid[3]+cell[1],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Pink Egg"grid[1] +cell[3],grid[3]+cell[1],10);
-
-		//VILLAGE - E5, F5
-		for(var i = 0;  i < 6;  i ++){  "Blue Bldg
-			for(var j = 0;  j < 6; j++){
-				if(j == 5 && (i != 2 && i != 3))continue;
-				add("entity"+ game.uniqueEntityIDs++,"everything",32,32); 
-				"grid[4] +cell[i],grid[4]+cell[j],10);
+		
+		//Spawners
+		pw.println("\tpublic static HashSet<Integer> SPAWNERS = new HashSet<Integer>();");
+		pw.println("\tstatic {");
+		for (EntityDefinition d : definitions) {
+			if (d.isSpawner) {
+				System.out.println("Added " + d.name + " to spawners");
+				pw.printf("\tSPAWNERS.add(%d);//Autogenerated: %s\n",d.type,d.name);
 			}
 		}
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Clover"grid[5] +cell[1],grid[4]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Weeds"grid[5] +cell[2],grid[4]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Blue Bush"grid[5] +cell[3],grid[4]+cell[0],10);
-
-		add("entity"+ game.uniqueEntityIDs++,"everything",32,32); "Red Bush"grid[5] +cell[4],grid[4]+cell[0],10);*/
-
-		//ETC
-		//PS, feel free to re-assign type IDs if it makes loading easier.
-
+		
+		pw.println("\t}\n}");
+		pw.close();
+		System.out.println("Done!  Remember to clean your eclipse project!");
+		
 	}
 
 	public byte[] getBytes() {

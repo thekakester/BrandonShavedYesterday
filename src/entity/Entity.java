@@ -19,6 +19,7 @@ public class Entity {
 	public int x,y;
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
+	public final EntityDefinition definition;
 	
 	/**Create and return an entity based on its type
 	 * 
@@ -35,7 +36,7 @@ public class Entity {
 			return new PlayerEntity(id, type);
 		}
 		
-		if (type == EntityType.ZOMBIE) {
+		if (type == EntityType.ZOMBIE_ENEMY) {
 			return new ZombieEntity(id);
 		}
 		
@@ -47,6 +48,7 @@ public class Entity {
 	protected Entity(int id, int type) {
 		this.id = id;
 		this.type = type;
+		this.definition = EntityManager.definitions.get(type);
 	}
 
 	@Override

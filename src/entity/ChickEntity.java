@@ -8,7 +8,7 @@ import game.Pathfinding;
 
 public class ChickEntity extends Entity {
 	public ChickEntity(int id, int x, int y) {
-		super(id, EntityType.CHICK);
+		super(id, EntityType.CHICK_ENTITY);
 		this.x = x;
 		this.y = y;
 	}
