@@ -25,8 +25,6 @@ public class EntityManager {
 		boolean save = true;
 		boolean nosave = false;
 		
-		
-		
 		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration,name)
 		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, dur,	"null"));
 		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, dur,	"player"));
