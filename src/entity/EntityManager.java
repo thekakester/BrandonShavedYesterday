@@ -14,10 +14,33 @@ public class EntityManager {
 	public EntityManager() {
 		int typeID = 0;
 		
-		add(new EntityDefinition(typeID++, false, false, "objects", 288, 0, 32, 32, 10));	//NULL
-		add(new EntityDefinition(typeID++, false, false, "characters", 96, 0, 32, 32, 10));	//Player
+		/**These will make definitions more readable
+		 * 
+		 */
+		int dur = 10;	//Default duration
+		int width = 32; //Default width
+		int height = 32;//Default height
+		boolean collide = true;
+		boolean nocollide = false;
+		boolean save = true;
+		boolean nosave = false;
+		
+		
+		
+		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, dur));		//NULL
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, dur));	//Player
 		last().useWalkingAnimation(96,0);
-		add(new EntityDefinition(typeID++, true, true, "everything", 0, 0, 32, 32, 10));	//Sign
+		add(new EntityDefinition(typeID++, collide, save, "everything", 0, 0, width, height, dur));			//Sign
+		add(new EntityDefinition(typeID++, collide, save, "everything", 32, 0, width, height, dur));		//Gravestone
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 32, width, height, 4));		//Gem
+		for (int frame = 1; frame < 8; frame++) {	//Add remaining frames
+			last().addFrame(32*frame, 32);
+		}
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 64, width, height, dur));		//Wall top back left
+		
+		//ETC
+		//PS, feel free to re-assign type IDs if it makes loading easier.
 		
 	}
 	

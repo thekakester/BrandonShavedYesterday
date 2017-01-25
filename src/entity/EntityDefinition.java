@@ -36,6 +36,15 @@ public class EntityDefinition {
 		this.sprites.add(defaultSprite);
 		
 	}
+	
+	/**Add a frame to the most recently created sprite
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void addFrame(int x, int y) {
+		sprites.get(sprites.size()-1).addFrame(x, y);
+	}
 
 	/**Add a set of sprites to this entity for walking animations
 	 * THE ANIMATION SPRITESHEET MUST BE:
@@ -46,8 +55,30 @@ public class EntityDefinition {
 	 * @param y y coordinate of the top left corner of the walking animation spritesheet
 	 */
 	public void useWalkingAnimation(int x, int y) {
-		// TODO Auto-generated method stub
+		int optionalXOffset = 0;
+		int optionalYoffset = 0;
 		
+		int duration = 3;	//3 time units per animation
+		
+		for (int row = 0; row < 4; row++) {
+			int direction = (row + 1) % 4;	//Converts from spritesheet direction (down,left,right,up) to engine direction (up,down,left,right)
+			int yOff = row * height;
+			
+			//Walking (eg entity2_0_w means entity 2 walking animation up)
+			Sprite s = new Sprite("entity" + type + "_" + direction + "_w",duration,width,height);
+			sprites.add(s);
+			for (int col = 0; col < 4; col++) {
+				int xOff = col;
+				if (xOff == 3) { xOff = 1; }
+				xOff *= width;
+				s.addFrame(x + xOff, y + yOff);
+			}
+			
+			//Idle (eg entity2_1 means entity 2 idle look down)
+			s = new Sprite("entity" + type + "_" + direction,duration,width,height);
+			s.addFrame(x+width, y+yOff);
+			sprites.add(s);
+		}
 	}
 
 	public byte[] getBytes() {

@@ -122,13 +122,13 @@ function begin_loadSprites() {
 	
 	
 	//ENTITY SPRITES
-	game.uniqueEntityIDs = 0;
+	/*game.uniqueEntityIDs = 0;
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"objects",32,32);	//Sprite: NULL
 	tmp.addFrame(288,0,10);
 	
-	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
+	//createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
 	
-	game.uniqueEntityIDs++;
+	game.uniqueEntityIDs+=2;
 	//var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Sign
 	//tmp.addFrame(0,0,10);
 	
@@ -733,7 +733,7 @@ function begin_loadSprites() {
 	
 	var tmp = engine.createSprite("entity"+ game.uniqueEntityIDs++,"everything",32,32); //Sprite: Red Bush
 	tmp.addFrame(grid[5] +cell[4],grid[4]+cell[0],10);
-	
+	*/
 	
 	
 	//ATTACK SPRITES

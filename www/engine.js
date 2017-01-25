@@ -308,6 +308,7 @@ engine.drawImage = function (imageTag) {
 *******************************************************************************/
 
 engine.createSprite = function(spriteTag, imageTag, width, height,optionalXOffset,optionalYOffset) {
+	//document.write("add(new EntityDefinition(typeID++, false, true, \"" + imageTag + "\", X, Y, 32, 32, 10));	//TODO<br>");
 	if (!optionalXOffset) { optionalXOffset = 0;}
 	if (!optionalYOffset) { optionalYOffset = 0;}
 	
@@ -368,6 +369,7 @@ engine.__Sprite.prototype = {
 		}
 	},
 	addFrame: function(x,y,duration) {
+		//document.write("last().addFrame("+x+", "+y+");<br>")
 		var newFrame = new engine.__Frame(x,y,duration);
 		this.__frames.push(newFrame);
 	},
