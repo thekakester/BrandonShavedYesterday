@@ -13,8 +13,8 @@ public class EntitySpawner extends Entity{
 
 	protected Entity child = null;
 	
-	public EntitySpawner(int id, int type) {
-		super(id, type);
+	public EntitySpawner(int id, int type, int x, int y) {
+		super(id, type,x,y);
 	}
 	
 	

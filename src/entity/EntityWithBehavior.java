@@ -13,15 +13,16 @@ import game.Pathfinding;
  *
  */
 public class EntityWithBehavior extends Entity {
-	
-	protected EntityWithBehavior(int id, int type) {
-		super(id, type);
+	protected int spawnX,spawnY;
+	protected EntityWithBehavior(int id, int type, int x, int y) {
+		super(id, type,x,y);
+		spawnX = x;
+		spawnY = y;
 	}
 
-	Random random = new Random();
+	private Random random = new Random();
+	private long waitStartedTime = 0;
 	
-	
-	long waitStartedTime = 0;
 	/**Wander around a point randomly, then wait before wandering again
 	 * 
 	 * @param x Center of wandering

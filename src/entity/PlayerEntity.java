@@ -6,8 +6,8 @@ public class PlayerEntity extends Entity{
 
 	private long lastUpdate = System.currentTimeMillis();	//If a player is inactive for 5 seconds, kill em
 	
-	protected PlayerEntity(int id, int type) {
-		super(id, type);
+	protected PlayerEntity(int id, int type,int x, int y) {
+		super(id, type,x,y);
 	}
 	
 	@Override
@@ -18,9 +18,7 @@ public class PlayerEntity extends Entity{
 			g.deleteEntity(id);
 			
 			//Add a zombie in its place
-			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE_ENEMY);
-			zombie.x = x;
-			zombie.y = y;
+			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE_ENEMY,x,y);
 			g.addEntity(zombie);
 		}
 	}

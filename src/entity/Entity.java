@@ -27,28 +27,29 @@ public class Entity {
 	 * @param type The type of the entity
 	 * @return The entity that was created
 	 */
-	public static Entity create(int id, int type) {
+	public static Entity create(int id, int type, int x, int y) {
 		if (EntityType.SPAWNERS.contains(type)) {
-			return new EntitySpawner(id,type);
+			return new EntitySpawner(id,type,x,y);
 		}
 		
 		if (type == EntityType.PLAYER) {
-			return new PlayerEntity(id, type);
+			return new PlayerEntity(id, type,x,y);
 		}
 		
 		if (type == EntityType.ZOMBIE_ENEMY) {
-			return new ZombieEntity(id);
+			return new ZombieEntity(id,x,y);
 		}
 		
 		//It didn't fit one of the special cases?
 		//Return a standard (static) entity
-		return new Entity(id, type);
+		return new Entity(id, type, x, y);
 	}
 	
-	protected Entity(int id, int type) {
+	protected Entity(int id, int type, int x, int y) {
 		this.id = id;
 		this.type = type;
 		this.definition = EntityManager.definitions.get(type);
+		this.x = x; this.y = y;
 	}
 
 	@Override

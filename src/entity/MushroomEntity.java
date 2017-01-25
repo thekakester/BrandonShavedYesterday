@@ -9,20 +9,15 @@ import game.Pathfinding;
 public class MushroomEntity extends EntityWithBehavior {
 
 	public MushroomEntity(int id, int x, int y) {
-		super(id, EntityType.MUSHROOM_ENEMY);
-		this.x = spawnX = x;
-		this.y = spawnY = y;
+		super(id, EntityType.MUSHROOM_ENEMY,x,y);
 	}
-
-	private long lastTriggered = System.currentTimeMillis();
-	private int spawnX, spawnY;
 
 	@Override
 	public void update(Game g) {
 		super.update(g);
 
 		//Use a prebuilt behavior
-		if (this.wander(g, spawnX, spawnY, 6, 1000)) { return; }
+		if (this.wander(g, spawnX, spawnY, 2, 1000)) { return; }
 	}
 
 }

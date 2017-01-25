@@ -163,9 +163,7 @@ public class Game extends GameBase {
 				int pid = getNewEntityId();
 
 				//Add the entity for our player
-				Entity player = Entity.create(pid,EntityType.PLAYER);
-				player.x = map.spawnCol;
-				player.y = map.spawnRow;
+				Entity player = Entity.create(pid,EntityType.PLAYER,map.spawnCol,map.spawnRow);
 				addEntity(player);
 
 				//Response is: pid and mapRows, mapCols
@@ -240,7 +238,7 @@ public class Game extends GameBase {
 
 					//Delete everything in this spot
 					for (Entity e : entities.values()) {
-						if (/**TODO EntityType.STATIC_ENTITIES.contains(e.type) &&*/ e.x == x && e.y == y) {
+						if (e.definition.saveable &&  e.x == x && e.y == y) {
 							deleteEntity(e.id);	//Gets cleaned up by server
 						}
 					}
@@ -250,9 +248,7 @@ public class Game extends GameBase {
 
 				//Get an ID and create the entity here
 				int id = getNewEntityId();
-				Entity e = Entity.create(id, Integer.parseInt(args[0]));
-				e.x = Integer.parseInt(args[1]);
-				e.y = Integer.parseInt(args[2]);
+				Entity e = Entity.create(id, Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]));
 				addEntity(e);
 				return null;	//The user will get the change with update
 			}
@@ -370,9 +366,7 @@ public class Game extends GameBase {
 				try {
 					//Get a new entity ID
 					int eid = Integer.parseInt(data[0]);//getNewEntityId();
-					Entity e = Entity.create(eid, Integer.parseInt(data[1]));
-					e.y = Integer.parseInt(data[2]);	//ROW
-					e.x = Integer.parseInt(data[3]);	//Col
+					Entity e = Entity.create(eid, Integer.parseInt(data[1]),Integer.parseInt(data[3]),Integer.parseInt(data[2]));
 					entities.put(eid, e);
 					System.out.println("Loaded entity: " + e);
 				} catch (Exception e) {
@@ -426,8 +420,6 @@ public class Game extends GameBase {
 			e.printStackTrace();
 		}
 		
-		//TODO REMOVE THIS
-		this.entities.put(1867, new MushroomEntity(1867, 10,10));
 
 	}
 
