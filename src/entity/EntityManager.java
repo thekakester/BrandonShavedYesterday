@@ -27,17 +27,17 @@ public class EntityManager {
 		
 		
 		
-		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, dur));		//NULL
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, dur));	//Player
+		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration,name)
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, dur,	"null"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, dur,	"player"));
 		last().useWalkingAnimation(96,0);
-		add(new EntityDefinition(typeID++, collide, save, "everything", 0, 0, width, height, dur));			//Sign
-		add(new EntityDefinition(typeID++, collide, save, "everything", 32, 0, width, height, dur));		//Gravestone
-		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 32, width, height, 4));		//Gem
+		add(new EntityDefinition(typeID++, collide, save, "everything", 0, 0, width, height, dur,		"sign"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", 32, 0, width, height, dur,		"gravestone"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 32, width, height, 4,		"gem"));
 		for (int frame = 1; frame < 8; frame++) {	//Add remaining frames
 			last().addFrame(32*frame, 32);
 		}
-		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 64, width, height, dur));		//Wall top back left
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 0, 64, width, height, dur,	"wall top back left"));
 		
 		//ETC
 		//PS, feel free to re-assign type IDs if it makes loading easier.

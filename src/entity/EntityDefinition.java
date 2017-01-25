@@ -22,7 +22,7 @@ public class EntityDefinition {
 	 * @param height - Height of the sprite
 	 * @param animationDuration
 	 */
-	public EntityDefinition(int typeID, boolean collidable, boolean saveable, String srcImageTag, int firstFrameX, int firstFrameY, int width, int height, int animationDuration) {
+	public EntityDefinition(int typeID, boolean collidable, boolean saveable, String srcImageTag, int firstFrameX, int firstFrameY, int width, int height, int animationDuration, String name) {
 		this.type = typeID;
 		this.collidable = collidable;
 		this.saveable = saveable;
