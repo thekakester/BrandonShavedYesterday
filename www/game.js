@@ -826,9 +826,9 @@ function begin_serverInit() {
 		}
 		
 		/* Get info about entities */
-		var uniqueEntityIDs = buffer.getInt();
-		console.log("Loading definitions for " + uniqueEntityIDs + " entities");
-		for (var type = 0; type < uniqueEntityIDs; type++) {
+		game.uniqueEntityIDs = buffer.getInt();
+		console.log("Loading definitions for " + game.uniqueEntityIDs + " entities");
+		for (var type = 0; type < game.uniqueEntityIDs; type++) {
 			var collidable = buffer.getByte();
 			console.log("Collidable: " + collidable)
 			if (collidable > 0) { game.collidableEntities[type] = true; }
