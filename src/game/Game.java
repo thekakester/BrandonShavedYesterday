@@ -15,6 +15,8 @@ import java.util.Set;
 import engine.GameBase;
 import engine.Server;
 import entity.Entity;
+import entity.EntityDefinition;
+import entity.EntityManager;
 import entity.EntityType;
 import entity.PlayerEntity;
 
@@ -31,6 +33,7 @@ public class Game extends GameBase {
 	public static String MAP = "default";
 
 	public Map map;
+	public EntityManager entityManager = new EntityManager();
 	private int lastAddedEntityID = 99;	//Next entity should be id: 101
 	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
@@ -169,7 +172,7 @@ public class Game extends GameBase {
 				bb.putInt(pid);
 				bb.putInt(map.getNumRows());
 				bb.putInt(map.getNumCols());
-				return concat(bb.array(),map.getUnpassableTileIds());
+				return concat(concat(bb.array(),map.getUnpassableTileIds()),entityManager.getBytes());
 			}
 
 			if (key.equalsIgnoreCase("entity")) {

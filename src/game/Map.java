@@ -156,8 +156,6 @@ public class Map implements SerializableObject {
 		int length = unpassableTiles.size();
 		length += 1;
 
-		length += EntityType.COLLIDABLE_ENTITIES.size();
-		length += 1;
 		ByteBuffer bb = ByteBuffer.allocate(length * 4);
 
 		//UnpassableTiles
@@ -166,11 +164,7 @@ public class Map implements SerializableObject {
 			bb.putInt(tileID);
 		}
 
-		//Unpassable Entities
-		bb.putInt(EntityType.COLLIDABLE_ENTITIES.size());
-		for (int eid : EntityType.COLLIDABLE_ENTITIES) {
-			bb.putInt(eid);
-		}
+		
 		return bb.array();
 	}
 

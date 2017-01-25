@@ -128,8 +128,9 @@ function begin_loadSprites() {
 	
 	createWalkingAnimSprites("entity" + game.uniqueEntityIDs++,"characters",32,32,96,0);//Sprite(s): Player (up/dn/lf/rt, walking and idle)
 	
-	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Sign
-	tmp.addFrame(0,0,10);
+	game.uniqueEntityIDs++;
+	//var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Sign
+	//tmp.addFrame(0,0,10);
 	
 	var tmp = engine.createSprite("entity" + game.uniqueEntityIDs++,"everything",32,32);	//Sprite: Gravestone
 	tmp.addFrame(32,0,10);
@@ -824,12 +825,41 @@ function begin_serverInit() {
 			game.collidableTiles[buffer.getInt()] = true;
 		}
 		
-		/* GET UNPASSABLE ENTITIES */
-		var count = buffer.getInt();
-		for (var i = 0; i < count; i++) {
-			game.collidableEntities[buffer.getInt()] = true;
+		/* Get info about entities */
+		var uniqueEntityIDs = buffer.getInt();
+		console.log("Loading definitions for " + uniqueEntityIDs + " entities");
+		for (var type = 0; type < uniqueEntityIDs; type++) {
+			var collidable = buffer.getByte();
+			console.log("Collidable: " + collidable)
+			if (collidable > 0) { game.collidableEntities[type] = true; }
+			
+			var taglen = buffer.getInt();
+			var srcImageTag = "";
+			for (var i = 0; i < taglen; i++) {
+				srcImageTag += buffer.getChar();
+			}
+			
+			//Load the sprite info
+			var spriteCount = buffer.getInt();
+			
+			for (var i = 0; i < spriteCount; i++) {
+				var width = buffer.getInt();
+				var height = buffer.getInt();
+				var taglen = buffer.getInt();
+				var spriteTag = "";
+				for (var j = 0; j < taglen; j++) {
+					spriteTag += buffer.getChar();
+				}
+				var duration = buffer.getInt();
+				var sprite = engine.createSprite(spriteTag,srcImageTag,width,height);
+				console.log("Adding sprite: " + spriteTag);
+				//Load the frames
+				var framecount = buffer.getInt();
+				for (var j = 0; j < framecount; j++) {
+					sprite.addFrame(buffer.getInt(),buffer.getInt(),duration);
+				}
+			}
 		}
-		
 		
 		
 		engine.enterGameLoop();	//Next step
