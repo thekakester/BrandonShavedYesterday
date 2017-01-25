@@ -18,6 +18,7 @@ import entity.Entity;
 import entity.EntityDefinition;
 import entity.EntityManager;
 import entity.EntityType;
+import entity.MushroomEntity;
 import entity.PlayerEntity;
 
 public class Game extends GameBase {
@@ -424,6 +425,9 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//TODO REMOVE THIS
+		this.entities.put(1867, new MushroomEntity(1867, 10,10));
 
 	}
 

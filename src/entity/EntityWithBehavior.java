@@ -52,21 +52,33 @@ public class EntityWithBehavior extends Entity {
 		for (int attempt = 0; attempt < 10; attempt++) {
 			int destX = x + (random.nextInt(distance*2)-distance);
 			int destY = y + (random.nextInt(distance*2)-distance);
-			
 			//Try to find a path here
 			//Dist *= 4 because we can be going from one corner to the other
-			path = Pathfinding.findPath(g, x, y, destX, destY, distance*4);
+			path = Pathfinding.findPath(g, this.x, this.y, destX, destY, distance*4);
 			if (path.size() > 0) { break; }
 		}
 		
 		//Did we find a path
 		if (path.size() > 0) {
 			this.setPath(path);
+			g.updateEntity(id);
 			waitStartedTime = 0;	//Reset wait timer
 			return true;	//Tell parent we can stop
 		}
 		
 		//Hmm.. we can't find a path.  We're stuck
 		return false;
+	}
+	
+	public String pathToText(LinkedList<Byte> path) {
+		String s = "";
+		for (Byte b : path) {
+			if (b == 0) { s += "u ";}
+			if (b == 1) { s += "d ";}
+			if (b == 2) { s += "l ";}
+			if (b == 3) { s += "r ";}
+		}
+		
+		return s;
 	}
 }
