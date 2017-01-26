@@ -34,6 +34,10 @@ public class EntitySpawner extends Entity{
 		if (type == EntityType.ROBOT_SPAWN) {
 			return new RobotEntity(id,this.x,this.y);
 		}
+		if (type == EntityType.ZOMBIE_SPAWN) {
+			return new ZombieEntity(id,this.x,this.y);
+		}
+		
 		
 		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
 	}
