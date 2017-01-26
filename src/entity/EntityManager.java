@@ -336,10 +336,10 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[0],width,height,normal,"House Right Strut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[1],width,height,normal,"Billy Bashful the Badass Barrel"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[1],width,height,normal,"Chest"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[1],width,height,normal,"Well Top"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[5], grid[0]+cell[1],width,height,normal,"Well Bottom"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height,normal,"Tree Top"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[7], grid[0]+cell[1],width,height,normal,"Tree Bottom"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[1],width,height*2,normal,"Well"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null4"));													//<----NULL
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height*2,normal,"Tree2"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null1"));													//<----NULL
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[1],width,height,normal,"Basic Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[9], grid[0]+cell[1],width,height,normal,"Splash"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[2],width,height,normal,"House Roof Angled Small Left"));
@@ -356,12 +356,12 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[3],width,height,normal,"Snow House Door Shut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[3],width,height,normal,"Snow House Window"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[3],width,height,normal,"Snow House Window Shut"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[4],width,height,normal,"Billy Bashful's Badass Barrel Buddy "));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[4],width,height,normal,"Billy Bashfuls Badass Barrel Buddy "));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[4],width,height,normal,"Snow Chest"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[4],width,height,normal,"SnOhWell Top"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[5], grid[0]+cell[4],width,height,normal,"SnOhWell Bottom"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[4],width,height,normal,"Snow Tree Top"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[7], grid[0]+cell[4],width,height,normal,"Snow Tree Bottom"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[4],width,height*2,normal,"SnOhWell"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null2"));													//<----NULL
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[4],width,height*2,normal,"Snow Tree"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null3"));													//<----NULL
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[4],width,height,normal,"Snow Basic Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[9], grid[0]+cell[4],width,height,normal,"Puddle"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[5],width,height,normal,"Snow House Left Angled Small Left"));
