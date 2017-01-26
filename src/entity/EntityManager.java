@@ -339,7 +339,8 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[1],width,height,normal,"Billy Bashful the Badass Barrel"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[1],width,height,normal,"Chest"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[1],width,height*2,normal,"Well"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null4"));													//<----NULL
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Zombie Spawn"));												
+		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height*2,normal,"Tree2"));
 		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null1"));													//<----NULL
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[1],width,height,normal,"Basic Bush"));
