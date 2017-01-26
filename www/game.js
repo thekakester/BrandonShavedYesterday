@@ -876,6 +876,11 @@ function tweenEntityToPosition(e,endX,endY) {
 		if (e.timeElapsedOnServer == 0) {
 			e.tween = 1;	//No tween for things we didn't get from server
 		}
+		
+		//If we're really far, don't tween
+		if (Math.abs(endX-e.tweenX) > 6 || Math.abs(endY-e.tweenY) > 6) {
+			e.tween = 1;
+		}
 		e.tween+=0.1;
 		if (e.tween > 1) { e.tween = 1;}
 		e.tweenX = (endX * e.tween) + (e.tweenX*(1-e.tween));
