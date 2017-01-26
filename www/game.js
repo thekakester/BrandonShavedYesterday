@@ -21,6 +21,9 @@ game.debug.speedBoost = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
 game.debug.circleFill = false;
+game.debug.lastFPSPrint = 0;
+game.debug.frameCount = 0;
+game.debug.lastFPS = 0;
 playerPath = null;
 
 /*******************************************************************************
@@ -360,8 +363,12 @@ game.onServerRespond = function(response) {
 					//console.log("Entity created [type:" + game.entities[eid].type + " id:" + eid + " at (" + x + "," + y + ")]");
 				}
 				
+				//If we just got a path and didn't previously have one, tween to it
+				if (e.path.isEmpty()) {
+					e.tween = 0;
+				}
 				e.path = path;
-				e.timeElapsedOnServer = timeElapsed;
+				e.timeElapsedOnServer = timeElapsed + game.ping / 2;
 				e.lastUpdate = new Date().getTime();
 				e.x = x;
 				e.y = y;
@@ -690,8 +697,7 @@ function updateGame() {
 	for (var eid in game.entities) {
 		var e = game.entities[eid];
 		if (e.path.isEmpty()) { 
-			e.tweenX = e.x;
-			e.tweenY = e.y;
+			tweenEntityToPosition(e,e.x,e.y);
 			continue;
 		}
 		
@@ -699,14 +705,17 @@ function updateGame() {
 		if (game.debug.enabled && game.player.id == e.id) {tilesPerSecond += game.debug.speedBoost; }
 		var millisecondsPerTile = 1000.0/tilesPerSecond;
 		
+
 		//What is the total elapsed time since this path was started
 		//(server offset + time since it told us that)
 		var timeElapsed = e.timeElapsedOnServer + (new Date().getTime()-e.lastUpdate);
+		
+	
 		//How many tiles have we traveled since the beginning of the path
 		var tilesTraveled = timeElapsed / millisecondsPerTile;
 		
 		//If we've traveled past our last tile, truncate it
-		if (tilesTraveled > e.path.getLength) { tilesTraveled = e.path.getLength(); }
+		if (tilesTraveled > e.path.getLength()) { tilesTraveled = e.path.getLength(); }
 		
 		var mostRecentTile = Math.floor(tilesTraveled);	//Most recent tile fully reached
 		var tween = tilesTraveled - mostRecentTile;	//time since this tile (note that last tile is too far back)
@@ -752,8 +761,11 @@ function updateGame() {
 		}
 		
 		//Tween to get our in-between movement to the next tile
-		e.tweenX = (endX * tween) + (e.x*(1-tween));
-		e.tweenY = (endY * tween) + (e.y*(1-tween));
+		var destTweenX = (endX * tween) + (e.x*(1-tween));
+		var destTweenY = (endY * tween) + (e.y*(1-tween));
+		
+		tweenEntityToPosition(e,destTweenX,destTweenY);
+
 		e.direction = direction;	//The last direction we tried
 		
 		//Update the lastUpdated time
@@ -765,6 +777,14 @@ function updateGame() {
 	////DEBUG STUFF
 	////////////////
 	if (game.debug.enabled) {
+		//Count fps
+		game.debug.frameCount++;
+		if (new Date().getTime() - game.debug.lastFPSPrint > 1000) {
+			game.debug.lastFPSPrint = new Date().getTime();
+			game.debug.lastFPS = game.debug.frameCount;
+			game.debug.frameCount = 0;
+		}
+		
 		if (engine.isKeyPressed("Digit1")) {
 			game.debug.selected--;
 		}
@@ -848,6 +868,16 @@ function updateGame() {
 	
 	//Deprecated.  Handled on server now
 	//playerPath = findPath(game.player.x,game.player.y,48,64);
+}
+
+function tweenEntityToPosition(e,endX,endY) {
+		if (e.timeElapsedOnServer == 0) {
+			e.tween = 1;	//No tween for things we didn't get from server
+		}
+		e.tween+=0.1;
+		if (e.tween > 1) { e.tween = 1;}
+		e.tweenX = (endX * e.tween) + (e.tweenX*(1-e.tween));
+		e.tweenY = (endY * e.tween) + (e.tweenY*(1-e.tween));
 }
 
 function paintGame() {
@@ -977,9 +1007,10 @@ function paintGame() {
 		
 		//Draw ping time
 		engine.__context.fillStyle  = "#000";
-		engine.__context.fillRect(0,42*2,150,42);
+		engine.__context.fillRect(0,42*2,300,42);
 		engine.__context.fillStyle  = "#fff";
 		engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
+		engine.__context.fillText("FPS: " + game.debug.lastFPS, 150,42*3-10);
 	}
 }
 

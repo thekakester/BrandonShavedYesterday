@@ -15,7 +15,7 @@ public class RobotEntity extends EntityWithBehavior {
 	public void update(Game g) {
 		super.update(g);
 
-		if (this.wander(g, spawnX, spawnY, 1, 2000)) { g.updateEntity(id); return; }
+		if (this.wander(g, spawnX, spawnY, 1, 2000)) { return; }
 	}
 
 }

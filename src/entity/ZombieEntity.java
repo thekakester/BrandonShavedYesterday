@@ -12,7 +12,7 @@ public class ZombieEntity extends EntityWithBehavior {
 	@Override
 	public void update(Game g) {
 		super.update(g);
-		if (this.wander(g, spawnX, spawnY, 10, 10000)) { g.updateEntity(id); return; }
+		if (this.wander(g, spawnX, spawnY, 10, 10000)) { return; }
 	}
 
 }

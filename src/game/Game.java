@@ -88,6 +88,7 @@ public class Game extends GameBase {
 	 * @param eid The EID that got updated.
 	 */
 	public void updateEntity(int eid) {
+		System.out.println("UPDATING ENTITY: " + eid);
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
 
@@ -185,7 +186,9 @@ public class Game extends GameBase {
 					e.appendToPath((byte)direction);
 				}
 
-				updateEntity(eid);
+				if (args.length > 1) {
+					updateEntity(eid);
+				}
 				return null;	//Nothing to say back
 			}
 
@@ -290,7 +293,7 @@ public class Game extends GameBase {
 
 	@Override
 	public long delayBetweenRuns() {
-		return 300;
+		return 50;
 	}
 
 	long lastSave = 0;	
