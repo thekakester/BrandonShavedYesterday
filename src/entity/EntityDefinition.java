@@ -102,6 +102,7 @@ public class EntityDefinition {
 	public byte[] getBytes() {
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
 		bb.put(collidable?(byte)1:(byte)0);
+		bb.putInt(baseHP);
 		bb.putInt(srcImageTag.length());
 		for (char c : srcImageTag.toCharArray()) {
 			bb.putChar(c);
@@ -116,7 +117,7 @@ public class EntityDefinition {
 	}
 
 	public int sizeInBytes() {
-		int len = 1 + 4 + (srcImageTag.length()*2);	//Collidable, imageSource name
+		int len = 1 + 4 + 4 + (srcImageTag.length()*2);	//Collidable, hp, imageSourceLen name
 		//Add the sprites
 		len += 4;	//num sprites
 		for (Sprite s : sprites) {
