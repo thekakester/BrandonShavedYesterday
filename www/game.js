@@ -1158,6 +1158,9 @@ function entitySortFunc(a,b) {
 	//If they're the same, compare HP
 	if (game.killableEntities[a.type] && !game.killableEntities[b.type]) { return 1;}
 	if (!game.killableEntities[a.type] && game.killableEntities[b.type]) { return -1;}
+	
+	if (a.id < b.id) { return -1;}
+	if (a.id > b.id) { return 1;}
 	return 0;
 }
 
