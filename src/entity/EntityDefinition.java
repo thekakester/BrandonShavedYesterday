@@ -82,6 +82,7 @@ public class EntityDefinition {
 			//Idle (eg entity2_1 means entity 2 idle look down)
 			s = new Sprite("entity" + type + "_" + direction,duration,width,height);
 			s.addFrame(x+width, y+yOff);
+			s.setOffset(offsetX, offsetY);
 			sprites.add(s);
 		}
 	}
