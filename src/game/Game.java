@@ -88,7 +88,6 @@ public class Game extends GameBase {
 	 * @param eid The EID that got updated.
 	 */
 	public void updateEntity(int eid) {
-		System.out.println("UPDATING ENTITY: " + eid);
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
 

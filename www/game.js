@@ -891,11 +891,23 @@ function tweenEntityToPosition(e,endX,endY) {
 
 function paintGame() {
 	//Offset everything by the player's position
+	var offsetXTile = Math.floor(game.player.tweenX - 12);
+	var offsetYTile = Math.floor(game.player.tweenY - 9);
 	var offsetX = Math.floor((game.player.tweenX - 12) * 32);
 	var offsetY = Math.floor((game.player.tweenY - 9) * 32);
 	
-	for (var r = 0; r < game.map.rows; r++) {
-		for (var c = 0; c < game.map.cols; c++) {
+	//Draw only what we can see.
+	var startRow = offsetYTile - 1;
+	var endRow = offsetYTile + 20;
+	var startCol = offsetXTile - 1;
+	var endCol = offsetXTile + 26;
+	
+	startRow = startRow < 0 ? 0 : startRow;
+	startCol = startCol < 0 ? 0 : startCol;
+	endRow = endRow > game.map.rows - 1 ? game.map.rows - 1 : endRow;
+	endCol = endCol > game.map.cols - 1 ? game.map.cols - 1 : endCol;
+	for (var r = startRow; r <= endRow; r++) {
+		for (var c = startCol; c <= endCol; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
 			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
@@ -904,9 +916,15 @@ function paintGame() {
 	}
 	
 	//Sort entities based on their y position. (ties use HP);
+	//Only add entities that are in viewing distance (x (-1:26) & y (-1:20)
 	var tmpEntities = [];
 	for (var id in game.entities) {
-		tmpEntities.push(game.entities[id]);
+		var e = game.entities[id];
+		var x = e.tweenX - offsetXTile;
+		var y = e.tweenY - offsetYTile;
+		if (x > -1 && x < 26 && y > -1 && y < 20) {
+			tmpEntities.push(e);
+		}
 	}
 	tmpEntities.sort(entitySortFunc);
 	
