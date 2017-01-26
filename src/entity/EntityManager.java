@@ -108,7 +108,8 @@ public class EntityManager {
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 256, width, height, normal,"Chick Entity"));
 		last().useWalkingAnimation(96,256);
-		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 64, width, height, normal,"Tree"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 64, width, height*2, normal,"Tree"));
+		last().setOffset(0, 32);
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 128, 64, width, height, normal,"Fence back left"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 160, 64, width, height, normal,"Fence back"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 192, 64, width, height, normal,"Fence back right"));
@@ -139,7 +140,8 @@ public class EntityManager {
 		last().addFrame(224+32, 192);
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 64, 288, width, height, normal,"Robot Spawn"));
 		last().isSpawner = true;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width, height, normal,"Robot Entity"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width*2, height*2, normal,"Robot Entity"));
+		last().setOffset(16, 32);
 		last().useWalkingAnimation(384,0);
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[0], grid[1]+cell[0], width, height, normal,"Teal Potion"));
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[0]+cell[1], grid[1]+cell[0], width, height, normal,"Red Potion"));

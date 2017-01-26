@@ -220,7 +220,7 @@ function begin_serverInit() {
 		console.log("Loading definitions for " + game.uniqueEntityIDs + " entities");
 		for (var type = 0; type < game.uniqueEntityIDs; type++) {
 			var collidable = buffer.getByte();
-			console.log("Collidable: " + collidable)
+			//console.log("Collidable: " + collidable)
 			if (collidable > 0) { game.collidableEntities[type] = true; }
 			
 			var taglen = buffer.getInt();
@@ -235,14 +235,16 @@ function begin_serverInit() {
 			for (var i = 0; i < spriteCount; i++) {
 				var width = buffer.getInt();
 				var height = buffer.getInt();
+				var xOffset = buffer.getInt();
+				var yOffset = buffer.getInt();
 				var taglen = buffer.getInt();
 				var spriteTag = "";
 				for (var j = 0; j < taglen; j++) {
 					spriteTag += buffer.getChar();
 				}
 				var duration = buffer.getInt();
-				var sprite = engine.createSprite(spriteTag,srcImageTag,width,height);
-				console.log("Adding sprite: " + spriteTag);
+				var sprite = engine.createSprite(spriteTag,srcImageTag,width,height,xOffset,yOffset);
+				//console.log("Adding sprite: " + spriteTag);
 				//Load the frames
 				var framecount = buffer.getInt();
 				for (var j = 0; j < framecount; j++) {

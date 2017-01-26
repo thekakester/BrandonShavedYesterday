@@ -6,6 +6,8 @@ import java.util.ArrayList;
 public class EntityDefinition {
 	public final int type;
 	private final int width,height,animationDuration;
+	private int offsetX, offsetY;
+	public int baseHP = -1;		//If positive, this is killable
 	public final boolean collidable, saveable;
 	private final String srcImageTag;
 	private final ArrayList<Sprite> sprites = new ArrayList<Sprite>();
@@ -59,9 +61,7 @@ public class EntityDefinition {
 	 * @param y y coordinate of the top left corner of the walking animation spritesheet
 	 */
 	public void useWalkingAnimation(int x, int y) {
-		int optionalXOffset = 0;
-		int optionalYoffset = 0;
-		
+
 		int duration = 3;	//3 time units per animation
 		
 		for (int row = 0; row < 4; row++) {
@@ -70,6 +70,7 @@ public class EntityDefinition {
 			
 			//Walking (eg entity2_0_w means entity 2 walking animation up)
 			Sprite s = new Sprite("entity" + type + "_" + direction + "_w",duration,width,height);
+			s.setOffset(offsetX, offsetY);
 			sprites.add(s);
 			for (int col = 0; col < 4; col++) {
 				int xOff = col;
@@ -83,6 +84,19 @@ public class EntityDefinition {
 			s.addFrame(x+width, y+yOff);
 			sprites.add(s);
 		}
+	}
+	
+	/**How far to shift this object left and up when drawing
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void setOffset(int x, int y) {
+		for (Sprite s : sprites) {
+			s.setOffset(x,y);
+		}
+		this.offsetX = x;
+		this.offsetY = y;
 	}
 
 	public byte[] getBytes() {
@@ -117,6 +131,7 @@ class Sprite {
 	final int animationDuration;
 	final String tag;
 	final int width,height;
+	private int xOffset,yOffset;
 	ArrayList<Frame> frames = new ArrayList<Frame>();
 	public Sprite(String tag, int animationDuration, int width, int height) {
 		this.animationDuration = animationDuration;
@@ -125,13 +140,18 @@ class Sprite {
 		this.height = height;
 	}
 	
+	public void setOffset(int x, int y) {
+		this.xOffset = x;
+		this.yOffset = y;
+	}
+
 	public void addFrame(int x, int y) {
 		frames.add(new Frame(x,y));
 	}
 	
 	public int getSizeInBytes() {
-		//width, height, tag length, tag, animationduration, frame length, frames
-		return 4 + 4 + 4 + (tag.length()*2) + 4 + 4 + (8*frames.size());
+		//width, height, xoffset, yoffset, tag length, tag, animationduration, frame length, frames
+		return 4 + 4 + 4 + 4 + 4 + (tag.length()*2) + 4 + 4 + (8*frames.size());
 	}
 	
 	/**See getSizeInBytes for order of data
@@ -142,6 +162,8 @@ class Sprite {
 		ByteBuffer bb = ByteBuffer.allocate(getSizeInBytes());
 		bb.putInt(width);
 		bb.putInt(height);
+		bb.putInt(xOffset);
+		bb.putInt(yOffset);
 		
 		bb.putInt(tag.length());
 		for (char c : tag.toCharArray()) {
