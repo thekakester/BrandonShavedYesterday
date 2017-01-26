@@ -903,8 +903,15 @@ function paintGame() {
 		}
 	}
 	
+	//Sort entities based on their y position. (ties use HP);
+	var tmpEntities = [];
 	for (var id in game.entities) {
-		var e = game.entities[id];
+		tmpEntities.push(game.entities[id]);
+	}
+	tmpEntities.sort(entitySortFunc);
+	
+	for (var id in tmpEntities) {
+		var e = tmpEntities[id];
 		if (e.dead) { continue; }
 		var x = (e.tweenX*32)-offsetX;
 		var y = (e.tweenY*32)-offsetY;
@@ -1143,6 +1150,16 @@ function isPassable(row,col) {
 /*******************************************************************************
 * Data Structures and Util                                                     *
 *******************************************************************************/
+
+function entitySortFunc(a,b) {
+	if (a.y < b.y) { return -1; }
+	if (a.y > b.y) { return 1; }
+	
+	//If they're the same, compare HP
+	if (game.killableEntities[a.type] && !game.killableEntities[b.type]) { return 1;}
+	if (!game.killableEntities[a.type] && game.killableEntities[b.type]) { return -1;}
+	return 0;
+}
 
 //GAME STUFF
 Entity.prototype = {

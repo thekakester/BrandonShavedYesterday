@@ -71,6 +71,22 @@ public class EntityWithBehavior extends Entity {
 		return false;
 	}
 	
+	/**Attempt to attack the entity specified
+	 * 
+	 * @param g Game object
+	 * @param e The entity to attack
+	 * @param delay How long to wait to attack (after they are in range)
+	 * @return
+	 */
+	public boolean attack(Game g, Entity e, long delay) {
+		int dX = Math.abs(e.x - x);
+		int dY = Math.abs(e.y - y);
+		
+		//Directly next to
+		//if ()
+		return false;
+	}
+	
 	public String pathToText(LinkedList<Byte> path) {
 		String s = "";
 		for (Byte b : path) {
