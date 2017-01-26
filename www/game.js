@@ -10,6 +10,7 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
+game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
@@ -273,7 +274,13 @@ function begin_getPid() {
 game.sendMessage = function() {
 	/*----------PLAYER-----------*/
 	//Return the message to send to the server
-	var message = "entity=" + game.player.id + "|" + game.player.x + "|" + game.player.y;
+	var message = "entity=" + game.player.id;
+	//Send our movement queue (direction path.  Eg: up-up-left-down)
+	while (!game.movementQueue.isEmpty()) {
+		var direction = game.movementQueue.dequeue();
+		message += "|" + direction;
+	}
+	
 	
 	/*----------MAP-------------*/
 	//If something changed in the map, relay that information
@@ -709,6 +716,8 @@ function updateGame() {
 		
 		var endX = 0; var endY = 0;
 		var direction = 0;
+		
+		//Update tiles that we've completely moved over
 		for (var i = 0; i < mostRecentTile; i++) {
 			direction = e.path.dequeue();
 			
@@ -716,6 +725,11 @@ function updateGame() {
 			else if (direction == 1) { dY++; }
 			else if (direction == 2) { dX--; }
 			else if (direction == 3) { dX++; }
+			
+			//If we're the player, log this to tell the server
+			if (e.id == game.player.id) {
+				game.movementQueue.enqueue(direction);
+			}
 		}
 		
 		//We've COMPLETELY moved dX and dY
@@ -971,6 +985,9 @@ function paintGame() {
 
 
 function move(xMovement, yMovement){
+	//Don't let the player move if we haven't spawned yet
+	if (game.player.x == -100) { return ;}	//This means unspawned
+	
 	var moved = false;
 	
 	var playerX = game.player.x;

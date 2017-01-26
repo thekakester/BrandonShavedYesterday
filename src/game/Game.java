@@ -177,12 +177,13 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
 				int eid = Integer.parseInt(args[0]);
-				int x = Integer.parseInt(args[1]);
-				int y = Integer.parseInt(args[2]);
-				if (x < 0 || y < 0) { return null; }	//Ignore negatives (usually spawn)
-				Entity e = entities.get(eid);
-				e.x = x;
-				e.y = y;
+				
+				//Parse the directions from the client
+				for (int i = 1; i < args.length; i++) {
+					int direction = Integer.parseInt(args[i]);
+					Entity e = entities.get(eid);
+					e.appendToPath((byte)direction);
+				}
 
 				updateEntity(eid);
 				return null;	//Nothing to say back

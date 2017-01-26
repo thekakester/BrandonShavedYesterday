@@ -12,6 +12,8 @@ public class PlayerEntity extends Entity{
 	
 	@Override
 	public void update(Game g) {
+		super.update(g);
+		
 		//Kill if idle for 5 seconds
 		if (System.currentTimeMillis() - lastUpdate > 5000) {
 			System.out.println("Player " + id + " disconnected.");
