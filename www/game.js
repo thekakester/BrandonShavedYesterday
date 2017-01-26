@@ -10,6 +10,7 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
+game.spawnerEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
@@ -220,9 +221,10 @@ function begin_serverInit() {
 		game.uniqueEntityIDs = buffer.getInt();
 		console.log("Loading definitions for " + game.uniqueEntityIDs + " entities");
 		for (var type = 0; type < game.uniqueEntityIDs; type++) {
-			var collidable = buffer.getByte();
-			//console.log("Collidable: " + collidable)
-			if (collidable > 0) { game.collidableEntities[type] = true; }
+			var collidableOrSpawner = buffer.getByte();
+			if (collidableOrSpawner & 0x1) {game.collidableEntities[type] = true;}	//Bit 1
+			if (collidableOrSpawner & 0x2) {game.spawnerEntities[type] = true;}		//Bit 2
+
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
 			var taglen = buffer.getInt();
@@ -923,7 +925,10 @@ function paintGame() {
 		var x = e.tweenX - offsetXTile;
 		var y = e.tweenY - offsetYTile;
 		if (x > -1 && x < 26 && y > -1 && y < 20) {
-			tmpEntities.push(e);
+			//Spawners only render in debug mode
+			if (game.debug.enabled || !game.spawnerEntities[e.type]) {
+				tmpEntities.push(e);
+			}
 		}
 	}
 	tmpEntities.sort(entitySortFunc);

@@ -102,7 +102,12 @@ public class EntityDefinition {
 
 	public byte[] getBytes() {
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
-		bb.put(collidable?(byte)1:(byte)0);
+		
+		byte collidableOrSpawn = 0;
+		if (collidable) { collidableOrSpawn += 1;}	//2^0
+		if (isSpawner) { collidableOrSpawn += 2; }	//2^1
+		
+		bb.put(collidableOrSpawn);
 		bb.putInt(baseHP);
 		bb.putInt(srcImageTag.length());
 		for (char c : srcImageTag.toCharArray()) {
@@ -118,7 +123,8 @@ public class EntityDefinition {
 	}
 
 	public int sizeInBytes() {
-		int len = 1 + 4 + 4 + (srcImageTag.length()*2);	//Collidable, hp, imageSourceLen name
+		//Note: Collidable and spawner are merged together into one byte.  LSB is collidable, next bit is spawner
+		int len = 1 + 4 + 4 + (srcImageTag.length()*2);	//{Collidable/Spawner}, hp, imageSourceLen name
 		//Add the sprites
 		len += 4;	//num sprites
 		for (Sprite s : sprites) {
