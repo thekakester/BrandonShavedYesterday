@@ -15,7 +15,7 @@ public class Entity {
 	public boolean isAlive = true;			//If set to false, this should be untracked
 	public final int id;
 	public final int type;
-	public int[] attributes  = new int[0];	//Dependent on the type of entity (eg.  HP)
+	public int[] attributes  = new int[0];	////Dependent on the type of entity (eg.  HP)
 	public int x,y;
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
