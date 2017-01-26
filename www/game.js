@@ -10,6 +10,7 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
+game.killableEntities = [];
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
@@ -222,7 +223,8 @@ function begin_serverInit() {
 			var collidable = buffer.getByte();
 			//console.log("Collidable: " + collidable)
 			if (collidable > 0) { game.collidableEntities[type] = true; }
-			
+			var hp = buffer.getInt();
+			if (hp > 0) { game.killableEntities[type] = true;}
 			var taglen = buffer.getInt();
 			var srcImageTag = "";
 			for (var i = 0; i < taglen; i++) {
@@ -684,7 +686,7 @@ function updateGame() {
 			for (var eid in game.entities) {
 				if (eid == game.player.id) { continue; }
 				var e = game.entities[eid];
-				if (Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
+				if (game.killableEntities[e.type] && Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
 					//He ded
 					e.dead = true;
 					game.appendMessage="&d=" + eid;	//Tell server

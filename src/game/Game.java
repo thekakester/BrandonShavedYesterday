@@ -216,11 +216,14 @@ public class Game extends GameBase {
 			//DEAD
 			if (key.equalsIgnoreCase("d")) {
 				int eid = Integer.parseInt(value);
-				for(ClientDelta d : clientDeltas.values()){
-					d.addDeadEntity(eid);
+				Entity e = entities.get(eid);
+				if (e.definition.baseHP > 0) {
+					for(ClientDelta d : clientDeltas.values()){
+						d.addDeadEntity(eid);
+					}
+					//Mark it as dead
+					e.isAlive = false;
 				}
-				//Mark it as dead
-				entities.get(eid).isAlive = false;
 			}
 			
 			if (key.equalsIgnoreCase("attack")) {
