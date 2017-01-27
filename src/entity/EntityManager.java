@@ -348,7 +348,7 @@ public class EntityManager {
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height*2,normal,"Tree2"));
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", 288-32, 0, width, height, normal,"warp"));
-		last().isSpawner = true;
+		last().isTrigger = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[1],width,height,normal,"Basic Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[9], grid[0]+cell[1],width,height,normal,"Splash"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[2],width,height,normal,"House Roof Angled Small Left"));

@@ -37,11 +37,6 @@ public class EntitySpawner extends Entity{
 		if (type == EntityType.ZOMBIE_SPAWN) {
 			return new ZombieEntity(id,this.x,this.y);
 		}
-		if (type == EntityType.WARP) {
-			//Not actually a spawn.  Just hidden
-			g.deleteEntity(id);//Release our hold on this id
-			return null;
-		}
 
 		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
 	}

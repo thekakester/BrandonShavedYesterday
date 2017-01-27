@@ -13,6 +13,7 @@ public class EntityDefinition {
 	private final ArrayList<Sprite> sprites = new ArrayList<Sprite>();
 	public final String name;
 	public boolean isSpawner;
+	public boolean isTrigger;
 	
 	/**Default constructor.
 	 * 
@@ -104,8 +105,9 @@ public class EntityDefinition {
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
 		
 		byte collidableOrSpawn = 0;
-		if (collidable) { collidableOrSpawn += 1;}	//2^0
-		if (isSpawner) { collidableOrSpawn += 2; }	//2^1
+		if (collidable) { collidableOrSpawn |= 1;}	//2^0
+		if (isSpawner) { collidableOrSpawn |= 2; }	//2^1
+		if (isTrigger) { collidableOrSpawn |= 4; }	//2^2
 		
 		bb.put(collidableOrSpawn);
 		bb.putInt(baseHP);

@@ -10,7 +10,7 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
-game.spawnerEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
+game.hiddenEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
 game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
 game.warping = false;				//When true, disables warps until server responds
@@ -232,7 +232,8 @@ function begin_serverInit() {
 		for (var type = 0; type < game.uniqueEntityIDs; type++) {
 			var collidableOrSpawner = buffer.getByte();
 			if (collidableOrSpawner & 0x1) {game.collidableEntities[type] = true;}	//Bit 1
-			if (collidableOrSpawner & 0x2) {game.spawnerEntities[type] = true;}		//Bit 2
+			if (collidableOrSpawner & 0x2) {game.hiddenEntities[type] = true;}		//Bit 2
+			if (collidableOrSpawner & 0x4) {game.hiddenEntities[type] = true;}		//Bit 4 //Trigger
 
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
@@ -963,7 +964,7 @@ function paintGame() {
 		var y = e.tweenY - offsetYTile;
 		if (x > -1 && x < 26 && y > -1 && y < 20) {
 			//Spawners only render in debug mode
-			if (game.debug.enabled || !game.spawnerEntities[e.type]) {
+			if (game.debug.enabled || !game.hiddenEntities[e.type]) {
 				tmpEntities.push(e);
 			}
 		}
@@ -1100,7 +1101,8 @@ function paintGame() {
 		engine.__context.fillRect(0,42*2,300,42);
 		engine.__context.fillStyle  = "#fff";
 		engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
-		engine.__context.fillText("FPS: " + game.debug.lastFPS, 150,42*3-10);
+		engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
+		engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
 	}
 }
 
