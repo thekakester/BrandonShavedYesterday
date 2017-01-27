@@ -128,6 +128,12 @@ function begin_loadSprites() {
 	tmp.addFrame(128,64,10);
 	tmp.addFrame(96,64,10);
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Black Void
+	tmp.addFrame(0,0,10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Indoor wood
+	tmp.addFrame(2752,320,10);
+	
 	
 	/**Entity sprites loaded on server and transmitted during init()**/
 	
@@ -711,7 +717,7 @@ function updateGame() {
 	}
 	
 	//If we're on a warp tile, warp
-	if (!game.warping) {
+	if (!game.warping && !game.debug.enabled) {
 		for (var key in game.warps) {
 			var warp = game.warps[key];
 			if (warp.x == game.player.x && warp.y == game.player.y) {
