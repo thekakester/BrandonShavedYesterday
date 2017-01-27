@@ -384,6 +384,8 @@ game.onServerRespond = function(response) {
 				e.type = type;
 				
 				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
+				//If this was a forced update about ourself, clear our path
+				if (e.id == game.player.id) { game.player.path = new Queue(); }
 			}
 		}
 		
