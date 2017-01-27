@@ -12,6 +12,8 @@ game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
 game.spawnerEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
+game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
+game.warping = false;				//When true, disables warps until server responds
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
@@ -326,6 +328,7 @@ game.sendMessage = function() {
 
 game.onServerRespond = function(response) {
 	game.ping = new Date().getTime()-game.pingStart;
+	game.warping = false;	//Allow another warp request
 	var buffer = ByteBuffer.wrap(response);
 	while (true) {
 		var responseType = buffer.getInt();
@@ -340,13 +343,6 @@ game.onServerRespond = function(response) {
 				var type = buffer.getInt();
 				var x = buffer.getInt();
 				var y = buffer.getInt();
-				var attributeLen = buffer.getInt();	//Not used yet
-				
-				//Read attributes
-				var attributes = [];
-				for (var j = 0; j < attributeLen; j++) {
-					attributes[j] = buffer.getInt();
-				}
 				
 				var pathLen = buffer.getInt();
 				var path = new Queue();
@@ -380,6 +376,8 @@ game.onServerRespond = function(response) {
 				e.x = x;
 				e.y = y;
 				e.type = type;
+				
+				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
 			}
 		}
 		
@@ -708,6 +706,18 @@ function updateGame() {
 					e.dead = true;
 					game.appendMessage="&d=" + eid;	//Tell server
 				}
+			}
+		}
+	}
+	
+	//If we're on a warp tile, warp
+	if (!game.warping) {
+		for (var key in game.warps) {
+			var warp = game.warps[key];
+			if (warp.x == game.player.x && warp.y == game.player.y) {
+				game.appendMessage="&warp=" + game.player.id + "|" + warp.id;
+				game.warping = true;	//Set to false when the server responds
+				break;
 			}
 		}
 	}

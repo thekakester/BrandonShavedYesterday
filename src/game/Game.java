@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -40,6 +41,7 @@ public class Game extends GameBase {
 	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
 	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 	private HashMap<Integer,Sign> signs = new HashMap<Integer,Sign>();
+	private HashMap<Integer,Point> warps = new HashMap<Integer,Point>();
 
 	public Game() {
 
@@ -85,15 +87,27 @@ public class Game extends GameBase {
 	 * 		e.y--;				//Move it
 	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
 	 * 
-	 * @param eid The EID that got updated.
+	 * @param eid The entity ID to udate
 	 */
 	public void updateEntity(int eid) {
+		updateEntity(eid,false);
+	}
+	
+	/**Mark this entity as updated so that clients learn about it
+	 * Example usage: move entity e up:
+	 * 		e.y--;				//Move it
+	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
+	 * 
+	 * @param eid The EID that got updated.
+	 * @param forcePlayerUpdate Default false.  If TRUE, this will force the player to update their own position.  Default false.
+	 */
+	public void updateEntity(int eid, boolean forcePlayerUpdate) {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
 
 			//Make sure this is added to deltas so we tell our clients
 			for (ClientDelta delta : clientDeltas.values()) {
-				if (delta.pid == eid) { continue; }	//Don't tell player about themself
+				if (delta.pid == eid && !forcePlayerUpdate) { continue; }	//Don't tell player about themself
 				//System.out.println("Adding [" + eid + ", (" + e.x + "," + e.y + ")] to delta" + delta.pid);
 				delta.addEntity(e);
 			}
@@ -177,7 +191,7 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
 				int eid = Integer.parseInt(args[0]);
-				
+
 				//Parse the directions from the client
 				for (int i = 1; i < args.length; i++) {
 					int direction = Integer.parseInt(args[i]);
@@ -211,7 +225,7 @@ public class Game extends GameBase {
 
 				return getClientDelta(pid);
 			}
-			
+
 			//DEAD
 			if (key.equalsIgnoreCase("d")) {
 				int eid = Integer.parseInt(value);
@@ -224,7 +238,7 @@ public class Game extends GameBase {
 					e.isAlive = false;
 				}
 			}
-			
+
 			if (key.equalsIgnoreCase("attack")) {
 				int eid = Integer.parseInt(value);
 				for(ClientDelta d : clientDeltas.values()){
@@ -271,6 +285,17 @@ public class Game extends GameBase {
 				Sign sign = signs.get(Integer.parseInt(value));
 				if(sign == null) { return new Sign(true).getBytes();}	//Default message
 				return sign.getBytes();
+			}
+			
+			if (key.equalsIgnoreCase("warp")) {
+				String[] args = value.split("\\|"); // targetEID|warpEID
+				Point p = warps.get(Integer.parseInt(args[1]));
+				if(p == null) { return null; }	//Do nothing
+				Entity e = entities.get(Integer.parseInt(args[0]));
+				e.x = p.x;
+				e.y = p.y;
+				updateEntity(e.id,true);	//Force update
+				return null;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -424,14 +449,54 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
+
+		//Load Warps
+		filename = Game.MAP + ".warps";
+		System.out.println("Loading warps from " + filename);
+		try {
+			File warpFile = new File(filename);
+			if (!warpFile.exists()) {
+				warpFile.createNewFile(); 
+				PrintWriter pw = new PrintWriter(warpFile);
+				pw.println("#Space Delimited");
+				pw.println("#First: eid of warp");
+				pw.println("#Second and third: x & y of warp location");
+				pw.close();
+			}
+			Scanner scanner = new Scanner(warpFile);
+			int lineNum = 0;
+
+			while (scanner.hasNextLine()) {
+				lineNum++;
+				String line = scanner.nextLine().trim();
+				String data[] = line.split(" ");
+				if (data.length < 2 || data[0].startsWith("#")) { continue; }
+				try {
+					//Get the entity ID this ties to
+					int eid = Integer.parseInt(data[0]);
+
+					//Get destination
+					int x = Integer.parseInt(data[1]);
+					int y = Integer.parseInt(data[2]);
+
+					//Store this sign
+					warps.put(eid,new Point(x,y));
+					System.out.println("Loaded warp for eid: " + eid + " to (x: " + x + ",y:" + y + ")");
+				} catch (Exception e) {
+					System.out.println("Failed to load line " + lineNum + " of warps: " + line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
 	public Collection<PlayerEntity> getPlayers() {
 		return players.values();
 	}
-	
+
 	@Override
 	public boolean debugShowCommunication() {
 		return this.players.size() < 2;	//2 or more players stop debug communication
