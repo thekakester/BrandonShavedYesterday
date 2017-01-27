@@ -671,21 +671,25 @@ function updateGame() {
 	}
 	
 	if (engine.isKeyPressed("Space")) {
-		//Get the position we're facing
-		var x = game.player.x;
-		var y = game.player.y;
-	
-		//Get the direction we're facing 
-		if(game.player.direction == 0) { y--; }
-		else if (game.player.direction == 1) { y++; }
-		else if (game.player.direction == 2) { x--; }
-		else if (game.player.direction == 3) { x++; }
+		if(game.message.length > 0) {
+			game.message = [];
+		} else {
+			//Get the position we're facing
+			var x = game.player.x;
+			var y = game.player.y;
 		
-		//Search for an entity here
-		for (var key in game.entities) {
-			var e = game.entities[key];
-			if (e.type == 2 && e.x == x && e.y == y) {	//EntityType.Sign is #2
-				game.appendMessage += "&sign=" + e.id;
+			//Get the direction we're facing 
+			if(game.player.direction == 0) { y--; }
+			else if (game.player.direction == 1) { y++; }
+			else if (game.player.direction == 2) { x--; }
+			else if (game.player.direction == 3) { x++; }
+			
+			//Search for an entity here
+			for (var key in game.entities) {
+				var e = game.entities[key];
+				if (e.type == 2 && e.x == x && e.y == y) {	//EntityType.Sign is #2
+					game.appendMessage += "&sign=" + e.id;
+				}
 			}
 		}
 	}
@@ -1104,6 +1108,7 @@ function paintGame() {
 function move(xMovement, yMovement){
 	//Don't let the player move if we haven't spawned yet
 	if (game.player.x == -100) { return ;}	//This means unspawned
+	if (game.message.length > 0) { return; }//No doing stuff while there's a message
 	
 	var moved = false;
 	
