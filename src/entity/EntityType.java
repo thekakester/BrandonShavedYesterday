@@ -177,7 +177,7 @@ public class EntityType {
 	public static final int BLUE_EGG = 171;
 	public static final int PINK_EGG = 172;
 	public static final int CLOVER = 173;
-	public static final int WEEDS = 174;
+	public static final int BUSH = 174;
 	public static final int BLUE_BUSH = 175;
 	public static final int RED_BUSH = 176;
 	public static final int HOUSE_WALL = 177;

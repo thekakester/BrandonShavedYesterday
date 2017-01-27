@@ -331,7 +331,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[3]+cell[1], width, height, normal,"Blue Egg"));
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[3]+cell[1], width, height, normal,"Pink Egg"));
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[1], grid[4]+cell[0], width, height, normal,"Clover"));
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[2], grid[4]+cell[0], width, height, normal,"Weeds"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[2], grid[4]+cell[0], width, height, normal,"Bush"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[3], grid[4]+cell[0], width, height, normal,"Blue Bush"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[4], grid[4]+cell[0], width, height, normal,"Red Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[0],width,height,normal,"House Wall"));
