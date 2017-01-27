@@ -12,6 +12,7 @@ import game.Game;
 public class EntitySpawner extends Entity{
 
 	protected Entity child = null;
+	private long cooldownStart = 0;
 
 	public EntitySpawner(int id, int type, int x, int y) {
 		super(id, type,x,y);
@@ -44,11 +45,18 @@ public class EntitySpawner extends Entity{
 	@Override
 	public void update(Game g) {
 		if (child == null || !child.isAlive) {
-			child = createEntity(g);
-			if  (child != null) {
-				System.out.println("Spawned entity");
-				//Add this to the game class
-				g.addEntity(child);
+			if (cooldownStart == 0) {
+				cooldownStart = System.currentTimeMillis();
+			}
+			
+			if (System.currentTimeMillis() - cooldownStart > 5000) {
+				cooldownStart = 0;
+				child = createEntity(g);
+				if  (child != null) {
+					System.out.println("Spawned entity");
+					//Add this to the game class
+					g.addEntity(child);
+				}
 			}
 		}
 	}
