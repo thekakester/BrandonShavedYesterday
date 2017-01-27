@@ -383,6 +383,7 @@ game.onServerRespond = function(response) {
 				e.x = x;
 				e.y = y;
 				e.type = type;
+				e.dead = false;	//Just in case a player was marked as dead. Make sure they respawn
 				
 				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
 				//If this was a forced update about ourself, clear our path
@@ -716,7 +717,7 @@ function updateGame() {
 				var e = game.entities[eid];
 				if (game.killableEntities[e.type] && Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
 					//He ded
-					e.dead = true;
+					e.dead = true;	//Temporarily doesn't draw.  If player, server will re-aliveafy
 					game.appendMessage="&d=" + eid;	//Tell server
 				}
 			}
