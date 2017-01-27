@@ -269,8 +269,7 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("sign")) {
 				//Only arg is eid of the sign
 				Sign sign = signs.get(Integer.parseInt(value));
-				if(sign == null) { return null;}
-
+				if(sign == null) { return new Sign(true).getBytes();}	//Default message
 				return sign.getBytes();
 			}
 		} catch (Exception e) {

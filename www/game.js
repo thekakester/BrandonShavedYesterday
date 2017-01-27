@@ -15,6 +15,7 @@ game.killableEntities = [];
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
+game.message = [];			//If game.message.length() > 0, this will display a message to the user
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
 game.debug.enabled = false;
@@ -439,6 +440,18 @@ game.onServerRespond = function(response) {
 			}
 		}
 		
+		//Response 7: Notification
+		if (responseType == 7) {
+			var lines = buffer.getInt();
+			for (var line = 0; line < lines; line++) {
+				game.message[line] = "";
+				var length = buffer.getInt();
+				for (var c = 0; c < length; c++) {
+					game.message[line] += buffer.getChar();
+				}
+			}
+		}
+		
 	}
 }
 
@@ -652,19 +665,21 @@ function updateGame() {
 	}
 	
 	if (engine.isKeyPressed("Space")) {
-		//TEMP: Check around you for a sign then call it!
-		for (var dCol = -1; dCol <=1; dCol++) {
-			for (var dRow = -1; dRow <=1; dRow++) {
-				var row = game.player.y + dRow;
-				var col = game.player.x + dCol;
-				
-				//Search for an entity here
-				for (var key in game.entities) {
-					var e = game.entities[key];
-					if (e.type == 2 && e.x == col && e.y == row) {	//EntityType.Sign is #2
-						game.appendMessage += "&sign=" + e.id;
-					}
-				}
+		//Get the position we're facing
+		var x = game.player.x;
+		var y = game.player.y;
+	
+		//Get the direction we're facing 
+		if(game.player.direction == 0) { y--; }
+		else if (game.player.direction == 1) { y++; }
+		else if (game.player.direction == 2) { x--; }
+		else if (game.player.direction == 3) { x++; }
+		
+		//Search for an entity here
+		for (var key in game.entities) {
+			var e = game.entities[key];
+			if (e.type == 2 && e.x == x && e.y == y) {	//EntityType.Sign is #2
+				game.appendMessage += "&sign=" + e.id;
 			}
 		}
 	}
@@ -674,7 +689,7 @@ function updateGame() {
 	if (!engine.containsSprite("inst_att_"+game.player.id)) {
 		if (engine.isKeyDown("Space")) {
 			startAttackSprite(game.player.id);
-			game.appendMessage="&attack="+game.player.id;
+			game.appendMessage+="&attack="+game.player.id;
 			
 			//Check if they're hitting anything
 			var attackX = game.player.tweenX;
@@ -949,10 +964,24 @@ function paintGame() {
 		//Draws the attack sprite if it exists
 		engine.drawSprite("inst_att_" + e.id,x,y);
 	}
-
+	
 	engine.recordKeyboard(true);
 	engine.__context.fillStyle = "#FFF";
 	engine.__context.fillText(engine.keyboardBuffer,10,engine.height - 30);
+	
+	
+	if (game.message.length > 0) {
+		var yStart = 600-(30*4)-10;
+		engine.__context.fillStyle = "#000";
+		engine.__context.fillRect(10,yStart,780,(30*4));
+		
+		//Actually draw the message
+		engine.__context.fillStyle = "#fff";
+		engine.__context.font = "24px celticFont";
+		for (var i = 0; i < game.message.length;i++) {
+			engine.__context.fillText(game.message[i],30,yStart + (28*(i+1)));
+		}
+	}
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {

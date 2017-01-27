@@ -12,6 +12,16 @@ public class Sign {
 		
 	}
 	
+	public Sign(boolean nothing) {
+		if (nothing) {
+			lineCount = 4;
+			lines[0] = "Hmm... I can't quite make out";
+			lines[1] = "what this is trying to say.";
+			lines[2] = "";
+			lines[3] = "Must not be important";
+		}
+	}
+	
 	public void addLine(String s) {
 		if (lineCount >= lines.length) { return; }
 		try {
@@ -32,7 +42,7 @@ public class Sign {
 		//Build the response
 		ByteBuffer bb = ByteBuffer.allocate(size);
 		
-		bb.putInt(ResponseType.SIGN);
+		bb.putInt(ResponseType.NOTIFICATION);
 		bb.putInt(lineCount);
 		
 		for (int i = 0; i < lineCount; i++) {
