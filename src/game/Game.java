@@ -129,6 +129,18 @@ public class Game extends GameBase {
 		}
 		entities.remove(eid);
 	}
+	
+	/**Send a message to a specific player
+	 * Use this if some other player's action needs to send a direct message
+	 * 
+	 * @param eid The player (pid) to get this message
+	 * @param notification The message to send
+	 */
+	public void addNotification(int eid, Sign notification) {
+		if (clientDeltas.containsKey(eid)) {
+			clientDeltas.get(eid).addNotification(notification);
+		}
+	}
 
 	/**update player deltas so they know a tile changed
 	 * 
@@ -231,11 +243,22 @@ public class Game extends GameBase {
 				int eid = Integer.parseInt(value);
 				Entity e = entities.get(eid);
 				if (e.definition.baseHP > 0) {
-					for(ClientDelta d : clientDeltas.values()){
-						d.addDeadEntity(eid);
+					//If its a player, don't ACTUALLY kill them
+					if (players.containsKey(e.id)) {
+						e.x = map.spawnCol;
+						e.y = map.spawnRow;
+						updateEntity(e.id,true);//Force update
+						//Tell the dead player that they died
+						addNotification(e.id,new Sign("You died"));
+					} else {
+						for (ClientDelta d : clientDeltas.values()){
+							d.addDeadEntity(eid);
+						}
+						e.isAlive = false;//Mark it as dead so our thread cleans it up
 					}
-					//Mark it as dead
-					e.isAlive = false;
+					
+					
+					
 				}
 			}
 
