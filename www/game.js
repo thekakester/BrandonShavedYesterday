@@ -736,6 +736,23 @@ function updateGame() {
 		}
 	}
 	
+	//If getting attacked by an entity
+	for(var eid in game.entities){
+		
+		var e = game.entities[eid];
+		if(!(!(!(game.killableEntities[e.type]))))continue;
+		var x = e.x;
+		var y = e.y;
+		if(e.direction == 0){y--;}
+		else if(e.direction == 1){y++;}
+		else if(e.direction == 2){x--;}
+		else if(e.direction == 3){x++;}
+		if(x == game.player.x && y == game.player.y){
+			game.appendMessage+="&d="+game.player.id;
+			break;
+		}
+	}
+	
 	//Update the positions of all the entities based on elapsed time
 	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
 	var defaultTPS = 6;	//Speed of entities
