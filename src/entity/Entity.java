@@ -74,10 +74,10 @@ public class Entity {
 		bb.putInt(y);
 		size += 4;
 		
-		//This works:
-		//byte flags = 0;
-		//if (isHostile) { flags |= 0x1; }
-		//bb.put(flags);
+		//Add flags.  Contains isHostile
+		byte flags = 0;
+		if (isHostile) { flags |= 0x1; }
+		bb.put(flags);
 
 		
 		bb.putInt(path.size()); size+=4;
@@ -104,7 +104,7 @@ public class Entity {
 	public int sizeInBytes() {
 		int length = 6;	//ID, type,x,y,path.length,elapsedTimeSincePathCreated
 		length *= 4;	//int = 4 bytes
-		//length += 1;	//Flags (1 byte)
+		length += 1;	//Flags (1 byte)
 		
 		//Path is in bytes, not int so we add it after multiplying by 4
 		length += path.size();

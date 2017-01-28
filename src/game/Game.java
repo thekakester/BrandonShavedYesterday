@@ -259,7 +259,7 @@ public class Game extends GameBase {
 						
 					}
 				}
-				return null;
+				return null;	//This was missing
 			}
 
 			if (key.equalsIgnoreCase("attack")) {
