@@ -6,6 +6,7 @@ public class ZombieEntity extends EntityWithBehavior {
 	
 	public ZombieEntity(int id,int x, int y) {
 		super(id, EntityType.ZOMBIE_ENEMY,x,y);
+		this.isHostile = true;
 	}
 	
 	

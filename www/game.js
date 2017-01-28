@@ -737,7 +737,7 @@ function updateGame() {
 	} //I like to live...dangerously. 
 	
 	//If getting attacked by an entity
-	if(!game.waitingForServerResponse){
+	if(!game.waitingForServerResponse && !game.debug.enabled){
 		for(var eid in game.entities){
 			
 			var e = game.entities[eid];

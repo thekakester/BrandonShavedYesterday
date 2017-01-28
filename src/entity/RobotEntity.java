@@ -9,6 +9,7 @@ public class RobotEntity extends EntityWithBehavior {
 	
 	public RobotEntity(int id, int x, int y) {
 		super(id, EntityType.ROBOT_ENTITY,x,y);
+		this.isHostile = true;
 	}
 	
 	@Override
