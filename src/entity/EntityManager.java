@@ -368,7 +368,8 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[4],width,height,normal,"Billy Bashfuls Badass Barrel Buddy "));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[4],width,height,normal,"Snow Chest"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[4],width,height*2,normal,"SnOhWell"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null2"));													//<----NULL
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 288-64, 0, width, height, normal,"AI Blocker"));
+		last().isTrigger = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[4],width,height*2,normal,"Snow Tree"));
 		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null3"));													//<----NULL
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[4],width,height,normal,"Snow Basic Bush"));

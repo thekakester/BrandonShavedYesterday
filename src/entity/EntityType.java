@@ -212,7 +212,7 @@ public class EntityType {
 	public static final int BILLY_BASHFULS_BADASS_BARREL_BUDDY_ = 206;
 	public static final int SNOW_CHEST = 207;
 	public static final int SNOHWELL = 208;
-	public static final int NULL2 = 209;
+	public static final int AI_BLOCKER = 209;
 	public static final int SNOW_TREE = 210;
 	public static final int NULL3 = 211;
 	public static final int SNOW_BASIC_BUSH = 212;

@@ -42,15 +42,16 @@ public class Pathfinding {
 	 * @param endX
 	 * @param endY
 	 * @param maxDist
+	 * @param isAI if true, this will not look for paths over Anti-AI tiles.
 	 * @return
 	 */
-	public static LinkedList<Byte> findPath(Game g, int startX, int startY, int endX, int endY, int maxDist) {
+	public static LinkedList<Byte> findPath(Game g, int startX, int startY, int endX, int endY, int maxDist, boolean isAI) {
 		//Swapping start and goal makes building the path easier
 		Point goal = new Point(startX,startY);
 		Point start = new Point(endX,endY);
 		
 		//Quick way out if goal (start) isnt passable
-		if (!isPassable(g, start)) { return new LinkedList<Byte>(); }
+		if (!isPassable(g, start, isAI)) { return new LinkedList<Byte>(); }
 		
 		if (start.equals(goal)) { return buildPath(goal); }
 
@@ -82,7 +83,7 @@ public class Pathfinding {
 				
 			for (Point neighbor : neighbors) {	
 				//If its passable, add it to the queue
-				if (neighbor.depth < maxDist && isPassable(g,neighbor)) {
+				if (neighbor.depth < maxDist && isPassable(g,neighbor,isAI)) {
 					if (neighbor.equals(goal)) {
 						return buildPath(neighbor);
 					}
@@ -119,14 +120,14 @@ public class Pathfinding {
 		return directions;
 	}
 
-	private static boolean isPassable(Game g, Point neighbor) {
+	private static boolean isPassable(Game g, Point neighbor, boolean isAI) {
 		if (!g.map.isTilePassable(neighbor.y,neighbor.x)) {
 			return false;
 		}
 
 		//Check if an entity is in the way
 		for (Entity e : g.getEntitiesAt(neighbor.x,neighbor.y)) {
-			if (e.definition.collidable) {
+			if (e.definition.collidable || (isAI && e.type == EntityType.AI_BLOCKER)) {
 				return false;
 			}
 		}
