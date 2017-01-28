@@ -19,6 +19,7 @@ public class Entity {
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
 	public final EntityDefinition definition;
+	public boolean isHostile = false;	//If true, will damage player when they walk in front
 
 	/**Create and return an entity based on its type
 	 * 
@@ -67,6 +68,8 @@ public class Entity {
 		bb.putInt(type);
 		bb.putInt(x);
 		bb.putInt(y);
+		
+		bb.put(isHostile ? (byte)1 : (byte)0);
 
 		bb.putInt(path.size());
 		for (Byte b : path) {
@@ -86,6 +89,8 @@ public class Entity {
 	public int sizeInBytes() {
 		int length = 6;	//ID, type,x,y,path.length,elapsedTimeSincePathCreated
 		length *= 4;	//int = 4 bytes
+		
+		length += 1;	//1 byte for the flags
 		
 		//Path is in bytes, not int so we add it after multiplying by 4
 		length += path.size();
