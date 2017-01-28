@@ -97,8 +97,8 @@ public class Map {
 		FileOutputStream fos = new FileOutputStream(file);
 		//Put the basics.  ChunkRowSize, chunkColsize, spawnrow, spawncol, and numChunks
 		ByteBuffer bb = ByteBuffer.allocate(5*4);
-		bb.putInt(6);	//ChunkRowSize
-		bb.putInt(6);	//ChunkColSize
+		bb.putInt(40);	//ChunkRowSize
+		bb.putInt(40);	//ChunkColSize
 		bb.putInt(0);	//SpawnRow
 		bb.putInt(0);	//SpawnCol
 		bb.putInt(0);	//num chunks	
