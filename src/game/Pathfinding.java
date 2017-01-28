@@ -51,7 +51,7 @@ public class Pathfinding {
 		Point start = new Point(endX,endY);
 		
 		//Quick way out if goal (start) isnt passable
-		if (!isPassable(g, start, isAI)) { return new LinkedList<Byte>(); }
+		if (!isPassable(g, start, isAI)) { System.out.println("Cant' start"); return new LinkedList<Byte>(); }
 		
 		if (start.equals(goal)) { return buildPath(goal); }
 

@@ -86,7 +86,7 @@ public class Game extends GameBase {
 	public void updateEntity(int eid) {
 		updateEntity(eid,false);
 	}
-	
+
 	/**Mark this entity as updated so that clients learn about it
 	 * Example usage: move entity e up:
 	 * 		e.y--;				//Move it
@@ -99,11 +99,17 @@ public class Game extends GameBase {
 		if (entities.containsKey(eid)) {
 			Entity e = entities.get(eid);
 
+			//Create a point for this entity to check its chunk
+			Point chunk = new Point(e.chunkX,e.chunkY);
+
+
 			//Make sure this is added to deltas so we tell our clients
 			for (ClientDelta delta : clientDeltas.values()) {
-				if (delta.pid == eid && !forcePlayerUpdate) { continue; }	//Don't tell player about themself
-				//System.out.println("Adding [" + eid + ", (" + e.x + "," + e.y + ")] to delta" + delta.pid);
-				delta.addEntity(e);
+				if (delta.pid == eid && !forcePlayerUpdate) { continue; }	//Don't tell player about themself (unless forced)
+				//Skip if in different chunks
+				if (delta.player.getCachedChunks().contains(chunk) || (forcePlayerUpdate&&delta.pid == eid)) {
+					delta.addEntity(e);
+				}
 			}
 		}
 	}
@@ -123,7 +129,7 @@ public class Game extends GameBase {
 		}
 		entities.remove(eid);
 	}
-	
+
 	/**Send a message to a specific player
 	 * Use this if some other player's action needs to send a direct message
 	 * 
@@ -150,8 +156,7 @@ public class Game extends GameBase {
 
 	public byte[] getClientDelta(int pid) {
 		if (!clientDeltas.containsKey(pid)) {
-			ClientDelta d = new ClientDelta(pid);
-			clientDeltas.put(pid, d);
+			return null;
 		}
 		return clientDeltas.get(pid).getBytes();
 	}
@@ -168,16 +173,18 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("init")) {
 				//Return the PID and the original map state
 				int pid = getNewEntityId();
-				
-				//Create the delta if it doesn't exist
-				getClientDelta(pid);	//This generates a new delta
 
 				//Add the entity for our player
 				PlayerEntity player = (PlayerEntity)Entity.create(pid,EntityType.PLAYER,map.spawnCol,map.spawnRow);
 				addEntity(player);
-				
+
+				//Create a delta for this player
+				ClientDelta delta = new ClientDelta(player);
+				clientDeltas.put(player.id, delta);
+
 				//Add the map stuff
 				updatePlayerChunk(player);
+				updateEntity(player.id,true);//Cause us to actually spawn
 
 				//Response is: pid
 				ByteBuffer bb = ByteBuffer.allocate(4);
@@ -194,7 +201,7 @@ public class Game extends GameBase {
 					int direction = Integer.parseInt(args[i]);
 					e.appendToPath((byte)direction);
 				}
-				
+
 				//Update the chunk they're in
 				updatePlayerChunk((PlayerEntity)e);
 
@@ -243,7 +250,7 @@ public class Game extends GameBase {
 							d.addDeadEntity(eid);
 						}
 						e.isAlive = false;//Mark it as dead so our thread cleans it up
-						
+
 					}
 				}
 				return null;	//This was missing
@@ -297,7 +304,7 @@ public class Game extends GameBase {
 				if(sign == null) { return new Sign(true).getBytes();}	//Default message
 				return sign.getBytes();
 			}
-			
+
 			if (key.equalsIgnoreCase("warp")) {
 				String[] args = value.split("\\|"); // targetEID|warpEID
 				Point p = warps.get(Integer.parseInt(args[1]));
@@ -323,29 +330,49 @@ public class Game extends GameBase {
 	private void updatePlayerChunk(PlayerEntity p) {
 		ClientDelta delta = clientDeltas.get(p.id);
 		if (delta == null) { return; }	//This should never happen.  TO get here, player has to move.  To move, they must have delta
-		
+
 		p.recalculateChunks(map.chunkRows, map.chunkCols);
-		
-		System.out.println("Player: " + p.id + " needs " + p.getNewChunks().size() + " new chunks");
-		
+
 		//Add new chunks to the player's delta
 		for (Point point : p.getNewChunks()) {
+			System.out.println("NEW: " + point);
 			//Add these tiles to the client delta
 			MapChunk chunk = map.getChunk(point.y,point.x);
 			for (int row = 0; row < chunk.tiles.length; row++) {
 				for (int col = 0; col < chunk.tiles[row].length; col++) {
-					
 					delta.updateTile(row + (chunk.row*map.chunkRows), col+(chunk.col*map.chunkCols), chunk.tiles[row][col]);
 				}
 			}
 		}
-		
+
+
+
 		//Add stale chunks to the player's delta
 		for (Point point : p.getStaleChunks()) {
+			System.out.println("STALE: " + point);
 			int startRow = point.y * map.chunkRows;
 			int startCol = point.x * map.chunkCols;
 			delta.addStaleMapZone(startRow, startCol, startRow + map.chunkRows, startCol + map.chunkCols);
 		}
+
+		//Add entities that are in the new chunks and delete entities in the stale ones
+		for (Entity e : entities.values()) {
+			Point point = new Point(e.chunkX,e.chunkY);
+			if (p.getNewChunks().contains(point)) {
+				delta.addEntity(e);
+			}
+			if (p.getStaleChunks().contains(point)) {
+				delta.addDeadEntity(e.id);
+			}
+		}
+
+		//Clear the player's chunks so we don't keep sending them
+		p.getNewChunks().clear();
+		p.getStaleChunks().clear();
+		
+		//TODO when our game gets bigger and we have lots of entities, we can't just loop through each one every time a player loads
+		//a new chunk.  Instead, modify entity.update() and cause it to place itself in a 2D hash map for its chunk.  Then we just have to loop over
+		//these "chunks" and add the entities.
 	}
 
 	//Method for conveniently converting a single integer

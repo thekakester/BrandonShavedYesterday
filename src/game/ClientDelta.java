@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import entity.Entity;
+import entity.PlayerEntity;
 
 public class ClientDelta {
 
-	public ClientDelta(int pid) {
-		this.pid = pid;
+	public ClientDelta(PlayerEntity p) {
+		this.pid = p.id;
+		this.player = p;
 	}
 
 	/**Call this whenever an entity changes.  Added, modified, or removed
@@ -29,6 +31,7 @@ public class ClientDelta {
 	private HashSet<Sign> notifications = new HashSet<Sign>();
 	private int DEBUG_MAX_RESPONSESIZE = 500;
 	final int pid;
+	final PlayerEntity player;
 
 	//Convert all our entity stuff 
 	public byte[] getBytes() {

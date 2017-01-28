@@ -89,4 +89,8 @@ public class PlayerEntity extends Entity{
 	public HashSet<Point> getNewChunks() {
 		return newChunks;
 	}
+
+	public HashSet<Point> getCachedChunks() {
+		return this.cachedChunks;
+	}
 }

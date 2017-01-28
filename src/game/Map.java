@@ -19,7 +19,7 @@ public class Map {
 	private HashSet<Integer> unpassableTiles = new HashSet<Integer>();
 	private Game game;
 	private int defaultTileForNewChunks = 5;//Water
-	int spawnRow,spawnCol,chunkRows,chunkCols;
+	public int spawnRow,spawnCol,chunkRows,chunkCols;
 
 	//Indexed as row, col.  Eg chunks.get(row).get(col)
 	private HashMap<Integer,HashMap<Integer,MapChunk>> chunks = new HashMap<Integer,HashMap<Integer,MapChunk>>();
@@ -40,8 +40,6 @@ public class Map {
 		unpassableTiles.add(15);//Dark Water
 		unpassableTiles.add(19);//Maisma
 		unpassableTiles.add(20);//Black Tile
-
-		File f = new File(filename);
 		load();
 	}
 
@@ -226,10 +224,11 @@ public class Map {
 		if (row < 0) { cRow--; row+=this.chunkRows; }
 		if (col < 0) { cCol--; col+=this.chunkCols; }	
 		MapChunk c = getChunk(cRow,cCol);
+
 		return c.tiles[row][col];
 	}
 
 	public boolean isTilePassable(int row, int col) {
-		return unpassableTiles.contains(getTileAt(row,col));
+		return !unpassableTiles.contains(getTileAt(row,col));
 	}
 }

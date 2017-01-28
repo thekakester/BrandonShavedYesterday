@@ -10,7 +10,6 @@ public class ChickEntity extends EntityWithBehavior {
 	@Override
 	public void update(Game g) {
 		super.update(g);
-
 		if (this.wander(g, spawnX, spawnY, 3, 2500)) { return; }
 	}
 

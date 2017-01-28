@@ -16,10 +16,12 @@ public class Entity {
 	public final int id;
 	public final int type;
 	public int x,y;
+	public int chunkX, chunkY;
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
 	public final EntityDefinition definition;
 	public boolean isHostile = false;	//If true, will damage player when they walk in front
+	private boolean calculatedChunks = false;	//This is required for static items since they never run update();
 
 	/**Create and return an entity based on its type
 	 * 
@@ -73,13 +75,13 @@ public class Entity {
 		size += 4;
 		bb.putInt(y);
 		size += 4;
-		
+
 		//Add flags.  Contains isHostile
 		byte flags = 0;
 		if (isHostile) { flags |= 0x1; }
 		bb.put(flags);
 
-		
+
 		bb.putInt(path.size()); size+=4;
 		for (Byte b : path) {
 			bb.put(b); size++;
@@ -91,7 +93,7 @@ public class Entity {
 		if (size != this.sizeInBytes()) {
 			System.out.println("Expected " + this.sizeInBytes() + " got " + size);
 		}
-		
+
 		return bb.array();
 	}
 
@@ -105,7 +107,7 @@ public class Entity {
 		int length = 6;	//ID, type,x,y,path.length,elapsedTimeSincePathCreated
 		length *= 4;	//int = 4 bytes
 		length += 1;	//Flags (1 byte)
-		
+
 		//Path is in bytes, not int so we add it after multiplying by 4
 		length += path.size();
 
@@ -113,6 +115,7 @@ public class Entity {
 	}
 
 	public void update(Game g) {
+		if (!calculatedChunks) { calculateChunks(g); }	//Everythign must do this at least once
 		if (path.isEmpty()) { return; }
 
 		//Update x and y based on our path
@@ -142,8 +145,20 @@ public class Entity {
 			if (direction == 3) { this.x++; }
 		}
 
+		calculateChunks(g);
+
 		//Update our start time to
 		pathStartTime += (int)(mostRecentTile * millisecondsPerTile);
+	}
+
+	private void calculateChunks(Game g) {
+		calculatedChunks = true;	//So we don't run this if we don't ahve to
+		
+		//Get our chunk
+		chunkX = x / g.map.chunkCols;
+		if (x < 0) { chunkX--; }
+		chunkY = y / g.map.chunkCols;
+		if (y < 0) { chunkY--; }	
 	}
 
 	protected void setPath(LinkedList<Byte> path) {
@@ -166,7 +181,7 @@ public class Entity {
 			p.add(direction);
 			setPath(p);
 		}
-		
+
 		//If the path is larger than 5, we're too far behind.
 		//Just teleport
 		if (getPath().size() > 5) {

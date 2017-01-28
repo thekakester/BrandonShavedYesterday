@@ -205,7 +205,7 @@ function begin_serverInit() {
 		var pid = buffer.getInt();
 		
 		//Set the player entity
-		game.player = new Entity(pid,1,-100,-100);	//Type 1: player
+		game.player = new Entity(pid,1,0,0);	//Type 1: player
 		game.entities[pid] = game.player;
 		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
@@ -349,7 +349,7 @@ game.onServerRespond = function(response) {
 				var timeElapsed = buffer.getInt();
 				
 				if (x == y && y == -1) {
-					//He dead
+					//He dead   TODO-----------------------------CHANGE THIS!  IF SOMETHING GOES TO -1 -1, do they deserve to die??????/??
 					delete game.entities[eid];
 					continue;
 				}
@@ -1138,7 +1138,6 @@ function paintGame() {
 
 function move(xMovement, yMovement){
 	//Don't let the player move if we haven't spawned yet
-	if (game.player.x == -100) { return ;}	//This means unspawned
 	if (game.message.length > 0) { return; }//No doing stuff while there's a message
 	
 	var moved = false;
