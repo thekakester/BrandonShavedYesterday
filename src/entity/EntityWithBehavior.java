@@ -51,8 +51,8 @@ public class EntityWithBehavior extends Entity {
 				
 		//Do 10 attempts at finding a valid place, then give up
 		for (int attempt = 0; attempt < 10; attempt++) {
-			int destX = x + (random.nextInt(distance*2)-distance);
-			int destY = y + (random.nextInt(distance*2)-distance);
+			int destX = x + (random.nextInt((distance*2)+1)-distance);
+			int destY = y + (random.nextInt((distance*2)+1)-distance);
 			//Try to find a path here
 			//Dist *= 4 because we can be going from one corner to the other
 			path = Pathfinding.findPath(g, this.x, this.y, destX, destY, distance*4,true);	//Pass true to specify we can't pass AntiAI tiles
