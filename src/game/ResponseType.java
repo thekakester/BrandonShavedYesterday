@@ -8,5 +8,6 @@ public class ResponseType {
 	public static final int ATTACKING_ENTITIES = 5;
 	public static final int DEAD_ENTITIES = 6;
 	public static final int NOTIFICATION = 7;
+	public static final int MAP_STALE_UPDATE = 8;
 	
 }

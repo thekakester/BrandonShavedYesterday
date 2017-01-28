@@ -2,24 +2,18 @@ package game;
 
 import java.awt.Point;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedByInterruptException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 
 import engine.GameBase;
 import engine.Server;
 import entity.Entity;
-import entity.EntityDefinition;
 import entity.EntityManager;
 import entity.EntityType;
-import entity.MushroomEntity;
 import entity.PlayerEntity;
 
 public class Game extends GameBase {
@@ -158,19 +152,6 @@ public class Game extends GameBase {
 		if (!clientDeltas.containsKey(pid)) {
 			ClientDelta d = new ClientDelta(pid);
 			clientDeltas.put(pid, d);
-
-			//They don't know anything yet!  Tell them everything
-			for (Entity e : entities.values()) {
-				d.addEntity(e);
-			}
-
-			//Tell them everything about the map
-			for (int row = 0; row < map.getNumRows(); row++) {
-				for (int col = 0; col < map.getNumCols(); col++) {
-					d.updateTile(row, col, map.getTileAt(row,col));
-				}
-			}
-
 		}
 		return clientDeltas.get(pid).getBytes();
 	}
@@ -187,29 +168,35 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("init")) {
 				//Return the PID and the original map state
 				int pid = getNewEntityId();
+				
+				//Create the delta if it doesn't exist
+				getClientDelta(pid);	//This generates a new delta
 
 				//Add the entity for our player
-				Entity player = Entity.create(pid,EntityType.PLAYER,map.spawnCol,map.spawnRow);
+				PlayerEntity player = (PlayerEntity)Entity.create(pid,EntityType.PLAYER,map.spawnCol,map.spawnRow);
 				addEntity(player);
+				
+				//Add the map stuff
+				updatePlayerChunk(player);
 
-				//Response is: pid and mapRows, mapCols
-				ByteBuffer bb = ByteBuffer.allocate(4*3);
+				//Response is: pid
+				ByteBuffer bb = ByteBuffer.allocate(4);
 				bb.putInt(pid);
-				bb.putInt(map.getNumRows());
-				bb.putInt(map.getNumCols());
 				return concat(concat(bb.array(),map.getUnpassableTileIds()),entityManager.getBytes());
 			}
 
 			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
 				int eid = Integer.parseInt(args[0]);
-
+				Entity e = entities.get(eid);
 				//Parse the directions from the client
 				for (int i = 1; i < args.length; i++) {
 					int direction = Integer.parseInt(args[i]);
-					Entity e = entities.get(eid);
 					e.appendToPath((byte)direction);
 				}
+				
+				//Update the chunk they're in
+				updatePlayerChunk((PlayerEntity)e);
 
 				if (args.length > 1) {
 					updateEntity(eid);
@@ -267,6 +254,7 @@ public class Game extends GameBase {
 				for(ClientDelta d : clientDeltas.values()){
 					d.addAttackingEntity(eid);
 				}
+				return null;
 			}
 
 			//Add an entity, or remove all if ID=0
@@ -326,6 +314,38 @@ public class Game extends GameBase {
 
 		System.err.println("Invalid command: " + key);
 		return ("Unknown or invalid command: " + key).getBytes();
+	}
+
+	/**Give a player object, check what chunk theyre in and send clientDeltas if necessary
+	 * 
+	 * @param p A reference to the player entity
+	 */
+	private void updatePlayerChunk(PlayerEntity p) {
+		ClientDelta delta = clientDeltas.get(p.id);
+		if (delta == null) { return; }	//This should never happen.  TO get here, player has to move.  To move, they must have delta
+		
+		p.recalculateChunks(map.chunkRows, map.chunkCols);
+		
+		System.out.println("Player: " + p.id + " needs " + p.getNewChunks().size() + " new chunks");
+		
+		//Add new chunks to the player's delta
+		for (Point point : p.getNewChunks()) {
+			//Add these tiles to the client delta
+			MapChunk chunk = map.getChunk(point.y,point.x);
+			for (int row = 0; row < chunk.tiles.length; row++) {
+				for (int col = 0; col < chunk.tiles[row].length; col++) {
+					
+					delta.updateTile(row + (chunk.row*map.chunkRows), col+(chunk.col*map.chunkCols), chunk.tiles[row][col]);
+				}
+			}
+		}
+		
+		//Add stale chunks to the player's delta
+		for (Point point : p.getStaleChunks()) {
+			int startRow = point.y * map.chunkRows;
+			int startCol = point.x * map.chunkCols;
+			delta.addStaleMapZone(startRow, startCol, startRow + map.chunkRows, startCol + map.chunkCols);
+		}
 	}
 
 	//Method for conveniently converting a single integer
@@ -401,7 +421,7 @@ public class Game extends GameBase {
 
 	public void load() {
 		//Set second argument to true to ALWAYS generate a new map file
-		map = new Map(this,Game.MAP + ".map",false);
+		map = new Map(this,Game.MAP + ".map");
 
 		//Load Entities
 		String filename = Game.MAP + ".entities";

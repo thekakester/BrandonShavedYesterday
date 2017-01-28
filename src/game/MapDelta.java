@@ -10,5 +10,4 @@ public class MapDelta {
 		this.col = col;
 		this.type = type;
 	}
-
 }

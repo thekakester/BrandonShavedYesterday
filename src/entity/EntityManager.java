@@ -78,7 +78,7 @@ public class EntityManager {
 
 		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration,name)
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", 288, 0, width, height, normal,"null"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, normal,"player"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, fast,"player"));
 		last().useWalkingAnimation(96,0);
 		last().baseHP = 1;
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 0, 0, width, height, normal,"sign"));
@@ -103,12 +103,12 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", 288, 32, width, height, normal,"Egg Blue-Orange"));
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 0, 288, width, height, normal,"Mushroom Spawn"));
 		last().isSpawner = true;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 0, 256, width, height, normal,"Mushroom Enemy"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 0, 256, width, height,fast,"Mushroom Enemy"));
 		last().baseHP = 1;
 		last().useWalkingAnimation(0,256);
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Chick Spawn"));
 		last().isSpawner = true;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 256, width, height, normal,"Chick Entity"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 256, width, height,fast,"Chick Entity"));
 		last().baseHP = 1;
 		last().useWalkingAnimation(96,256);
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 96, 64, width, height*2, normal,"Tree"));
@@ -123,7 +123,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 160, 128, width, height, normal,"Fence front"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 192, 128, width, height, normal,"Fence front right"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 64, width, height, normal,"Fence Post"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "darkerCharacters", 96, 0, width, height, normal,"Zombie Enemy"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "darkerCharacters", 96, 0, width, height,fast,"Zombie Enemy"));
 		last().baseHP = 1;
 		last().useWalkingAnimation(96,0);
 		add(new EntityDefinition(typeID++, collide, save,  "everything", 224, 96, width, height, normal,"Torch Yellow"));
@@ -144,7 +144,7 @@ public class EntityManager {
 		last().addFrame(224+32, 192);
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 64, 288, width, height, normal,"Robot Spawn"));
 		last().isSpawner = true;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width*2, height*2, normal,"Robot Entity"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width*2, height*2,fast,"Robot Entity"));
 		last().baseHP = 1;
 		last().setOffset(16, 32);
 		last().useWalkingAnimation(384,0);

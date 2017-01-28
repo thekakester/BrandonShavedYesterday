@@ -23,6 +23,7 @@ public class ClientDelta {
 	private ArrayList<String> undeliveredChatMessages = new ArrayList<String>();
 	private HashSet<Entity> changedEntities = new HashSet<Entity>();
 	private HashSet<MapDelta> changedMapTiles = new HashSet<MapDelta>();
+	private HashSet<StaleMapDelta> staleMapTiles = new HashSet<StaleMapDelta>();
 	private HashSet<Integer> attackingEntities = new HashSet<Integer>();
 	private HashSet<Integer> deadEntities = new HashSet<Integer>();
 	private HashSet<Sign> notifications = new HashSet<Sign>();
@@ -47,6 +48,11 @@ public class ClientDelta {
 		size += 8;		//Add 2 integers (8bytes): ResponseType and tiles.size()
 		size += changedMapTiles.size() * (3*4);	//Each delta is 3 ints (row,col,type)
 
+
+		//Count size of our stale map deltas
+		size += 8;		//Add 2 integers (8bytes): ResponseType and tiles.size()
+		size += staleMapTiles.size() * (4*4);	//Each delta is 4 ints (sRow,sCol,eRow,eCol)
+
 		//This is chat
 		size += 8; //add 2 integers (8bytes): ResponseType and messages.length
 		size += undeliveredChatMessages.size()*4; //Add Length Int for every message
@@ -61,7 +67,7 @@ public class ClientDelta {
 		//Add entities that are dead
 		size += 8;	//Add 2 integers(8 bytes) ResponseType and attackingEntities.length
 		size += 4 * deadEntities.size();
-		
+
 		//Add notifications (each sign is self contained.  Contains its own header
 		for (Sign s : notifications) {
 			size += s.getSizeInBytes();
@@ -88,15 +94,8 @@ public class ClientDelta {
 		//map deltas
 		bb.putInt(ResponseType.MAP_UPDATE);
 
-		//Debug stuff.  Limit the number of tile updates we can send at a time
-		//int tilesToSend = DEBUG_MAX_RESPONSESIZE;
-		//if (changedMapTiles.size() < tilesToSend) {
-		//	tilesToSend = changedMapTiles.size();
-		//}
-
 		//Number of tiles we're sending
 		bb.putInt(changedMapTiles.size());
-
 
 		for (MapDelta d : changedMapTiles) {
 			bb.putInt(d.row);
@@ -105,10 +104,19 @@ public class ClientDelta {
 		}
 
 		changedMapTiles.clear();
-		//Clear what we sent
-		//for (int i = 0; i < tilesToSend; i++) {
-		//	changedMapTiles.remove(0);
-		//}
+		
+		//STALE MAP UPDATES
+		bb.putInt(ResponseType.MAP_STALE_UPDATE);
+		bb.putInt(staleMapTiles.size());
+
+		for (StaleMapDelta d : staleMapTiles) {
+			bb.putInt(d.startRow);
+			bb.putInt(d.startCol);
+			bb.putInt(d.endRow);
+			bb.putInt(d.endCol);			
+		}
+
+		staleMapTiles.clear();
 
 		bb.putInt(ResponseType.CHAT);
 		bb.putInt(undeliveredChatMessages.size());
@@ -136,7 +144,7 @@ public class ClientDelta {
 			bb.putInt(eid);
 		}
 		deadEntities.clear();
-		
+
 		//ADD NOTIFICATIONS
 		//Each sign is self contained.  Contains responsetype and length
 		for (Sign s : notifications) {
@@ -168,6 +176,9 @@ public class ClientDelta {
 
 	public void addNotification(Sign notification) {
 		notifications.add(notification);
-		
+	}
+	
+	public void addStaleMapZone(int startRow, int startCol, int endRow, int endCol) {
+		this.staleMapTiles.add(new StaleMapDelta(startRow, startCol, endRow, endCol));
 	}
 }

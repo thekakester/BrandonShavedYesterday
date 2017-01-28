@@ -3,6 +3,7 @@ game.entities = [];		//Usage: game.entities[entityID]
 game.player = null;		//Usage: game.player  (reference to player entity)
 game.map = {
 	delta: {},
+	tile: [],
 	set: function(row,col,value) {
 		this[row][col] = value;
 		this.delta[row + "|" + col + "|" + value] = null;
@@ -208,18 +209,6 @@ function begin_serverInit() {
 		game.entities[pid] = game.player;
 		console.log("Player " + game.player.id + ": " + game.player.x + " " + game.player.y);
 		
-		/* GET MAP */
-		game.map.rows = buffer.getInt();
-		game.map.cols = buffer.getInt();
-		game.map.tile = []
-		for (var r = 0; r < game.map.rows; r++) {
-			game.map.tile[r] = [];
-			for (var c = 0; c < game.map.cols; c++) {
-				game.map.tile[r][c] = 5;		//Init to tile 5 (water)
-			}
-		}
-		console.log("Loaded map with " + game.map.rows + " rows and " + game.map.cols + " cols");
-		
 		/* GET UNPASSABLE TILES */
 		var count = buffer.getInt();
 		for (var i = 0; i < count; i++) {
@@ -398,6 +387,9 @@ game.onServerRespond = function(response) {
 				var row = buffer.getInt();
 				var col = buffer.getInt();
 				var type = buffer.getInt();
+				if (game.map.tile[row] == undefined) {
+					game.map.tile[row] = [];
+				}
 				game.map.tile[row][col] = type;
 			}
 		}
@@ -456,6 +448,25 @@ game.onServerRespond = function(response) {
 				var length = buffer.getInt();
 				for (var c = 0; c < length; c++) {
 					game.message[line] += buffer.getChar();
+				}
+			}
+		}
+		
+		//Response 7: STALE MAP TILES
+		if (responseType == 8) {
+			var zones = buffer.getInt();
+			for (var i = 0; i < zones; i++) {
+				var startRow = buffer.getInt();
+				var startCol = buffer.getInt();
+				var endRow = buffer.getInt();
+				var endCol = buffer.getInt();
+				//Clear these from our map
+				for (var r = startRow; r < endRow; r++) {
+					for (var c = startCol; c < endCol; c++) {
+						if (game.map.tile[r]) {
+							delete game.map.tile[r][c];
+						}
+					}
 				}
 			}
 		}
@@ -910,9 +921,7 @@ function updateGame() {
 					for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
 						var row = game.player.y + yOffset;
 						var col = game.player.x + xOffset;
-						
-						if (row < 0 || row >= engine.height || col < 0 || col >= engine.width) { continue; }
-						
+												
 						//Distance calculation
 						var distSqrd = (xOffset*xOffset)+(yOffset*yOffset);
 						var radSqrd = game.debug.brushSize * game.debug.brushSize;
@@ -964,16 +973,14 @@ function paintGame() {
 	var startCol = offsetXTile - 1;
 	var endCol = offsetXTile + 26;
 	
-	startRow = startRow < 0 ? 0 : startRow;
-	startCol = startCol < 0 ? 0 : startCol;
-	endRow = endRow > game.map.rows - 1 ? game.map.rows - 1 : endRow;
-	endCol = endCol > game.map.cols - 1 ? game.map.cols - 1 : endCol;
 	for (var r = startRow; r <= endRow; r++) {
 		for (var c = startCol; c <= endCol; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
 			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
-			engine.drawSprite("tile" + game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
+			if (game.map.tile[r]!=undefined && game.map.tile[r][c] !=undefined) {
+				engine.drawSprite("tile" + game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
+			}
 		}
 	}
 	
@@ -1230,10 +1237,6 @@ function getSpriteTag(entity) {
 
 //Returns true if there is a tile at position [row][col] and it is a passable tile
 function isPassable(row,col) {
-	if(col < 0 || row < 0 || col >= game.map.cols || row >= game.map.rows){
-		//Do not pass go, do not collect $200
-		return false;
-	}
 	
 	//Loop over entities to see if there's anything on this tile
 	for (var eid in game.entities) {
@@ -1243,6 +1246,10 @@ function isPassable(row,col) {
 		}
 	}
 
+	if (game.map.tile[row] == undefined || game.map.tile[row][col] == undefined) { 
+		return false;
+	}
+	
 	return !game.collidableTiles[game.map.tile[row][col]];
 }
 

@@ -2,6 +2,7 @@ package game;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -13,30 +14,25 @@ import java.util.Scanner;
 
 import entity.EntityType;
 
-public class Map implements SerializableObject {
+public class Map {
 	private final String mapFilename;
-	private int map[][];
 	private HashSet<Integer> unpassableTiles = new HashSet<Integer>();
 	private Game game;
-	int spawnRow,spawnCol;
-	
+	private int defaultTileForNewChunks = 5;//Water
+	int spawnRow,spawnCol,chunkRows,chunkCols;
+
+	//Indexed as row, col.  Eg chunks.get(row).get(col)
+	private HashMap<Integer,HashMap<Integer,MapChunk>> chunks = new HashMap<Integer,HashMap<Integer,MapChunk>>();
+
 	//Map player-entityID to a delta object
 	//Delta represents what's changed that they don't know about
 
-	/**Default constructor.  Use this if you don't exclusively need the other
-	 * 
-	 * @param filename
-	 */
-	public Map(Game game, String filename) {
-		this(game,filename,false);
-	}
 
 	/**If generateNew is set to true, a new map will be generated and saved to filename
 	 * 
 	 * @param filename
-	 * @param regenerate If set to true, a new map will always be generated.  Otherwise, it will only be generated if it doesn't exist
 	 */
-	public Map(Game game, String filename, boolean regenerate) {
+	public Map(Game game, String filename) {
 		this.game = game;
 		mapFilename = filename;
 		unpassableTiles.add(5);//water
@@ -44,49 +40,94 @@ public class Map implements SerializableObject {
 		unpassableTiles.add(15);//Dark Water
 		unpassableTiles.add(19);//Maisma
 		unpassableTiles.add(20);//Black Tile
-		
+
 		File f = new File(filename);
-		if (regenerate || !f.exists()) {
-			generateNewMap(200,200,false);	//YOU CAN MODIFY THIS!  (change the map type)
-		}
 		load();
 	}
 
 	public void load() {
 		System.out.println("Loading map from " + this.mapFilename);
+
 		try {
 			File file = new File(mapFilename);
+			if (!file.exists()) {
+				createBasicMapFile(file);
+			}
 			FileInputStream fis = new FileInputStream(file);
-			byte[] buf = new byte[(int)file.length()];
+			byte[] buf = new byte[4+4+4+4+4];	//ChunkWidth, ChunkHeight, SpawnRow, SpawnCol, NumChunks
 			fis.read(buf);
 
 			ByteBuffer buffer = ByteBuffer.wrap(buf);
-			int rows = buffer.getInt();
-			int cols = buffer.getInt();
+			chunkRows = buffer.getInt();
+			chunkCols = buffer.getInt();
 			spawnRow = buffer.getInt();
 			spawnCol = buffer.getInt();
-			System.out.println("Map size: " + rows + " " + cols + "  Spawn (r,c): " + spawnRow + "," + spawnCol);
+			int numChunks = buffer.getInt();
 
-			map = new int[rows][cols];
+			System.out.printf("Map has %d chunks.  Spawn (row,col): (%d,%d).  Chunk Size(row,col): (%d,%d)%n",numChunks,spawnRow,spawnCol,chunkRows,chunkCols);
 
-			//Read the data
-			for (int r = 0; r < rows; r++) {
-				for (int c = 0; c < cols; c++) {
-					map[r][c] = buffer.getInt();
+			int bytesPerChunk = 4 + 4 + (4*chunkRows*chunkCols);	//chunkRow, chunkCol, data (rows*cols of ints)
+			buf = new byte[bytesPerChunk];
+			for (int i = 0; i < numChunks; i++) {
+				//Load each chunk
+				fis.read(buf);
+				ByteBuffer bb = ByteBuffer.wrap(buf);
+				int rowCoord = bb.getInt();
+				int colCoord = bb.getInt();
+				MapChunk chunk = new MapChunk(rowCoord,colCoord,chunkRows,chunkCols);
+				for (int r = 0; r < chunkRows; r++) {
+					for (int c = 0; c < chunkCols; c++) {
+						chunk.set(r, c, bb.getInt());
+					}
 				}
+
+				//Store this in our map
+				if (!chunks.containsKey(rowCoord)) {
+					chunks.put(rowCoord, new HashMap<Integer,MapChunk>());
+				}
+				chunks.get(rowCoord).put(colCoord, chunk);
+				System.out.println("Loaded chunk " + rowCoord + " " + colCoord);
 			}
-
-
+			System.out.println("Loaded map: " + numChunks + " chunks");
+			fis.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createBasicMapFile(File file) throws Exception {
+		FileOutputStream fos = new FileOutputStream(file);
+		//Put the basics.  ChunkRowSize, chunkColsize, spawnrow, spawncol, and numChunks
+		ByteBuffer bb = ByteBuffer.allocate(5*4);
+		bb.putInt(6);	//ChunkRowSize
+		bb.putInt(6);	//ChunkColSize
+		bb.putInt(0);	//SpawnRow
+		bb.putInt(0);	//SpawnCol
+		bb.putInt(0);	//num chunks	
+		fos.write(bb.array());
+		fos.close();
 	}
 
 	public void save() {
 		System.out.println("Saving map to " + mapFilename);
 		try {
 			FileOutputStream fos = new FileOutputStream(new File(mapFilename));
-			fos.write(serialize());
+
+			//ChunkRows,chunkcols, spawnrow, spawncol, numChunks
+			ByteBuffer bb = ByteBuffer.allocate(4 * 5);
+			bb.putInt(this.chunkRows);
+			bb.putInt(this.chunkCols);
+			bb.putInt(spawnRow);
+			bb.putInt(spawnCol);
+			bb.putInt(countChunks());
+			fos.write(bb.array());
+
+			//Now add all the chunk data to it
+			for (HashMap<Integer,MapChunk> row : chunks.values()) {
+				for (MapChunk chunk : row.values()) {
+					fos.write(chunk.getBytes());
+				}
+			}
 
 			fos.close();
 		} catch (Exception e) {
@@ -94,63 +135,41 @@ public class Map implements SerializableObject {
 		}
 	}
 
-	/**Generate a new empty map file and saves it.
-	 * You should only call this if your map file is corrupt or missing.
+	/**Get a specific chunk, and create it if it doesn't exist
 	 * 
-	 * @param rows Rows in the map
-	 * @param cols Cols in the map
-	 * @param randomOnes Set to true to generate random spots around the map file
+	 * @param row
+	 * @param col
+	 * @return
 	 */
-	private void generateNewMap(int rows, int cols, boolean randomOnes) {
-		System.out.println("Generating a new map file");
-		map = new int[rows][cols];
-
-		
-
-		Random rand = new Random();
-		for (int r = 0; r < rows; r++) {
-			for (int c = 0; c < cols; c++) {
-				int tile = 5;
-				if (randomOnes) { tile = rand.nextInt(10); }
-				map[r][c] = tile;
-			}
+	MapChunk getChunk(int row, int col) {
+		HashMap<Integer,MapChunk> rowOfChunks = chunks.get(row);
+		if (rowOfChunks == null) {
+			//Create it
+			rowOfChunks = new HashMap<Integer,MapChunk>();
+			chunks.put(row, rowOfChunks);
 		}
-		save();
+
+		//Get the chunk
+		MapChunk chunk = rowOfChunks.get(col);
+		if (chunk == null) {
+			System.out.println("Creating new chunk " + row + " " + col);
+			chunk = new MapChunk(row,col,this.chunkRows,this.chunkCols);
+			chunk.init(this.defaultTileForNewChunks);
+			rowOfChunks.put(col, chunk);
+		}
+		return chunk;
 	}
 
-	/**Convert the map to a string and write it to the printwriter provided.
-	 * FORMAT: first two ints are rows/cols.  Remaining data is integers
+	/**Count how many chunks we have in memory and return that value
 	 * 
-	 * @param pw
+	 * @return
 	 */
-	@Override
-	public byte[] serialize() {
-		int length = 4;	//Width + height + spawnRow + spawnCol ints
-		length += map.length * map[0].length;	//One int for each tile
-		length += 1;	//count of unpassable tiles
-		length += unpassableTiles.size();
-
-		int bytesNeeded = length * 4;
-
-		ByteBuffer bb = ByteBuffer.allocate(bytesNeeded);
-		bb.putInt(map.length);
-		bb.putInt(map[0].length);
-		bb.putInt(spawnRow);
-		bb.putInt(spawnCol);
-		for (int[] row : map) {
-			for (int val : row) {
-				bb.putInt(val);
-			};
+	public int countChunks() {
+		int count = 0;
+		for (HashMap<Integer,MapChunk> chunkMap : chunks.values()) {
+			count += chunkMap.size();
 		}
-		return bb.array();
-	}
-
-	public int getNumRows() {
-		return map.length;
-	}
-
-	public int getNumCols() {
-		return map[0].length;
+		return count;
 	}
 
 	public byte[] getUnpassableTileIds() {
@@ -165,23 +184,52 @@ public class Map implements SerializableObject {
 			bb.putInt(tileID);
 		}
 
-		
+
 		return bb.array();
 	}
 
+	/**Warning, this is not super fast.  2 hash map calls
+	 * 
+	 * @param row
+	 * @param col
+	 * @param tile
+	 */
 	public void set(int row, int col, int tile) {
-		map[row][col] = tile;
+		//Get the chunk
+		int cRow = row/this.chunkRows;
+		int rowInsideChunk = row - (cRow * this.chunkRows);
+		int cCol = col/this.chunkCols;
+		int colInsideChunk = col - (cCol * this.chunkCols);
+
+		//Special case for negative numbers
+		if (rowInsideChunk < 0) { cRow--; rowInsideChunk+=this.chunkRows; }
+		if (colInsideChunk < 0) { cCol--; colInsideChunk+=this.chunkCols; }	
+
+		MapChunk c = getChunk(cRow,cCol);
+		c.tiles[rowInsideChunk][colInsideChunk] = tile;
 		game.updateTile(row, col, tile);
 	}
 
+	/**Warning, this is not super fast.  2 hash map calls
+	 * 
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	public int getTileAt(int row, int col) {
-		return map[row][col];
+		//Get the chunk
+		int cRow = row/this.chunkRows;
+		row -= cRow * this.chunkRows;
+		int cCol = col/this.chunkCols;
+		col -= cCol * this.chunkCols;
+		//Special case for negative numbers
+		if (row < 0) { cRow--; row+=this.chunkRows; }
+		if (col < 0) { cCol--; col+=this.chunkCols; }	
+		MapChunk c = getChunk(cRow,cCol);
+		return c.tiles[row][col];
 	}
 
 	public boolean isTilePassable(int row, int col) {
-		if (row < 0 || row >= map.length || col < 0 || col >= map[row].length) {
-			return false;
-		}
-		return !unpassableTiles.contains(map[row][col]);
+		return unpassableTiles.contains(getTileAt(row,col));
 	}
 }
