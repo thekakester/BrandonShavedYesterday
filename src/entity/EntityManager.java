@@ -77,7 +77,7 @@ public class EntityManager {
 		int[] cell = {0,32,64,96,128,160,192,224,256,288};
 
 		//EntityDefinition(id, collidable, savable, imageTag, x, y, width,height,duration,name)
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", 288, 0, width, height, normal,"null"));
 		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 96, 0, width, height, normal,"player"));
 		last().useWalkingAnimation(96,0);
 		last().baseHP = 1;
@@ -331,11 +331,11 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[2], grid[3]+cell[1], width, height, normal,"Blue Egg"));
 		add(new EntityDefinition(typeID++, nocollide, nosave,  "everything", grid[1]+cell[3], grid[3]+cell[1], width, height, normal,"Pink Egg"));
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[1], grid[4]+cell[0], width, height, normal,"Clover"));
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[5]+cell[2], grid[4]+cell[0], width, height, normal,"Weeds"));
+		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[2], grid[4]+cell[0], width, height, normal,"Bush"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[3], grid[4]+cell[0], width, height, normal,"Blue Bush"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[5]+cell[4], grid[4]+cell[0], width, height, normal,"Red Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[0],width,height,normal,"House Wall"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[1], grid[0]+cell[0],width,height,normal,"House Door"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[8]+cell[1], grid[0]+cell[0],width,height,normal,"House Door"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[0],width,height,normal,"House Door Shut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[0],width,height,normal,"House Window"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[0],width,height,normal,"House Window Shut"));
@@ -347,7 +347,8 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Zombie Spawn"));												
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height*2,normal,"Tree2"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null1"));													//<----NULL
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", 288-32, 0, width, height, normal,"warp"));
+		last().isTrigger = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[1],width,height,normal,"Basic Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[9], grid[0]+cell[1],width,height,normal,"Splash"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[2],width,height,normal,"House Roof Angled Small Left"));

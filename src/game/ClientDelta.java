@@ -25,6 +25,7 @@ public class ClientDelta {
 	private ArrayList<MapDelta> changedMapTiles = new ArrayList<MapDelta>();
 	private HashSet<Integer> attackingEntities = new HashSet<Integer>();
 	private HashSet<Integer> deadEntities = new HashSet<Integer>();
+	private HashSet<Sign> notifications = new HashSet<Sign>();
 	private int DEBUG_MAX_RESPONSESIZE = 500;
 	final int pid;
 
@@ -60,6 +61,11 @@ public class ClientDelta {
 		//Add entities that are dead
 		size += 8;	//Add 2 integers(8 bytes) ResponseType and attackingEntities.length
 		size += 4 * deadEntities.size();
+		
+		//Add notifications (each sign is self contained.  Contains its own header
+		for (Sign s : notifications) {
+			size += s.getSizeInBytes();
+		}
 
 		ByteBuffer bb = ByteBuffer.allocate(size);
 
@@ -131,6 +137,13 @@ public class ClientDelta {
 			bb.putInt(eid);
 		}
 		deadEntities.clear();
+		
+		//ADD NOTIFICATIONS
+		//Each sign is self contained.  Contains responsetype and length
+		for (Sign s : notifications) {
+			bb.put(s.getBytes());
+		}
+		notifications.clear();
 
 		return bb.array();
 
@@ -152,5 +165,10 @@ public class ClientDelta {
 
 	public void addDeadEntity(int eid) {
 		deadEntities.add(eid);
+	}
+
+	public void addNotification(Sign notification) {
+		notifications.add(notification);
+		
 	}
 }

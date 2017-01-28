@@ -43,6 +43,7 @@ public class Map implements SerializableObject {
 		unpassableTiles.add(9);//lava
 		unpassableTiles.add(15);//Dark Water
 		unpassableTiles.add(19);//Maisma
+		unpassableTiles.add(20);//Black Tile
 		
 		File f = new File(filename);
 		if (regenerate || !f.exists()) {

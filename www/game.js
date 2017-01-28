@@ -10,10 +10,14 @@ game.map = {
 };
 game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
+game.hiddenEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
+game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
+game.warping = false;				//When true, disables warps until server responds
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
+game.message = [];			//If game.message.length() > 0, this will display a message to the user
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
 game.debug.enabled = false;
@@ -124,6 +128,12 @@ function begin_loadSprites() {
 	tmp.addFrame(128,64,10);
 	tmp.addFrame(96,64,10);
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"darkerTiles",32,32);	//Sprite: Black Void
+	tmp.addFrame(0,0,10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Indoor wood
+	tmp.addFrame(2752,320,10);
+	
 	
 	/**Entity sprites loaded on server and transmitted during init()**/
 	
@@ -220,9 +230,11 @@ function begin_serverInit() {
 		game.uniqueEntityIDs = buffer.getInt();
 		console.log("Loading definitions for " + game.uniqueEntityIDs + " entities");
 		for (var type = 0; type < game.uniqueEntityIDs; type++) {
-			var collidable = buffer.getByte();
-			//console.log("Collidable: " + collidable)
-			if (collidable > 0) { game.collidableEntities[type] = true; }
+			var collidableOrSpawner = buffer.getByte();
+			if (collidableOrSpawner & 0x1) {game.collidableEntities[type] = true;}	//Bit 1
+			if (collidableOrSpawner & 0x2) {game.hiddenEntities[type] = true;}		//Bit 2
+			if (collidableOrSpawner & 0x4) {game.hiddenEntities[type] = true;}		//Bit 4 //Trigger
+
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
 			var taglen = buffer.getInt();
@@ -323,6 +335,7 @@ game.sendMessage = function() {
 
 game.onServerRespond = function(response) {
 	game.ping = new Date().getTime()-game.pingStart;
+	game.warping = false;	//Allow another warp request
 	var buffer = ByteBuffer.wrap(response);
 	while (true) {
 		var responseType = buffer.getInt();
@@ -337,13 +350,6 @@ game.onServerRespond = function(response) {
 				var type = buffer.getInt();
 				var x = buffer.getInt();
 				var y = buffer.getInt();
-				var attributeLen = buffer.getInt();	//Not used yet
-				
-				//Read attributes
-				var attributes = [];
-				for (var j = 0; j < attributeLen; j++) {
-					attributes[j] = buffer.getInt();
-				}
 				
 				var pathLen = buffer.getInt();
 				var path = new Queue();
@@ -377,6 +383,11 @@ game.onServerRespond = function(response) {
 				e.x = x;
 				e.y = y;
 				e.type = type;
+				e.dead = false;	//Just in case a player was marked as dead. Make sure they respawn
+				
+				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
+				//If this was a forced update about ourself, clear our path
+				if (e.id == game.player.id) { game.player.path = new Queue(); }
 			}
 		}
 		
@@ -434,6 +445,18 @@ game.onServerRespond = function(response) {
 				//This entitiy is dead
 				delete game.entities[eid];
 				console.log("Entity " + eid + " died");
+			}
+		}
+		
+		//Response 7: Notification
+		if (responseType == 7) {
+			var lines = buffer.getInt();
+			for (var line = 0; line < lines; line++) {
+				game.message[line] = "";
+				var length = buffer.getInt();
+				for (var c = 0; c < length; c++) {
+					game.message[line] += buffer.getChar();
+				}
 			}
 		}
 		
@@ -650,18 +673,24 @@ function updateGame() {
 	}
 	
 	if (engine.isKeyPressed("Space")) {
-		//TEMP: Check around you for a sign then call it!
-		for (var dCol = -1; dCol <=1; dCol++) {
-			for (var dRow = -1; dRow <=1; dRow++) {
-				var row = game.player.y + dRow;
-				var col = game.player.x + dCol;
-				
-				//Search for an entity here
-				for (var key in game.entities) {
-					var e = game.entities[key];
-					if (e.type == 2 && e.x == col && e.y == row) {	//EntityType.Sign is #2
-						game.appendMessage += "&sign=" + e.id;
-					}
+		if(game.message.length > 0) {
+			game.message = [];
+		} else {
+			//Get the position we're facing
+			var x = game.player.x;
+			var y = game.player.y;
+		
+			//Get the direction we're facing 
+			if(game.player.direction == 0) { y--; }
+			else if (game.player.direction == 1) { y++; }
+			else if (game.player.direction == 2) { x--; }
+			else if (game.player.direction == 3) { x++; }
+			
+			//Search for an entity here
+			for (var key in game.entities) {
+				var e = game.entities[key];
+				if (e.type == 2 && e.x == x && e.y == y) {	//EntityType.Sign is #2
+					game.appendMessage += "&sign=" + e.id;
 				}
 			}
 		}
@@ -672,7 +701,7 @@ function updateGame() {
 	if (!engine.containsSprite("inst_att_"+game.player.id)) {
 		if (engine.isKeyDown("Space")) {
 			startAttackSprite(game.player.id);
-			game.appendMessage="&attack="+game.player.id;
+			game.appendMessage+="&attack="+game.player.id;
 			
 			//Check if they're hitting anything
 			var attackX = game.player.tweenX;
@@ -688,9 +717,21 @@ function updateGame() {
 				var e = game.entities[eid];
 				if (game.killableEntities[e.type] && Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
 					//He ded
-					e.dead = true;
+					e.dead = true;	//Temporarily doesn't draw.  If player, server will re-aliveafy
 					game.appendMessage="&d=" + eid;	//Tell server
 				}
+			}
+		}
+	}
+	
+	//If we're on a warp tile, warp
+	if (!game.warping && !game.debug.enabled) {
+		for (var key in game.warps) {
+			var warp = game.warps[key];
+			if (warp.x == game.player.x && warp.y == game.player.y) {
+				game.appendMessage="&warp=" + game.player.id + "|" + warp.id;
+				game.warping = true;	//Set to false when the server responds
+				break;
 			}
 		}
 	}
@@ -891,11 +932,23 @@ function tweenEntityToPosition(e,endX,endY) {
 
 function paintGame() {
 	//Offset everything by the player's position
+	var offsetXTile = Math.floor(game.player.tweenX - 12);
+	var offsetYTile = Math.floor(game.player.tweenY - 9);
 	var offsetX = Math.floor((game.player.tweenX - 12) * 32);
 	var offsetY = Math.floor((game.player.tweenY - 9) * 32);
 	
-	for (var r = 0; r < game.map.rows; r++) {
-		for (var c = 0; c < game.map.cols; c++) {
+	//Draw only what we can see.
+	var startRow = offsetYTile - 1;
+	var endRow = offsetYTile + 20;
+	var startCol = offsetXTile - 1;
+	var endCol = offsetXTile + 26;
+	
+	startRow = startRow < 0 ? 0 : startRow;
+	startCol = startCol < 0 ? 0 : startCol;
+	endRow = endRow > game.map.rows - 1 ? game.map.rows - 1 : endRow;
+	endCol = endCol > game.map.cols - 1 ? game.map.cols - 1 : endCol;
+	for (var r = startRow; r <= endRow; r++) {
+		for (var c = startCol; c <= endCol; c++) {
 			//context.drawImage(images.tiles, 0,32*game.map.tile[r][c],32,32,32 * (c-offsetX), 32 * (r-offsetY),32,32);		
 			//console.log(sprites.tiles[game.map.tile[r][c]].__frames[0].y);
 			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
@@ -904,9 +957,18 @@ function paintGame() {
 	}
 	
 	//Sort entities based on their y position. (ties use HP);
+	//Only add entities that are in viewing distance (x (-1:26) & y (-1:20)
 	var tmpEntities = [];
 	for (var id in game.entities) {
-		tmpEntities.push(game.entities[id]);
+		var e = game.entities[id];
+		var x = e.tweenX - offsetXTile;
+		var y = e.tweenY - offsetYTile;
+		if (x > -1 && x < 26 && y > -1 && y < 20) {
+			//Spawners only render in debug mode
+			if (game.debug.enabled || !game.hiddenEntities[e.type]) {
+				tmpEntities.push(e);
+			}
+		}
 	}
 	tmpEntities.sort(entitySortFunc);
 	
@@ -926,10 +988,24 @@ function paintGame() {
 		//Draws the attack sprite if it exists
 		engine.drawSprite("inst_att_" + e.id,x,y);
 	}
-
+	
 	engine.recordKeyboard(true);
 	engine.__context.fillStyle = "#FFF";
 	engine.__context.fillText(engine.keyboardBuffer,10,engine.height - 30);
+	
+	
+	if (game.message.length > 0) {
+		var yStart = 600-(30*4)-10;
+		engine.__context.fillStyle = "#000";
+		engine.__context.fillRect(10,yStart,780,(30*4));
+		
+		//Actually draw the message
+		engine.__context.fillStyle = "#fff";
+		engine.__context.font = "24px celticFont";
+		for (var i = 0; i < game.message.length;i++) {
+			engine.__context.fillText(game.message[i],30,yStart + (28*(i+1)));
+		}
+	}
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
@@ -1026,7 +1102,8 @@ function paintGame() {
 		engine.__context.fillRect(0,42*2,300,42);
 		engine.__context.fillStyle  = "#fff";
 		engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
-		engine.__context.fillText("FPS: " + game.debug.lastFPS, 150,42*3-10);
+		engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
+		engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
 	}
 }
 
@@ -1034,6 +1111,7 @@ function paintGame() {
 function move(xMovement, yMovement){
 	//Don't let the player move if we haven't spawned yet
 	if (game.player.x == -100) { return ;}	//This means unspawned
+	if (game.message.length > 0) { return; }//No doing stuff while there's a message
 	
 	var moved = false;
 	
@@ -1158,6 +1236,9 @@ function entitySortFunc(a,b) {
 	//If they're the same, compare HP
 	if (game.killableEntities[a.type] && !game.killableEntities[b.type]) { return 1;}
 	if (!game.killableEntities[a.type] && game.killableEntities[b.type]) { return -1;}
+	
+	if (a.id < b.id) { return -1;}
+	if (a.id > b.id) { return 1;}
 	return 0;
 }
 

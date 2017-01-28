@@ -15,7 +15,6 @@ public class Entity {
 	public boolean isAlive = true;			//If set to false, this should be untracked
 	public final int id;
 	public final int type;
-	public int[] attributes  = new int[0];	////Dependent on the type of entity (eg.  HP)
 	public int x,y;
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
@@ -68,11 +67,6 @@ public class Entity {
 		bb.putInt(type);
 		bb.putInt(x);
 		bb.putInt(y);
-		bb.putInt(attributes.length);
-
-		for (int i = 0; i < attributes.length; i++) {
-			bb.putInt(attributes[i]);
-		}
 
 		bb.putInt(path.size());
 		for (Byte b : path) {
@@ -90,10 +84,9 @@ public class Entity {
 	}
 
 	public int sizeInBytes() {
-		int length = 7;	//ID, type,x,y,attributes.length,path.length,elapsedTimeSincePathCreated
-		length += attributes.length;
+		int length = 6;	//ID, type,x,y,path.length,elapsedTimeSincePathCreated
 		length *= 4;	//int = 4 bytes
-
+		
 		//Path is in bytes, not int so we add it after multiplying by 4
 		length += path.size();
 

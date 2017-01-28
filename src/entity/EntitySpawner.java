@@ -12,19 +12,20 @@ import game.Game;
 public class EntitySpawner extends Entity{
 
 	protected Entity child = null;
-	
+	private long cooldownStart = 0;
+
 	public EntitySpawner(int id, int type, int x, int y) {
 		super(id, type,x,y);
 	}
-	
-	
+
+
 	/**Create an entity appropriate for this spawner
 	 * 
 	 * @return An entity that gets spawned by this spawner
 	 */
 	private Entity createEntity(Game g) {
 		int id = g.getNewEntityId();
-		
+
 		if (type == EntityType.MUSHROOM_SPAWN) {
 			return new MushroomEntity(id,this.x,this.y);
 		}
@@ -37,18 +38,26 @@ public class EntitySpawner extends Entity{
 		if (type == EntityType.ZOMBIE_SPAWN) {
 			return new ZombieEntity(id,this.x,this.y);
 		}
-		
-		
+
 		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
 	}
-	
+
 	@Override
 	public void update(Game g) {
 		if (child == null || !child.isAlive) {
-			child = createEntity(g);
-			System.out.println("Spawned entity");
-			//Add this to the game class
-			g.addEntity(child);
+			if (cooldownStart == 0) {
+				cooldownStart = System.currentTimeMillis();
+			}
+			
+			if (System.currentTimeMillis() - cooldownStart > 5000) {
+				cooldownStart = 0;
+				child = createEntity(g);
+				if  (child != null) {
+					System.out.println("Spawned entity");
+					//Add this to the game class
+					g.addEntity(child);
+				}
+			}
 		}
 	}
 }
