@@ -10,6 +10,7 @@ public class MushroomEntity extends EntityWithBehavior {
 
 	public MushroomEntity(int id, int x, int y) {
 		super(id, EntityType.MUSHROOM_ENEMY,x,y);
+		this.isHostile = true;
 	}
 
 	@Override

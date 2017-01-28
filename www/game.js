@@ -13,7 +13,7 @@ game.collidableEntities = [];//Array of entities that can't be walked on
 game.hiddenEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
 game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
-game.warping = false;				//When true, disables warps until server responds
+game.waitingForServerResponse = false;				//When true, disables warps until server responds
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
@@ -335,7 +335,7 @@ game.sendMessage = function() {
 
 game.onServerRespond = function(response) {
 	game.ping = new Date().getTime()-game.pingStart;
-	game.warping = false;	//Allow another warp request
+	game.waitingForServerResponse = false;	//Allow another warp request
 	var buffer = ByteBuffer.wrap(response);
 	while (true) {
 		var responseType = buffer.getInt();
@@ -350,6 +350,7 @@ game.onServerRespond = function(response) {
 				var type = buffer.getInt();
 				var x = buffer.getInt();
 				var y = buffer.getInt();
+				var flags = buffer.getByte();
 				
 				var pathLen = buffer.getInt();
 				var path = new Queue();
@@ -386,6 +387,7 @@ game.onServerRespond = function(response) {
 				e.dead = false;	//Just in case a player was marked as dead. Make sure they respawn
 				
 				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
+				e.hostile = flags & 0x1 == 1;
 				//If this was a forced update about ourself, clear our path
 				if (e.id == game.player.id) { game.player.path = new Queue(); }
 			}
@@ -725,33 +727,37 @@ function updateGame() {
 	}
 	
 	//If we're on a warp tile, warp
-	if (!game.warping && !game.debug.enabled) {
+	if (!game.waitingForServerResponse && !game.debug.enabled) {
 		for (var key in game.warps) {
 			var warp = game.warps[key];
 			if (warp.x == game.player.x && warp.y == game.player.y) {
 				game.appendMessage="&warp=" + game.player.id + "|" + warp.id;
-				game.warping = true;	//Set to false when the server responds
+				game.waitingForServerResponse = true;	//Set to false when the server responds
+				break;
+			}
+		}
+	} //I like to live...dangerously. 
+	
+	//If getting attacked by an entity
+	if(!game.waitingForServerResponse){
+		for(var eid in game.entities){
+			
+			var e = game.entities[eid];
+			if(!e.hostile)continue; //carry on sir.
+			var x = e.x;
+			var y = e.y;
+			if(e.direction == 0){y--;}
+			else if(e.direction == 1){y++;}
+			else if(e.direction == 2){x--;}
+			else if(e.direction == 3){x++;}
+			if(x == game.player.x && y == game.player.y){
+				game.appendMessage+="&d="+game.player.id;
+				game.waitingForServerResponse = true;
 				break;
 			}
 		}
 	}
 	
-	//If getting attacked by an entity
-	for(var eid in game.entities){
-		
-		var e = game.entities[eid];
-		if(!(!(!(game.killableEntities[e.type]))))continue;
-		var x = e.x;
-		var y = e.y;
-		if(e.direction == 0){y--;}
-		else if(e.direction == 1){y++;}
-		else if(e.direction == 2){x--;}
-		else if(e.direction == 3){x++;}
-		if(x == game.player.x && y == game.player.y){
-			game.appendMessage+="&d="+game.player.id;
-			break;
-		}
-	}
 	
 	//Update the positions of all the entities based on elapsed time
 	//WARNING: tilesPerSecond MUST BE EXACTLY THE SAME ON THE SERVER
@@ -1269,6 +1275,7 @@ Entity.prototype = {
 	tweenY: 0,		//Calculated by path
 	direction: 1,	//0/1/2/3 = up/dn/lf/rt respectively (default down)
 	dead: false,	//If true, treat it like its gone
+	hostile: false,
 	path: new Queue(),
 	timeElapsedOnServer: 0,
 	lastUpdate: 0,		//Time in javascript time since last server update

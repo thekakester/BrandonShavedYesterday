@@ -63,9 +63,9 @@ public class ClientDelta {
 		size += 4 * deadEntities.size();
 		
 		//Add notifications (each sign is self contained.  Contains its own header
-		for (Sign s : notifications) {
-			size += s.getSizeInBytes();
-		}
+//		for (Sign s : notifications) {
+//			size += s.getSizeInBytes();
+//		}
 
 		ByteBuffer bb = ByteBuffer.allocate(size);
 
@@ -138,12 +138,12 @@ public class ClientDelta {
 		}
 		deadEntities.clear();
 		
-		//ADD NOTIFICATIONS
-		//Each sign is self contained.  Contains responsetype and length
-		for (Sign s : notifications) {
-			bb.put(s.getBytes());
-		}
-		notifications.clear();
+//		//ADD NOTIFICATIONS
+//		//Each sign is self contained.  Contains responsetype and length
+//		for (Sign s : notifications) {
+//			bb.put(s.getBytes());
+//		}
+//		notifications.clear();
 
 		return bb.array();
 

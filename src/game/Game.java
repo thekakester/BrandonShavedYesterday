@@ -249,12 +249,14 @@ public class Game extends GameBase {
 						e.y = map.spawnRow;
 						updateEntity(e.id,true);//Force update
 						//Tell the dead player that they died
-						addNotification(e.id,new Sign("You died"));
+						//addNotification(e.id,new Sign("You died"));
+						
 					} else {
 						for (ClientDelta d : clientDeltas.values()){
 							d.addDeadEntity(eid);
 						}
 						e.isAlive = false;//Mark it as dead so our thread cleans it up
+						
 					}
 					
 					
