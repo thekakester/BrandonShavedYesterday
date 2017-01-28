@@ -21,8 +21,8 @@ public class ClientDelta {
 	}
 
 	private ArrayList<String> undeliveredChatMessages = new ArrayList<String>();
-	private ArrayList<Entity> changedEntities = new ArrayList<Entity>();
-	private ArrayList<MapDelta> changedMapTiles = new ArrayList<MapDelta>();
+	private HashSet<Entity> changedEntities = new HashSet<Entity>();
+	private HashSet<MapDelta> changedMapTiles = new HashSet<MapDelta>();
 	private HashSet<Integer> attackingEntities = new HashSet<Integer>();
 	private HashSet<Integer> deadEntities = new HashSet<Integer>();
 	private HashSet<Sign> notifications = new HashSet<Sign>();
@@ -63,9 +63,9 @@ public class ClientDelta {
 		size += 4 * deadEntities.size();
 		
 		//Add notifications (each sign is self contained.  Contains its own header
-//		for (Sign s : notifications) {
-//			size += s.getSizeInBytes();
-//		}
+		for (Sign s : notifications) {
+			size += s.getSizeInBytes();
+		}
 
 		ByteBuffer bb = ByteBuffer.allocate(size);
 
@@ -98,8 +98,7 @@ public class ClientDelta {
 		bb.putInt(changedMapTiles.size());
 
 
-		for (int i = 0; i < changedMapTiles.size(); i++) {
-			MapDelta d = changedMapTiles.get(i);
+		for (MapDelta d : changedMapTiles) {
 			bb.putInt(d.row);
 			bb.putInt(d.col);
 			bb.putInt(d.type);
@@ -138,12 +137,12 @@ public class ClientDelta {
 		}
 		deadEntities.clear();
 		
-//		//ADD NOTIFICATIONS
-//		//Each sign is self contained.  Contains responsetype and length
-//		for (Sign s : notifications) {
-//			bb.put(s.getBytes());
-//		}
-//		notifications.clear();
+		//ADD NOTIFICATIONS
+		//Each sign is self contained.  Contains responsetype and length
+		for (Sign s : notifications) {
+			bb.put(s.getBytes());
+		}
+		notifications.clear();
 
 		return bb.array();
 

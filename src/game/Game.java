@@ -240,6 +240,7 @@ public class Game extends GameBase {
 
 			//DEAD
 			if (key.equalsIgnoreCase("d")) {
+				System.out.println("GOT d " + value);
 				int eid = Integer.parseInt(value);
 				Entity e = entities.get(eid);
 				if (e.definition.baseHP > 0) {
@@ -249,8 +250,7 @@ public class Game extends GameBase {
 						e.y = map.spawnRow;
 						updateEntity(e.id,true);//Force update
 						//Tell the dead player that they died
-						//addNotification(e.id,new Sign("You died"));
-						
+						addNotification(e.id,new Sign("You died"));
 					} else {
 						for (ClientDelta d : clientDeltas.values()){
 							d.addDeadEntity(eid);
@@ -258,10 +258,8 @@ public class Game extends GameBase {
 						e.isAlive = false;//Mark it as dead so our thread cleans it up
 						
 					}
-					
-					
-					
 				}
+				return null;
 			}
 
 			if (key.equalsIgnoreCase("attack")) {
@@ -326,6 +324,7 @@ public class Game extends GameBase {
 			e.printStackTrace();
 		}
 
+		System.err.println("Invalid command: " + key);
 		return ("Unknown or invalid command: " + key).getBytes();
 	}
 

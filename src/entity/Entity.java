@@ -63,34 +63,48 @@ public class Entity {
 
 
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
+		int size = 0;//this.sizeInBytes();
 
 		bb.putInt(id);
+		size += 4;
 		bb.putInt(type);
+		size += 4;
 		bb.putInt(x);
+		size += 4;
 		bb.putInt(y);
+		size += 4;
 		
-		bb.put(isHostile ? (byte)1 : (byte)0);
+		//This works:
+		//byte flags = 0;
+		//if (isHostile) { flags |= 0x1; }
+		//bb.put(flags);
 
-		bb.putInt(path.size());
+		
+		bb.putInt(path.size()); size+=4;
 		for (Byte b : path) {
-			bb.put(b);
+			bb.put(b); size++;
 		}
 
 		//Elapsed time since path created
-		bb.putInt(getPathElapsedTime());
+		bb.putInt(getPathElapsedTime()); size +=4;
 
+		if (size != this.sizeInBytes()) {
+			System.out.println("Expected " + this.sizeInBytes() + " got " + size);
+		}
+		
 		return bb.array();
 	}
 
 	private int getPathElapsedTime() {
-		return (int)(System.currentTimeMillis() - pathStartTime);
+		int timeElapsed = (int)(System.currentTimeMillis()-pathStartTime);
+		if (timeElapsed < 0) { return 0; }
+		return timeElapsed;
 	}
 
 	public int sizeInBytes() {
 		int length = 6;	//ID, type,x,y,path.length,elapsedTimeSincePathCreated
 		length *= 4;	//int = 4 bytes
-		
-		length += 1;	//1 byte for the flags
+		//length += 1;	//Flags (1 byte)
 		
 		//Path is in bytes, not int so we add it after multiplying by 4
 		length += path.size();

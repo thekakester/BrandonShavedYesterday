@@ -344,21 +344,26 @@ game.onServerRespond = function(response) {
 		//Response 1: Entity Info Update
 		if (responseType == 1) {
 			var count = buffer.getInt();
-			
+			console.log("Entity count: " + count);
 			for (var i = 0; i < count; i++) {
 				var eid = buffer.getInt();
+				if (eid == game.player.id) { console.log("UPDATING OUR PLAYER: ------------")};
 				var type = buffer.getInt();
 				var x = buffer.getInt();
 				var y = buffer.getInt();
-				var flags = buffer.getByte();
+				//var flags = buffer.getByte();
+				
+				console.log("id type x y flags " + eid + " " + type + " " + x + " " + y + " ");
 				
 				var pathLen = buffer.getInt();
+				console.log("pathlen " + pathLen);
 				var path = new Queue();
 				for (var j = 0; j < pathLen; j++) {
 					path.enqueue(buffer.getByte());
 				}
 				
 				var timeElapsed = buffer.getInt();
+				console.log("Elapsed time: " + timeElapsed);
 				
 				if (x == y && y == -1) {
 					//He dead
@@ -387,7 +392,8 @@ game.onServerRespond = function(response) {
 				e.dead = false;	//Just in case a player was marked as dead. Make sure they respawn
 				
 				if (e.type == 189 /**warp**/) {game.warps[e.id] = e;}
-				e.hostile = flags & 0x1 == 1;
+				//e.hostile = flags & 0x1 == 1;	//Set hostile to true if the first bit of flags is "1"
+				if (game.killableEntities[e.type]) { e.hostile = true; }
 				//If this was a forced update about ourself, clear our path
 				if (e.id == game.player.id) { game.player.path = new Queue(); }
 			}
@@ -396,10 +402,12 @@ game.onServerRespond = function(response) {
 		//Response 2: Map update
 		if (responseType == 2) {
 			var count = buffer.getInt();
+			console.log("Map count: " + count)
 			for (var i = 0; i < count; i++) {
 				var row = buffer.getInt();
 				var col = buffer.getInt();
 				var type = buffer.getInt();
+				console.log("ROW COL " + row + " " + col);
 				game.map.tile[row][col] = type;
 			}
 		}
@@ -743,7 +751,7 @@ function updateGame() {
 		for(var eid in game.entities){
 			
 			var e = game.entities[eid];
-			if(!e.hostile)continue; //carry on sir.
+			if(!e.hostile){continue;} //carry on sir.
 			var x = e.x;
 			var y = e.y;
 			if(e.direction == 0){y--;}
