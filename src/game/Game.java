@@ -308,7 +308,7 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("warp")) {
 				String[] args = value.split("\\|"); // targetEID|warpEID
 				Point p = warps.get(Integer.parseInt(args[1]));
-				if(p == null) { return null; }	//Do nothing
+				if(p == null) { System.out.println("No warp here, sorry"); return null; }	//Do nothing
 				Entity e = entities.get(Integer.parseInt(args[0]));
 				e.x = p.x;
 				e.y = p.y;
