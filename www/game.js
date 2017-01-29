@@ -248,6 +248,113 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Left
 	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[5],10);
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Left
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[5],10);
+	
+	//The water update
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 1
+	tmp.addFrame(grid[1]+cell[8],grid[3]+cell[9],10);
+	tmp.addFrame(grid[1]+cell[9],grid[3]+cell[9],10);
+	tmp.addFrame(grid[2]+cell[0],grid[3]+cell[9],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 1
+	tmp.addFrame(grid[2]+cell[1],grid[3]+cell[9],10);
+	tmp.addFrame(grid[2]+cell[2],grid[3]+cell[9],10);
+	tmp.addFrame(grid[2]+cell[3],grid[3]+cell[9],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 2
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[0],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[0],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 2
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[0],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[0],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 3
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[1],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[1],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 3
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[1],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[1],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 4
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[2],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[2],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 4
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[2],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[2],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 5
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[3],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[3],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 5
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[3],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[3],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 6
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[4],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[4],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 6
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[4],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[4],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water 7
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[5],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[5],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water 7
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[5],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[5],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water Rocks 1
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[6],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[6],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[6],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water Rocks 1
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[6],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[6],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[6],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water Rocks 2
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[7],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[7],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[7],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water Rocks 2
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[7],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[7],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[7],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Water Rocks 3
+	tmp.addFrame(grid[1]+cell[8],grid[4]+cell[8],10);
+	tmp.addFrame(grid[1]+cell[9],grid[4]+cell[8],10);
+	tmp.addFrame(grid[2]+cell[0],grid[4]+cell[8],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Light Water Rocks 3
+	tmp.addFrame(grid[2]+cell[1],grid[4]+cell[9],10);
+	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[9],10);
+	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[9],10);
+	
+	
+	
+	
 	
 	/**Entity sprites loaded on server and transmitted during init()**/
 	
