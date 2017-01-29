@@ -111,6 +111,9 @@ public class EntityDefinition {
 		
 		bb.put(collidableOrSpawn);
 		bb.putInt(baseHP);
+		bb.putInt(sprites.get(0).frames.get(0).x);	//Debug mode ease of access.
+		bb.putInt(sprites.get(0).frames.get(0).y);	//Better level design layout
+		bb.put(this.saveable ? (byte)1 : (byte)0);
 		bb.putInt(srcImageTag.length());
 		for (char c : srcImageTag.toCharArray()) {
 			bb.putChar(c);
@@ -128,6 +131,8 @@ public class EntityDefinition {
 		//Note: Collidable and spawner are merged together into one byte.  LSB is collidable, next bit is spawner
 		int len = 1 + 4 + 4 + (srcImageTag.length()*2);	//{Collidable/Spawner}, hp, imageSourceLen name
 		//Add the sprites
+		len += 8;	//Row and col of the spot on the spritesheet (for debug mode ease of access)
+		len += 1;	//Is the entity savable (byte)
 		len += 4;	//num sprites
 		for (Sprite s : sprites) {
 			len += s.getSizeInBytes();

@@ -23,6 +23,12 @@ game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sen
 game.debug = {};
 game.debug.enabled = false;
 game.debug.selected = 0;
+game.debug.entities = []	//Index entities by x and y position for easier level design
+game.debug.savableEntitites = [];
+game.debug.selectedX = 0;
+game.debug.selectedY = 0;
+game.debug.maxX = 0;		//The furtheset we're allowed to select before it loops
+game.debug.maxY = 0;		//Same as above
 game.debug.speedBoost = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
@@ -397,7 +403,6 @@ function begin_loadSprites() {
 					tmp.addFrame(96+288*j+l*32,yOffset+i*96+k*32,10);
 					tmp.addFrame(192+288*j+l*32,yOffset+i*96+k*32,10);
 				}
-				
 			}
 		}
 	}
@@ -496,11 +501,25 @@ function begin_serverInit() {
 
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
+			var startX = buffer.getInt()/32;
+			var startY = buffer.getInt()/32;
+			var savable = buffer.getByte();
 			var taglen = buffer.getInt();
 			var srcImageTag = "";
 			for (var i = 0; i < taglen; i++) {
 				srcImageTag += buffer.getChar();
 			}
+			
+			//For debug mode, store this indexed by the x and y position
+			if (!game.debug.entities[startY]) {
+				game.debug.entities[startY] = [];
+			}
+			game.debug.entities[startY][startX] = type;
+			//+1 because we want x % maxX to be x, but x+1 should loop back to 0
+			game.debug.maxX = startX+1 > game.debug.maxX ? startX+1 : game.debug.maxX;
+			game.debug.maxY = startY+1 > game.debug.maxY ? startY+1 : game.debug.maxY;
+			
+			if (savable==1) {game.debug.savableEntitites[type] = true;}
 			
 			//Load the sprite info
 			var spriteCount = buffer.getInt();
@@ -1151,7 +1170,7 @@ function updateGame() {
 		}
 		if (engine.isKeyPressed("Digit6")) {
 			game.debug.row++;
-			game.debug.row %= 2;
+			game.debug.row %= 3;
 			game.selected = 0;
 		}
 		if (engine.isKeyPressed("Digit7")) {
@@ -1166,6 +1185,32 @@ function updateGame() {
 			game.debug.circleFill = !game.debug.circleFill;
 		}
 		
+		if (engine.isKeyPressed("KeyW")) {
+			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
+			game.debug.selectedY--;
+			while (game.debug.selectedY < 0) { game.debug.selectedY += game.debug.maxY;}
+		}
+		if (engine.isKeyPressed("KeyS")) {
+			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY += 4; }	//When combined below, this becomes 5 (1/2 grid size)
+			game.debug.selectedY++;
+			while (game.debug.selectedY >= game.debug.maxY) { game.debug.selectedY -= game.debug.maxY;}
+		}
+		if (engine.isKeyPressed("KeyA")) {
+			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
+			game.debug.selectedX--;
+			while (game.debug.selectedX < 0) { game.debug.selectedX += game.debug.maxX;}
+		}
+		if (engine.isKeyPressed("KeyD")) {
+			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX += 4; }	//When combined below, this becomes 5 (1/2 grid size)
+			game.debug.selectedX++;
+			while (game.debug.selectedX >= game.debug.maxX) { game.debug.selectedX -= game.debug.maxX;}
+		}
+		
+		if (game.debug.entities[game.debug.selectedY] && game.debug.entities[game.debug.selectedY][game.debug.selectedX]) {
+			game.debug.selected = game.debug.entities[game.debug.selectedY][game.debug.selectedX];
+		} else {
+			game.debug.selected = 0;
+		}
 		
 		
 		//Assume X tiles.  add by X then mod by X.  Solves + and - changes
@@ -1238,6 +1283,12 @@ function paintGame() {
 	var offsetX = Math.floor((game.player.tweenX - 12) * 32);
 	var offsetY = Math.floor((game.player.tweenY - 9) * 32);
 	
+	//If debug mode, shift offsetY slightly less so everything is drawn lower
+	if (game.debug.enabled) {
+		offsetYTile -= 4;
+		offsetY -= 4*32;
+	}
+	
 	//Draw only what we can see.
 	var startRow = offsetYTile - 1;
 	var endRow = offsetYTile + 20;
@@ -1308,8 +1359,6 @@ function paintGame() {
 	
 	//////////DEBUG MODE
 	if (game.debug.enabled) {
-		
-		
 		//Draw the entity ID above every entity (and paths)
 		engine.__context.fillStyle = "#fff";
 		engine.__context.font="12px Arial";
@@ -1338,71 +1387,141 @@ function paintGame() {
 			engine.__context.stroke();
 		}
 		
-		
-		//IDK why i chose 42, but go with it
-		engine.__context.fillStyle = "#000";
-		engine.__context.fillRect(0,0,engine.width,42*2);
-		engine.__context.fillStyle = "#fff";
-		
-		var xOffset = 0;
-		while (game.debug.selected - xOffset > 20) {
-			xOffset += 20;
-		}
-		xOffset *= 32+5;
-		
-		var selectRow = game.debug.row == 1 ? 42 : 0;
-		engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, selectRow,32+10,32+10);
-		
-		//If we go too far to the right, scroll
-		
-		
-		
-		
-		//Draw percent of brushSize
-		engine.__context.fillStyle = "#f00";
-		var height = game.debug.brushSize * 4.2;	//0-10 * 42 is a size of 0 to 42
-		engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, 42-height,32+10,height);
-		
-		//Draw tiles at the top for level editor
-		for (var i =0 ; i < game.uniqueTileIDs; i++) {
-			engine.drawSprite("tile" + i,(i*(32+5) + 5)-xOffset,5);
-		}
-		
-		
-		//Draw what we're about to edit
-		//NOTE:  THIS IS JUST DRAWING!  MAY DIFFER FROM ACTUAL
-		engine.__context.fillStyle  = "rgba(255, 0, 0, 0.2)";
-		for (var colOffset = -game.debug.brushSize; colOffset <= game.debug.brushSize; colOffset++) {
-			for (var rowOffset = -game.debug.brushSize; rowOffset <= game.debug.brushSize; rowOffset++) {
-				var row = game.player.y + rowOffset;
-				var col = game.player.x + colOffset;
-				var x = (col * 32) - offsetX;
-				var y = (row * 32) - offsetY;
-				
-				//Distance calculation
-				var distSqrd = (colOffset*colOffset)+(rowOffset*rowOffset);
-				var radSqrd = game.debug.brushSize * game.debug.brushSize;
-				if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
-				if (!game.debug.circleFill || distSqrd <= radSqrd) {
-					engine.__context.fillRect(x,y,32,32);
+		if (game.debug.row == 2) {
+			//Use multiples of 42 (32+10px padding)
+			//8 rows, 19 cols
+			var width = 42;
+			var maxRow = 8;
+			var maxCol = 19;
+			var zoomOut = false;
+			if (engine.isKeyDown("ShiftRight")) {
+				zoomOut = true;
+				engine.__context.save();
+				engine.__context.scale(0.5,0.5);
+				maxRow *= 2;
+				maxCol *= 2;
+			}
+			var rowOffset = game.debug.selectedY-Math.floor(maxRow/2);
+			var colOffset = game.debug.selectedX-Math.floor(maxCol/2);;
+			
+			for (var row = 0; row < maxRow; row++) {
+				for (var col = 0; col < maxCol; col++) {
+					var r = row + rowOffset;
+					var c = col + colOffset;
+					if (r < 0) { r += game.debug.maxY; }
+					if (c < 0) { c += game.debug.maxX; }
+					r %= game.debug.maxY;
+					c %= game.debug.maxX;
+					
+					var opacity = 0.8;
+					var majorColor = 150;
+					var minorColor = 50;
+					var noColor = 0;
+					if (r == game.debug.selectedY && c == game.debug.selectedX) {
+						opacity = 1;
+						majorColor = 255;
+						minorColor = 255;
+						noColor = 255;
+					}
+					//Draw this entity if it exists
+					if (game.debug.entities[r] && game.debug.entities[r][c]) {
+						var type = game.debug.entities[r][c];
+						if (game.collidableEntities[type]) {
+							engine.__context.fillStyle = "rgba("+majorColor+",050,"+majorColor+"," + opacity +")";
+						} else {
+							engine.__context.fillStyle  = "rgba("+minorColor+", "+minorColor+", "+minorColor+", " + opacity +")";
+						}
+						engine.__context.fillRect(col * width, row*width, width, width);
+						
+						if (game.debug.savableEntitites[type]) {
+							engine.__context.fillStyle = "rgba("+minorColor+","+minorColor+","+minorColor+"," + opacity +")";
+							engine.__context.beginPath();
+							engine.__context.moveTo(col*width+1,row*width+1);
+							engine.__context.lineTo(col*width + 40,row*width+1);
+							engine.__context.lineTo(col*width+21,row*width+41);
+							engine.__context.fill();
+						}
+						
+						engine.drawSprite("entity" + type,(col * width)+5,(row * width)+5);
+					} else {
+						var gridlineColor = 0;
+						var imagelineColor = 0;
+						if (r % 10 == 0 || c % 10 == 0) { gridlineColor = 150;}
+						if (r == 0 || c == 0) { imagelineColor = 150;}
+						
+						engine.__context.fillStyle  = "rgba("+noColor+", "+imagelineColor + ", "+gridlineColor+", 0.9)";
+						engine.__context.fillRect(col * width, row*width, width, width);
+					}
 				}
 			}
+			
+			if (zoomOut) {
+				//Restore out graphics state
+				engine.__context.restore();
+			}
+		} else {
+			
+			//IDK why i chose 42, but go with it
+			engine.__context.fillStyle = "#000";
+			engine.__context.fillRect(0,0,engine.width,42*2);
+			engine.__context.fillStyle = "#fff";
+			
+			var xOffset = 0;
+			while (game.debug.selected - xOffset > 20) {
+				xOffset += 20;
+			}
+			xOffset *= 32+5;
+			
+			var selectRow = game.debug.row == 1 ? 42 : 0;
+			engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, selectRow,32+10,32+10);
+			
+			//If we go too far to the right, scroll
+			//Draw percent of brushSize
+			engine.__context.fillStyle = "#f00";
+			var height = game.debug.brushSize * 4.2;	//0-10 * 42 is a size of 0 to 42
+			engine.__context.fillRect(game.debug.selected * (32+5) - xOffset, 42-height,32+10,height);
+			
+			//Draw tiles at the top for level editor
+			for (var i =0 ; i < game.uniqueTileIDs; i++) {
+				engine.drawSprite("tile" + i,(i*(32+5) + 5)-xOffset,5);
+			}
+			
+			
+			//Draw what we're about to edit
+			//NOTE:  THIS IS JUST DRAWING!  MAY DIFFER FROM ACTUAL
+			engine.__context.fillStyle  = "rgba(255, 0, 0, 0.2)";
+			for (var colOffset = -game.debug.brushSize; colOffset <= game.debug.brushSize; colOffset++) {
+				for (var rowOffset = -game.debug.brushSize; rowOffset <= game.debug.brushSize; rowOffset++) {
+					var row = game.player.y + rowOffset;
+					var col = game.player.x + colOffset;
+					var x = (col * 32) - offsetX;
+					var y = (row * 32) - offsetY;
+					
+					//Distance calculation
+					var distSqrd = (colOffset*colOffset)+(rowOffset*rowOffset);
+					var radSqrd = game.debug.brushSize * game.debug.brushSize;
+					if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
+					if (!game.debug.circleFill || distSqrd <= radSqrd) {
+						engine.__context.fillRect(x,y,32,32);
+					}
+				}
+			}
+			
+			
+			//ENTITY STUFF
+			//Draw tiles at the top for level editor
+			for (var i =0 ; i < game.uniqueEntityIDs; i++) {
+				engine.drawSprite("entity" + i,(i*(32+5) + 5)-xOffset,5+42);
+			}
+			
+			//Draw ping time
+			engine.__context.fillStyle  = "#000";
+			engine.__context.fillRect(0,42*2,300,42);
+			engine.__context.fillStyle  = "#fff";
+			engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
+			engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
+			engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
 		}
-		
-		
-		//ENTITY STUFF
-		//Draw tiles at the top for level editor
-		for (var i =0 ; i < game.uniqueEntityIDs; i++) {
-			engine.drawSprite("entity" + i,(i*(32+5) + 5)-xOffset,5+42);
-		}
-		
-		//Draw ping time
-		engine.__context.fillStyle  = "#000";
-		engine.__context.fillRect(0,42*2,300,42);
-		engine.__context.fillStyle  = "#fff";
-		engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
-		engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
-		engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
 	}
 }
 
