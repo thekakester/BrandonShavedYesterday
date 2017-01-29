@@ -457,6 +457,23 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[3], grid[2]+cell[5],width,height,normal,"Gold Box"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[0], grid[2]+cell[6],width,height,normal,"Gold Crown"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[1], grid[2]+cell[6],width,height,normal,"Gold Loot"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[0],width,height,normal,"Path Inner 1"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[0],width,height,normal,"Path Inner 2"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[0],width,height,normal,"Path Inner 3"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[1],width,height,normal,"Path Inner 4"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[1],width,height,normal,"Path Inner 5"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[2],width,height,normal,"Path Inner 6"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[2],width,height,normal,"Path Inner 7"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[2],width,height,normal,"Path Inner 8"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[3],width,height,normal,"Path Outer 1"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[3],width,height,normal,"Path Outer 2"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[3],width,height,normal,"Path Outer 3"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[4],width,height,normal,"Path Outer 4"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[4],width,height,normal,"Path"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[4],width,height,normal,"Path Outer 5"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[5],width,height,normal,"Path Outer 6"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[5],width,height,normal,"Path Outer 8"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[5],width,height,normal,"Path Outer 8"));
 		
 		
 

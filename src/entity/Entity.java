@@ -65,16 +65,11 @@ public class Entity {
 
 
 		ByteBuffer bb = ByteBuffer.allocate(this.sizeInBytes());
-		int size = 0;//this.sizeInBytes();
 
 		bb.putInt(id);
-		size += 4;
 		bb.putInt(type);
-		size += 4;
 		bb.putInt(x);
-		size += 4;
 		bb.putInt(y);
-		size += 4;
 
 		//Add flags.  Contains isHostile
 		byte flags = 0;
@@ -82,17 +77,13 @@ public class Entity {
 		bb.put(flags);
 
 
-		bb.putInt(path.size()); size+=4;
+		bb.putInt(path.size());
 		for (Byte b : path) {
-			bb.put(b); size++;
+			bb.put(b);
 		}
 
 		//Elapsed time since path created
-		bb.putInt(getPathElapsedTime()); size +=4;
-
-		if (size != this.sizeInBytes()) {
-			System.out.println("Expected " + this.sizeInBytes() + " got " + size);
-		}
+		bb.putInt(getPathElapsedTime());
 
 		return bb.array();
 	}
