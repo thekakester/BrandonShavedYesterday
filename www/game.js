@@ -969,6 +969,7 @@ function updateGame() {
 	if (engine.isKeyPressed("Escape")) {
 		game.debug.enabled = !game.debug.enabled;
 		game.debug.selected = 0;
+		game.debug.row = 0;
 		game.debug.brushSize = 0;
 		console.log("Set debug mode to " + game.debug.enabled);
 	}
@@ -1297,7 +1298,7 @@ function paintGame() {
 	var offsetY = Math.floor((game.player.tweenY - 9) * 32);
 	
 	//If debug mode, shift offsetY slightly less so everything is drawn lower
-	if (game.debug.enabled) {
+	if (game.debug.enabled && game.debug.row >= 2) {
 		offsetYTile -= 4;
 		offsetY -= 4*32;
 	}
@@ -1542,9 +1543,10 @@ function paintGame() {
 		engine.__context.fillText("? key = help:",10,595);
 		
 		if (engine.isKeyDown("Slash")) {
-			engine.__context.fillStyle  = "#000";
-			engine.__context.fillRect(0,0,600,800);
+			engine.__context.fillStyle  = "rgba(0,0,0,.8)";
+			engine.__context.fillRect(0,0,800,600);
 			engine.__context.fillStyle  = "#fff";
+			engine.__context.font = "18px Arial";
 			var y = 20;
 			engine.__context.fillText("WASD: Select",10,y); y+=20
 			engine.__context.fillText("E: Create object / Set tile",10,y); y+=20
