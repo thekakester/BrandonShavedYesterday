@@ -449,6 +449,7 @@ game.onServerRespond = function(response) {
 				for (var c = 0; c < length; c++) {
 					game.message[line] += buffer.getChar();
 				}
+				game.message[line] = unescape(game.message[line]);
 			}
 		}
 		
