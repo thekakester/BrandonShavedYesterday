@@ -140,6 +140,114 @@ function begin_loadSprites() {
 	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Indoor wood
 	tmp.addFrame(2752,320,10);
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Vertical 1
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Vertical 2
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Vertical 3
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Horizontal 1
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Horizontal 2
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path End Top
+	tmp.addFrame(grid[1]+cell[6],grid[0]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 1
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 2
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 3
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 4
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Horizontal 3
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path End Down
+	tmp.addFrame(grid[1]+cell[7],grid[0]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 5
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 6
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 7
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path Corner 8
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path End Right
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Dark Path End Left
+	tmp.addFrame(grid[1]+cell[8],grid[0]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Vertical 1
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Vertical 2
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Vertical 3
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Horizontal 1
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Horizontal 2
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Top
+	tmp.addFrame(grid[2]+cell[6],grid[0]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 1
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 2
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 3
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 4
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Horizontal 3
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Down
+	tmp.addFrame(grid[2]+cell[7],grid[0]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 5
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[0],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 6
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[1],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 7
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[2],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path Corner 8
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Right
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Path End Left
+	tmp.addFrame(grid[2]+cell[8],grid[0]+cell[5],10);
+	
 	
 	/**Entity sprites loaded on server and transmitted during init()**/
 	
