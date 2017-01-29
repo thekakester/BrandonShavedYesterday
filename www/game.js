@@ -48,6 +48,11 @@ game.init = function () {
 }
 
 function begin_loadSprites() {
+	
+	//ARRAY DECLARATIONS  -- to make math easier
+	var grid = [0,320,640,960,1280,1600,1920,2240,2560,2880];
+	var cell = [0,32,64,96,128,160,192,224,256,288];
+	
 	//The tag for tile sprites is "tile" followed by the tile number.
 	//Example: "tile0" is grass, "tile1" is flowers, etc.
 	game.uniqueTileIDs = 0;
