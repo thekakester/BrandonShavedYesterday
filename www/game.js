@@ -24,11 +24,14 @@ game.debug = {};
 game.debug.enabled = false;
 game.debug.selected = 0;
 game.debug.entities = []	//Index entities by x and y position for easier level design
+game.debug.tiles = []		//Index tiles by x and y position for easier level design
+game.debug.entities.maxX = 0;
+game.debug.entities.maxY = 0;
+game.debug.tiles.maxX = 0;
+game.debug.tiles.maxY = 0;
 game.debug.savableEntitites = [];
 game.debug.selectedX = 0;
 game.debug.selectedY = 0;
-game.debug.maxX = 0;		//The furtheset we're allowed to select before it loops
-game.debug.maxY = 0;		//Same as above
 game.debug.speedBoost = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
@@ -408,7 +411,21 @@ function begin_loadSprites() {
 	}
 	
 	
-	
+	//This is a bad hacky way to populate our debug menu
+	for (var spriteTag in engine.__sprites) {
+		//Get the sprite
+		var sprite = engine.__sprites[spriteTag];
+		
+		//Get the x and y position of the first frame
+		var x = sprite.__frames[0].x/32;
+		var y = sprite.__frames[0].y/32;
+		if (!game.debug.tiles[y]) {
+			game.debug.tiles[y] = [];
+		}
+		game.debug.tiles[y][x] = spriteTag;
+		game.debug.tiles.maxX = x+1 > game.debug.tiles.maxX ? x+1 : game.debug.tiles.maxX;
+		game.debug.tiles.maxY = y+1 > game.debug.tiles.maxY ? y+1 : game.debug.tiles.maxY;
+	}
 	
 	
 	/**Entity sprites loaded on server and transmitted during init()**/
@@ -514,10 +531,10 @@ function begin_serverInit() {
 			if (!game.debug.entities[startY]) {
 				game.debug.entities[startY] = [];
 			}
-			game.debug.entities[startY][startX] = type;
+			game.debug.entities[startY][startX] = "entity" + type;
 			//+1 because we want x % maxX to be x, but x+1 should loop back to 0
-			game.debug.maxX = startX+1 > game.debug.maxX ? startX+1 : game.debug.maxX;
-			game.debug.maxY = startY+1 > game.debug.maxY ? startY+1 : game.debug.maxY;
+			game.debug.entities.maxX = startX+1 > game.debug.entities.maxX ? startX+1 : game.debug.entities.maxX;
+			game.debug.entities.maxY = startY+1 > game.debug.entities.maxY ? startY+1 : game.debug.entities.maxY;
 			
 			if (savable==1) {game.debug.savableEntitites[type] = true;}
 			
@@ -1179,48 +1196,51 @@ function updateGame() {
 			game.debug.circleFill = !game.debug.circleFill;
 		}
 		
+		//This is the index to use for grid view (ignored for other things)
+		var index = game.debug.row == 2 ? game.debug.tiles : game.debug.entities;
+		
 		if (engine.isKeyPressed("KeyW")) {
-			if (game.debug.row == 3) {
+			if (game.debug.row >= 2) {
 				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
 				game.debug.selectedY--;
-				while (game.debug.selectedY < 0) { game.debug.selectedY += game.debug.maxY;}
+				while (game.debug.selectedY < 0) { game.debug.selectedY += index.maxY;}
 			} else {
 				game.debug.row--;
 				if (game.debug.row < 0) { game.debug.row == 1; }
 			}
 		}
 		if (engine.isKeyPressed("KeyS")) {
-			if (game.debug.row == 3) {
+			if (game.debug.row >= 2) {
 				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY += 4; }	//When combined below, this becomes 5 (1/2 grid size)
 				game.debug.selectedY++;
-				while (game.debug.selectedY >= game.debug.maxY) { game.debug.selectedY -= game.debug.maxY;}
+				while (game.debug.selectedY >= index.maxY) { game.debug.selectedY -= index.maxY;}
 			} else {
 				game.debug.row++;
 				if (game.debug.row > 1) { game.debug.row = 0; }
 			}
 		}
 		if (engine.isKeyPressed("KeyA")) {
-			if (game.debug.row == 3) {
+			if (game.debug.row >= 2) {
 				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
 				game.debug.selectedX--;
-				while (game.debug.selectedX < 0) { game.debug.selectedX += game.debug.maxX;}
+				while (game.debug.selectedX < 0) { game.debug.selectedX += index.maxX;}
 			} else {
 				game.debug.selected--;
 			}
 		}
 		if (engine.isKeyPressed("KeyD")) {
-			if (game.debug.row == 3) {
+			if (game.debug.row >= 2) {
 				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX += 4; }	//When combined below, this becomes 5 (1/2 grid size)
 				game.debug.selectedX++;
-				while (game.debug.selectedX >= game.debug.maxX) { game.debug.selectedX -= game.debug.maxX;}
+				while (game.debug.selectedX >= index.maxX) { game.debug.selectedX -= index.maxX;}
 			} else {
 				game.debug.selected++;
 			}
 		}
 		
-		if (game.debug.row == 3) {
-			if (game.debug.entities[game.debug.selectedY] && game.debug.entities[game.debug.selectedY][game.debug.selectedX]) {
-				game.debug.selected = game.debug.entities[game.debug.selectedY][game.debug.selectedX];
+		if (game.debug.row >= 2) {
+			if (index[game.debug.selectedY] && index[game.debug.selectedY][game.debug.selectedX]) {
+				game.debug.selected = index[game.debug.selectedY][game.debug.selectedX];
 			} else {
 				game.debug.selected = 0;
 			}
@@ -1240,7 +1260,7 @@ function updateGame() {
 		var selectedID = game.debug.selected;	//Might be a tileID or entityID
 		
 		//if its an entity, tell the server to make a new entity 
-		if (game.debug.row == 1 || game.debug.row == 2) {
+		if (game.debug.row == 1 || game.debug.row == 3) {
 			if (engine.isKeyPressed("KeyE")) {	//Used pressed so we don't make extra entities
 				//Tell server to make a new entity
 				game.appendMessage += "&createEntity=" + selectedID + "|" + game.player.x + "|" + game.player.y;
@@ -1371,7 +1391,13 @@ function paintGame() {
 		}
 	}
 	
+	/////////////////////
+	//////////////////////
+	//////////////////////
 	//////////DEBUG MODE
+	/////////////////////
+	//////////////////////
+	//////////////////////
 	if (game.debug.enabled) {
 		//Draw the entity ID above every entity (and paths)
 		engine.__context.fillStyle = "#fff";
@@ -1401,7 +1427,10 @@ function paintGame() {
 			engine.__context.stroke();
 		}
 		
-		if (game.debug.row == 3) {
+		if (game.debug.row >= 2) {
+			
+			var index = game.debug.row == 2 ? game.debug.tiles : game.debug.entities;
+			
 			//Use multiples of 42 (32+10px padding)
 			//8 rows, 19 cols
 			var width = 42;
@@ -1422,10 +1451,10 @@ function paintGame() {
 				for (var col = 0; col < maxCol; col++) {
 					var r = row + rowOffset;
 					var c = col + colOffset;
-					if (r < 0) { r += game.debug.maxY; }
-					if (c < 0) { c += game.debug.maxX; }
-					r %= game.debug.maxY;
-					c %= game.debug.maxX;
+					if (r < 0) { r += index.maxY; }
+					if (c < 0) { c += index.maxX; }
+					r %= index.maxY;
+					c %= index.maxX;
 					
 					var opacity = 0.8;
 					var majorColor = 150;
@@ -1438,16 +1467,16 @@ function paintGame() {
 						noColor = 255;
 					}
 					//Draw this entity if it exists
-					if (game.debug.entities[r] && game.debug.entities[r][c]) {
-						var type = game.debug.entities[r][c];
-						if (game.collidableEntities[type]) {
+					if (index[r] && index[r][c]) {
+						var tag = index[r][c];
+						if (game.collidableEntities[tag.replace("entity","")]) {
 							engine.__context.fillStyle = "rgba("+majorColor+",050,"+majorColor+"," + opacity +")";
 						} else {
 							engine.__context.fillStyle  = "rgba("+minorColor+", "+minorColor+", "+minorColor+", " + opacity +")";
 						}
 						engine.__context.fillRect(col * width, row*width, width, width);
 						
-						if (game.debug.savableEntitites[type]) {
+						if (game.debug.savableEntitites[tag.replace("entity","")]) {
 							engine.__context.fillStyle = "rgba("+minorColor+","+minorColor+","+minorColor+"," + opacity +")";
 							engine.__context.beginPath();
 							engine.__context.moveTo(col*width+1,row*width+1);
@@ -1455,8 +1484,8 @@ function paintGame() {
 							engine.__context.lineTo(col*width+21,row*width+41);
 							engine.__context.fill();
 						}
-						
-						engine.drawSprite("entity" + type,(col * width)+5,(row * width)+5);
+						console.log("TAG:" + tag)
+						engine.drawSprite(tag,(col * width)+5,(row * width)+5);
 					} else {
 						var gridlineColor = 0;
 						var imagelineColor = 0;
