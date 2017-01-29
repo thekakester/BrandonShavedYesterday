@@ -352,6 +352,56 @@ function begin_loadSprites() {
 	tmp.addFrame(grid[2]+cell[2],grid[4]+cell[9],10);
 	tmp.addFrame(grid[2]+cell[3],grid[4]+cell[9],10);
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Grass Tile Alt
+	tmp.addFrame(grid[0]+cell[1],grid[4]+cell[9],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Sand Tile Alt
+	tmp.addFrame(grid[0]+cell[1],grid[5]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Snow Tile Alt
+	tmp.addFrame(grid[0]+cell[1],grid[6]+cell[1],10);
+
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 1
+	tmp.addFrame(grid[0]+cell[6],grid[6]+cell[3],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 2
+	tmp.addFrame(grid[0]+cell[6],grid[6]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 3
+	tmp.addFrame(grid[0]+cell[6],grid[6]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 4
+	tmp.addFrame(grid[0]+cell[6],grid[6]+cell[6],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 5
+	tmp.addFrame(grid[0]+cell[7],grid[6]+cell[3],10);
+
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 6
+	tmp.addFrame(grid[0]+cell[7],grid[6]+cell[4],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 7
+	tmp.addFrame(grid[0]+cell[7],grid[6]+cell[5],10);
+	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Ice Tile 8
+	tmp.addFrame(grid[0]+cell[7],grid[6]+cell[6],10);
+
+	
+	var yOffset = grid[4]+cell[5];
+	for(var i = 0; i < 6; i++){//Sprite: 
+		//0 - Green, 1 - Green Inner, 2 - Sand, 3 - Sand Inner, 4 - Snow, 5 - Snow Inner
+		for(var j = 0; j < 2; j++){//0 - Dark, 1 - Light
+			for(var k = 0; k < 3;k++){ //0 - Upper, 1 - Center, 2 - Lower
+				for(var l = 0; l < 3; l++){ //0 - Left, 1 - Center, 3 - Right
+					var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Add all the things for sprite name
+					tmp.addFrame(0+288*j+l*32,yOffset+i*96+k*32,10);
+					tmp.addFrame(96+288*j+l*32,yOffset+i*96+k*32,10);
+					tmp.addFrame(192+288*j+l*32,yOffset+i*96+k*32,10);
+				}
+				
+			}
+		}
+	}
+	
 	
 	
 	
