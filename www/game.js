@@ -1152,26 +1152,19 @@ function updateGame() {
 			game.debug.frameCount = 0;
 		}
 		
-		if (engine.isKeyPressed("Digit1")) {
-			game.debug.selected--;
-		}
-		if (engine.isKeyPressed("Digit2")) {
-			game.debug.selected++;
-		}
-		if (engine.isKeyPressed("Digit4")) {
+		if (engine.isKeyPressed("Minus")) {
 			if (game.debug.brushSize > 0) {
 				game.debug.brushSize--;
 			}
 		}
-		if (engine.isKeyPressed("Digit5")) {
+		if (engine.isKeyPressed("Equal")) {
 			if (game.debug.brushSize < 10) {
 				game.debug.brushSize++;
 			}
 		}
-		if (engine.isKeyPressed("Digit6")) {
-			game.debug.row++;
-			game.debug.row %= 3;
-			game.selected = 0;
+		if (engine.isKeyPressed("Digit1")) {
+			game.debug.row+=2;
+			game.debug.row %= 4;
 		}
 		if (engine.isKeyPressed("Digit7")) {
 			game.debug.speedBoost-=2;
@@ -1186,30 +1179,50 @@ function updateGame() {
 		}
 		
 		if (engine.isKeyPressed("KeyW")) {
-			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
-			game.debug.selectedY--;
-			while (game.debug.selectedY < 0) { game.debug.selectedY += game.debug.maxY;}
+			if (game.debug.row == 3) {
+				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
+				game.debug.selectedY--;
+				while (game.debug.selectedY < 0) { game.debug.selectedY += game.debug.maxY;}
+			} else {
+				game.debug.row--;
+				if (game.debug.row < 0) { game.debug.row == 1; }
+			}
 		}
 		if (engine.isKeyPressed("KeyS")) {
-			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY += 4; }	//When combined below, this becomes 5 (1/2 grid size)
-			game.debug.selectedY++;
-			while (game.debug.selectedY >= game.debug.maxY) { game.debug.selectedY -= game.debug.maxY;}
+			if (game.debug.row == 3) {
+				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedY += 4; }	//When combined below, this becomes 5 (1/2 grid size)
+				game.debug.selectedY++;
+				while (game.debug.selectedY >= game.debug.maxY) { game.debug.selectedY -= game.debug.maxY;}
+			} else {
+				game.debug.row++;
+				if (game.debug.row > 1) { game.debug.row = 0; }
+			}
 		}
 		if (engine.isKeyPressed("KeyA")) {
-			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
-			game.debug.selectedX--;
-			while (game.debug.selectedX < 0) { game.debug.selectedX += game.debug.maxX;}
+			if (game.debug.row == 3) {
+				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX -= 4; }	//When combined below, this becomes 5 (1/2 grid size)
+				game.debug.selectedX--;
+				while (game.debug.selectedX < 0) { game.debug.selectedX += game.debug.maxX;}
+			} else {
+				game.debug.selected--;
+			}
 		}
 		if (engine.isKeyPressed("KeyD")) {
-			if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX += 4; }	//When combined below, this becomes 5 (1/2 grid size)
-			game.debug.selectedX++;
-			while (game.debug.selectedX >= game.debug.maxX) { game.debug.selectedX -= game.debug.maxX;}
+			if (game.debug.row == 3) {
+				if (engine.isKeyDown("ShiftLeft")||engine.isKeyDown("ShiftRight")) { game.debug.selectedX += 4; }	//When combined below, this becomes 5 (1/2 grid size)
+				game.debug.selectedX++;
+				while (game.debug.selectedX >= game.debug.maxX) { game.debug.selectedX -= game.debug.maxX;}
+			} else {
+				game.debug.selected++;
+			}
 		}
 		
-		if (game.debug.entities[game.debug.selectedY] && game.debug.entities[game.debug.selectedY][game.debug.selectedX]) {
-			game.debug.selected = game.debug.entities[game.debug.selectedY][game.debug.selectedX];
-		} else {
-			game.debug.selected = 0;
+		if (game.debug.row == 3) {
+			if (game.debug.entities[game.debug.selectedY] && game.debug.entities[game.debug.selectedY][game.debug.selectedX]) {
+				game.debug.selected = game.debug.entities[game.debug.selectedY][game.debug.selectedX];
+			} else {
+				game.debug.selected = 0;
+			}
 		}
 		
 		
@@ -1226,13 +1239,13 @@ function updateGame() {
 		var selectedID = game.debug.selected;	//Might be a tileID or entityID
 		
 		//if its an entity, tell the server to make a new entity 
-		if (game.debug.row == 1) {
-			if (engine.isKeyPressed("Digit3")) {	//Used pressed so we don't make extra entities
+		if (game.debug.row == 1 || game.debug.row == 2) {
+			if (engine.isKeyPressed("KeyE")) {	//Used pressed so we don't make extra entities
 				//Tell server to make a new entity
 				game.appendMessage += "&createEntity=" + selectedID + "|" + game.player.x + "|" + game.player.y;
 			}
 		} else {	
-			if (engine.isKeyDown("Digit3")) {			
+			if (engine.isKeyDown("KeyE")) {			
 				for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
 					for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
 						var row = game.player.y + yOffset;
@@ -1387,7 +1400,7 @@ function paintGame() {
 			engine.__context.stroke();
 		}
 		
-		if (game.debug.row == 2) {
+		if (game.debug.row == 3) {
 			//Use multiples of 42 (32+10px padding)
 			//8 rows, 19 cols
 			var width = 42;
@@ -1459,7 +1472,7 @@ function paintGame() {
 				//Restore out graphics state
 				engine.__context.restore();
 			}
-		} else {
+		} else if (game.debug.row < 2) {
 			
 			//IDK why i chose 42, but go with it
 			engine.__context.fillStyle = "#000";
@@ -1521,6 +1534,26 @@ function paintGame() {
 			engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
 			engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
 			engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
+		}
+		
+		engine.__context.fillStyle  = "#000";
+		engine.__context.fillRect(0,600-20,800,20);
+		engine.__context.fillStyle  = "#fff";
+		engine.__context.fillText("? key = help:",10,595);
+		
+		if (engine.isKeyDown("Slash")) {
+			engine.__context.fillStyle  = "#000";
+			engine.__context.fillRect(0,0,600,800);
+			engine.__context.fillStyle  = "#fff";
+			var y = 20;
+			engine.__context.fillText("WASD: Select",10,y); y+=20
+			engine.__context.fillText("E: Create object / Set tile",10,y); y+=20
+			engine.__context.fillText("1: Toggle grid view (entities only)",10,y); y+=20
+			engine.__context.fillText("7/8: Fly slower/faster",10,y); y+=20
+			engine.__context.fillText("+/-: Increase/Decrease edit size (tiles only)",10,y); y+=20
+			engine.__context.fillText("9: Toggle between circle and square select zone (tiles only)",10,y); y+=20
+			engine.__context.fillText("Left Shift (in grid mode): Move 5 tiles at a time",10,y); y+=20
+			engine.__context.fillText("Right Shift (in grid mode): Zoom out",10,y); y+=20
 		}
 	}
 }
