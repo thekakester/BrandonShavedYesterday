@@ -458,22 +458,37 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[0], grid[2]+cell[6],width,height,normal,"Gold Crown"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[1], grid[2]+cell[6],width,height,normal,"Gold Loot"));
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[0],width,height,normal,"Path Inner 1"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[0],width,height,normal,"Path Inner 2"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[0],width,height,normal,"Path Inner 3"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[1],width,height,normal,"Path Inner 4"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[1],width,height,normal,"Path Inner 5"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[2],width,height,normal,"Path Inner 6"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[2],width,height,normal,"Path Inner 7"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[2],width,height,normal,"Path Inner 8"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[3],width,height,normal,"Path Outer 1"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[3],width,height,normal,"Path Outer 2"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[3],width,height,normal,"Path Outer 3"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[4],width,height,normal,"Path Outer 4"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[4],width,height,normal,"Path"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[4],width,height,normal,"Path Outer 5"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[0], grid[0]+cell[5],width,height,normal,"Path Outer 6"));
+		last().isGroundOverlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[1], grid[0]+cell[5],width,height,normal,"Path Outer 8"));
-		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[3]+cell[2], grid[0]+cell[5],width,height,normal,"Path Outer 8"));
+		last().isGroundOverlay = true;
 		
 		
 

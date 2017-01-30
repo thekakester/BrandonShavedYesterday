@@ -14,6 +14,7 @@ public class EntityDefinition {
 	public final String name;
 	public boolean isSpawner;
 	public boolean isTrigger;
+	public boolean isGroundOverlay;
 	
 	/**Default constructor.
 	 * 
@@ -108,6 +109,7 @@ public class EntityDefinition {
 		if (collidable) { collidableOrSpawn |= 1;}	//2^0
 		if (isSpawner) { collidableOrSpawn |= 2; }	//2^1
 		if (isTrigger) { collidableOrSpawn |= 4; }	//2^2
+		if (isGroundOverlay) { collidableOrSpawn |= 8; }	//2^3
 		
 		bb.put(collidableOrSpawn);
 		bb.putInt(baseHP);

@@ -13,6 +13,7 @@ game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
 game.hiddenEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
+game.overlayEntities = [];
 game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
 game.waitingForServerResponse = false;				//When true, disables warps until server responds
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
@@ -514,7 +515,8 @@ function begin_serverInit() {
 			var collidableOrSpawner = buffer.getByte();
 			if (collidableOrSpawner & 0x1) {game.collidableEntities[type] = true;}	//Bit 1
 			if (collidableOrSpawner & 0x2) {game.hiddenEntities[type] = true;}		//Bit 2
-			if (collidableOrSpawner & 0x4) {game.hiddenEntities[type] = true;}		//Bit 4 //Trigger
+			if (collidableOrSpawner & 0x4) {game.hiddenEntities[type] = true;}		//Bit 3 //Trigger
+			if (collidableOrSpawner & 0x8) {game.overlayEntities[type] = true;}		//Bit 4 //isgrund overlay
 
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
@@ -665,6 +667,7 @@ game.onServerRespond = function(response) {
 					console.log("Creating new entity");
 					game.entities[eid] = new Entity(eid,type,x,y);
 					e = game.entities[eid];
+					e.isOverlay = game.overlayEntities[type];
 				}
 				
 				//If we just got a path and didn't previously have one, tween to it
@@ -1711,6 +1714,9 @@ function isPassable(row,col) {
 *******************************************************************************/
 
 function entitySortFunc(a,b) {
+	if (a.isOverlay && !b.isOverlay) { return -1;}
+	if (b.isOverlay && !a.isOverlay) { return 1;}
+	
 	if (a.y < b.y) { return -1; }
 	if (a.y > b.y) { return 1; }
 	
@@ -1740,6 +1746,7 @@ Entity.prototype = {
 	idle: true,			//if false, animation starts
 	name: "unnamed",
 	delta: [],
+	isOverlay: false,
 	sprite: null,
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
