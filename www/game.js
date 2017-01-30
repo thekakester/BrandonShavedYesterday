@@ -13,7 +13,8 @@ game.collidableTiles = [];	//An array of unpassable tiles
 game.collidableEntities = [];//Array of entities that can't be walked on
 game.hiddenEntities = [];	//Array of things that should be hidden to the player (unless debug mode)
 game.killableEntities = [];
-game.overlayEntities = [];
+game.overlayEntities = [];	//Entities that appear above everything
+game.underlayEntities = [];	//Entities that appear under everything else
 game.warps = [];					//A set of warps.  These also exist in spawnerEntities and entities 
 game.waitingForServerResponse = false;				//When true, disables warps until server responds
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
@@ -516,7 +517,8 @@ function begin_serverInit() {
 			if (collidableOrSpawner & 0x1) {game.collidableEntities[type] = true;}	//Bit 1
 			if (collidableOrSpawner & 0x2) {game.hiddenEntities[type] = true;}		//Bit 2
 			if (collidableOrSpawner & 0x4) {game.hiddenEntities[type] = true;}		//Bit 3 //Trigger
-			if (collidableOrSpawner & 0x8) {game.overlayEntities[type] = true;}		//Bit 4 //isgrund overlay
+			if (collidableOrSpawner & 0x8) {game.underlayEntities[type] = true;}		//Bit 4 //isunderlay
+			if (collidableOrSpawner & 0x16) {game.overlayEntities[type] = true;}	//Bit 5 //isoverlay
 
 			var hp = buffer.getInt();
 			if (hp > 0) { game.killableEntities[type] = true;}
@@ -664,9 +666,10 @@ game.onServerRespond = function(response) {
 				
 				var e = game.entities[eid];
 				if (!e) {
-					console.log("Creating new entity");
+					console.log("Creating new entity: " + type);
 					game.entities[eid] = new Entity(eid,type,x,y);
 					e = game.entities[eid];
+					e.isUnderlay = game.underlayEntities[type];
 					e.isOverlay = game.overlayEntities[type];
 				}
 				
@@ -1243,7 +1246,7 @@ function updateGame() {
 		
 		if (game.debug.row >= 2) {
 			if (index[game.debug.selectedY] && index[game.debug.selectedY][game.debug.selectedX]) {
-				game.debug.selected = index[game.debug.selectedY][game.debug.selectedX];
+				game.debug.selected = index[game.debug.selectedY][game.debug.selectedX].replace("entity","").replace("tile","")-0;
 			} else {
 				game.debug.selected = 0;
 			}
@@ -1339,6 +1342,15 @@ function paintGame() {
 			//engine.__sprites[game.map.tile[r][c]].draw(context,,);
 			if (game.map.tile[r]!=undefined && game.map.tile[r][c] !=undefined) {
 				engine.drawSprite("tile" + game.map.tile[r][c],(32 * c) - offsetX,(32 * r)-offsetY);
+				if (game.debug.enabled && engine.isKeyDown("Digit2")) {
+					//Draw collision box
+					if (game.collidableTiles[game.map.tile[r][c]]) {
+						engine.__context.fillStyle = "rgba(255,0,0,.7)";
+					} else {
+						engine.__context.fillStyle = "rgba(255,255,255,.7)";
+					}
+					engine.__context.fillRect((32*c)-offsetX,(32*r)-offsetY,32,32);
+				}
 			}
 		}
 	}
@@ -1367,6 +1379,17 @@ function paintGame() {
 		
 		engine.drawSprite(getSpriteTag(e),x,y);	
 		
+		//DEBUG: Draw collision box
+		if (game.debug.enabled && engine.isKeyDown("Digit3")) {
+			//Draw collision box
+			if (game.collidableEntities[e.type]) {
+				engine.__context.fillStyle = "rgba(255,0,0,.7)";
+			} else {
+				engine.__context.fillStyle = "rgba(255,255,255,.7)";
+			}
+			engine.__context.fillRect(x,y,32,32);
+		}
+		
 		if (e.direction == 0) {y-=32;}
 		else if (e.direction == 1) { y += 32; }
 		else if (e.direction == 2) { x -= 32; }
@@ -1374,6 +1397,8 @@ function paintGame() {
 		
 		//Draws the attack sprite if it exists
 		engine.drawSprite("inst_att_" + e.id,x,y);
+		
+		
 	}
 	
 	engine.recordKeyboard(true);
@@ -1473,21 +1498,20 @@ function paintGame() {
 					if (index[r] && index[r][c]) {
 						var tag = index[r][c];
 						if (game.collidableEntities[tag.replace("entity","")]) {
-							engine.__context.fillStyle = "rgba("+majorColor+",050,"+majorColor+"," + opacity +")";
+							engine.__context.fillStyle = "rgba("+majorColor+",050,0," + opacity +")";
 						} else {
-							engine.__context.fillStyle  = "rgba("+minorColor+", "+minorColor+", "+minorColor+", " + opacity +")";
+							engine.__context.fillStyle  = "rgba(0, "+minorColor+", 0, " + opacity +")";
 						}
 						engine.__context.fillRect(col * width, row*width, width, width);
 						
 						if (game.debug.savableEntitites[tag.replace("entity","")]) {
-							engine.__context.fillStyle = "rgba("+minorColor+","+minorColor+","+minorColor+"," + opacity +")";
+							engine.__context.fillStyle = "rgba(0,"+minorColor+","+majorColor+"," + opacity +")";
 							engine.__context.beginPath();
 							engine.__context.moveTo(col*width+1,row*width+1);
 							engine.__context.lineTo(col*width + 40,row*width+1);
 							engine.__context.lineTo(col*width+21,row*width+41);
 							engine.__context.fill();
 						}
-						console.log("TAG:" + tag)
 						engine.drawSprite(tag,(col * width)+5,(row * width)+5);
 					} else {
 						var gridlineColor = 0;
@@ -1582,7 +1606,8 @@ function paintGame() {
 			var y = 20;
 			engine.__context.fillText("WASD: Select",10,y); y+=20
 			engine.__context.fillText("E: Create object / Set tile",10,y); y+=20
-			engine.__context.fillText("1: Toggle grid view (entities only)",10,y); y+=20
+			engine.__context.fillText("1: Toggle grid view",10,y); y+=20
+			engine.__context.fillText("2/3: Show Tile/Entity Collision boxes",10,y); y+=20
 			engine.__context.fillText("7/8: Fly slower/faster",10,y); y+=20
 			engine.__context.fillText("+/-: Increase/Decrease edit size (tiles only)",10,y); y+=20
 			engine.__context.fillText("9: Toggle between circle and square select zone (tiles only)",10,y); y+=20
@@ -1714,8 +1739,11 @@ function isPassable(row,col) {
 *******************************************************************************/
 
 function entitySortFunc(a,b) {
-	if (a.isOverlay && !b.isOverlay) { return -1;}
-	if (b.isOverlay && !a.isOverlay) { return 1;}
+	if (a.isUnderlay && !b.isUnderlay) { return -1;}
+	if (b.isUnderlay && !a.isUnderlay) { return 1;}
+	
+	if (a.isOverlay && !b.isOverlay) { return 1;}
+	if (b.isOverlay && !a.isOverlay) { return -1;}
 	
 	if (a.y < b.y) { return -1; }
 	if (a.y > b.y) { return 1; }
@@ -1747,6 +1775,7 @@ Entity.prototype = {
 	name: "unnamed",
 	delta: [],
 	isOverlay: false,
+	isUnderlay: false,
 	sprite: null,
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
