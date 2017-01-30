@@ -74,17 +74,43 @@ public class EntityWithBehavior extends Entity {
 	/**Attempt to attack the entity specified
 	 * 
 	 * @param g Game object
-	 * @param e The entity to attack
-	 * @param delay How long to wait to attack (after they are in range)
 	 * @return
 	 */
-	public boolean attack(Game g, Entity e, long delay) {
-		int dX = Math.abs(e.x - x);
-		int dY = Math.abs(e.y - y);
+	public boolean followNearestPlayer(Game g, int maxDistance) {
+		if (!this.getPath().isEmpty()) { return true; }
+		maxDistance *= maxDistance;	//We use distSquared.  Its faster than using sqrt()
 		
-		//Directly next to
-		//if ()
+		//Find the nearest player
+		PlayerEntity p = getNearestPlayer(g, x, y, maxDistance);
+		if (p!= null) {
+			//Get a path to them
+			this.setPath(Pathfinding.findPath(g, x, y, p.x, p.y, maxDistance, true));
+			if (!getPath().isEmpty()) { g.updateEntity(id); }
+			return (!this.getPath().isEmpty());
+		}
+		
 		return false;
+	}
+	
+	/**Get the nearest player to a specific point
+	 * 
+	 * @param g
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private PlayerEntity getNearestPlayer(Game g, int x, int y, int maxDistance) {
+		int closestDistSquared = Integer.MAX_VALUE;
+		PlayerEntity closest = null;
+		for (PlayerEntity p : g.getPlayers()) {
+			int distSquared = ((p.x-x)*(p.x-x))+((p.y-y)*(p.y-y));
+			if (distSquared <= maxDistance && distSquared < closestDistSquared) {
+				closestDistSquared = distSquared;
+				closest = p;
+			}
+		}
+		
+		return closest;
 	}
 	
 	public String pathToText(LinkedList<Byte> path) {
