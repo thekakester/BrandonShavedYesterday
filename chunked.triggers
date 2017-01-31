@@ -1,0 +1,5 @@
+#Space Delimited
+#First: eid of the triggerable object
+#Second: eid of the object to trigger
+#(An entity is triggered when their AI on the server says so.  This includes signs, onDeath(for spawners), and onWalk (for triggers)
+203 388 #Sign at spawn triggers first door

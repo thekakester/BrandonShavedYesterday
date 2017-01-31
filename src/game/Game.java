@@ -300,8 +300,19 @@ public class Game extends GameBase {
 
 			if (key.equalsIgnoreCase("sign")) {
 				//Only arg is eid of the sign
+				int eid = Integer.parseInt(value);
 				Sign sign = signs.get(Integer.parseInt(value));
 				if(sign == null) { return new Sign(true).getBytes();}	//Default message
+				
+				//Use the trigger if there is one
+				if (sign.triggerEid > 0) {
+					Entity triggered = entities.get(sign.triggerEid);
+					int type = entityManager.definitions.get(triggered.type).onTrigger;
+					Entity e = Entity.create(sign.triggerEid, type, triggered.x, triggered.y);
+					for (ClientDelta d : clientDeltas.values()) {
+						d.addEntity(e);	//TODO only add this to the person who triggered it
+					}
+				}
 				return sign.getBytes();
 			}
 
@@ -542,7 +553,7 @@ public class Game extends GameBase {
 				lineNum++;
 				String line = scanner.nextLine().trim();
 				String data[] = line.split(" ");
-				if (data.length < 2 || data[0].startsWith("#")) { continue; }
+				if (data.length < 3 || data[0].startsWith("#")) { continue; }
 				try {
 					//Get the entity ID this ties to
 					int eid = Integer.parseInt(data[0]);
@@ -551,7 +562,7 @@ public class Game extends GameBase {
 					int x = Integer.parseInt(data[1]);
 					int y = Integer.parseInt(data[2]);
 
-					//Store this sign
+					//Store this warp
 					warps.put(eid,new Point(x,y));
 					System.out.println("Loaded warp for eid: " + eid + " to (x: " + x + ",y:" + y + ")");
 				} catch (Exception e) {
@@ -561,6 +572,46 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//Load triggers
+		filename = Game.MAP + ".triggers";
+		System.out.println("Loading triggers from " + filename);
+		try {
+			File warpFile = new File(filename);
+			if (!warpFile.exists()) {
+				warpFile.createNewFile(); 
+				PrintWriter pw = new PrintWriter(warpFile);
+				pw.println("#Space Delimited");
+				pw.println("#First: eid of the triggerable object");
+				pw.println("#Second: eid of the object to trigger");
+				pw.println("#(An entity is triggered when their AI on the server says so.  This includes signs, onDeath(for spawners), and onWalk (for triggers)");
+				pw.close();
+			}
+			Scanner scanner = new Scanner(warpFile);
+			int lineNum = 0;
+
+			while (scanner.hasNextLine()) {
+				lineNum++;
+				String line = scanner.nextLine().trim();
+				String data[] = line.split(" ");
+				if (data.length < 2 || data[0].startsWith("#")) { continue; }
+				try {
+					//Get the entity ID this ties to
+					int eid = Integer.parseInt(data[0]);
+					int target = Integer.parseInt(data[1]);
+
+					//Store this sign
+					entities.get(eid).triggersEid = target;
+					if (signs.containsKey(eid)) {signs.get(eid).triggerEid = target;}
+					System.out.println("Loaded trigger for eid: " + eid + " triggers->" + target);
+				} catch (Exception e) {
+					System.out.println("Failed to load line " + lineNum + " of triggers: " + line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 
 	}
 

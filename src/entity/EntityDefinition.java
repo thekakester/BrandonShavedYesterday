@@ -16,6 +16,7 @@ public class EntityDefinition {
 	public boolean isTrigger;
 	public boolean isUnderlay;	//Always appears below everything else
 	public boolean isOverlay;	//Always appears above everything else
+	public int onTrigger;		//If set, this entity will transform to this when triggered.  Only for static entities!  behavior will not change
 	
 	/**Default constructor.
 	 * 

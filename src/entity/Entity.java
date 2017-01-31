@@ -22,6 +22,7 @@ public class Entity {
 	public final EntityDefinition definition;
 	public boolean isHostile = false;	//If true, will damage player when they walk in front
 	private boolean calculatedChunks = false;	//This is required for static items since they never run update();
+	public int triggersEid = -1;			//When set, this will be the object that this object triggers.
 
 	/**Create and return an entity based on its type
 	 * 

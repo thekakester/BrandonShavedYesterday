@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 public class Sign {
 	private int lineCount = 0;
 	private String[] lines = new String[4];
+	public int triggerEid = -1;	//If set, this will get triggered when this sign is read
 
 	public Sign() {
 

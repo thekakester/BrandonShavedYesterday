@@ -505,6 +505,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[0]+cell[8], grid[0] + cell[2], width, height, normal,"Gate Closed"));
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[9], grid[0] + cell[2], width, height, normal,"Gate Open"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[9]+cell[6], grid[1] + cell[1], width, height, normal,"Castle Door Locked"));
+		last().onTrigger=typeID;	//Turn into the next entitiy
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[9]+cell[6], grid[1] + cell[5], width, height, normal,"Castle Door"));
 		//add(new EntityDefinition(typeID++, collide, save,  "everything", grid[4]+cell[i], grid[4]+cell[j], width, height, normal,"Blue Building"));
 
