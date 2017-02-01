@@ -387,7 +387,9 @@ public class Game extends GameBase {
 				delta.addEntity(e);
 			}
 			if (p.getStaleChunks().contains(point)) {
-				delta.addDeadEntity(e.id);
+				if (e.id != p.id) {
+					delta.addDeadEntity(e.id);
+				}
 			}
 		}
 
