@@ -1074,7 +1074,7 @@ function updateGame() {
 			else if(e.direction == 2){x--;}
 			else if(e.direction == 3){x++;}
 			if(x == game.player.x && y == game.player.y){
-				game.appendMessage+="&d="+game.player.id;
+				game.appendMessage+="&d="+e.id + "|" + game.player.id;
 				game.waitingForServerResponse = true;
 				break;
 			}

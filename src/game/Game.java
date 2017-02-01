@@ -339,12 +339,13 @@ public class Game extends GameBase {
 		if (triggerEid < 0 ) { return; }
 		Entity target = entities.get(triggerEid);
 		if (target == null) { return; }
-		
+		ClientDelta delta = clientDeltas.get(pid);
+		if (delta == null) { return; }
 		//What does this turn into?
 		int type = EntityManager.definitions.get(target.type).onTrigger;
 		if (type < 0) { return; }
 		Entity e = Entity.create(triggerEid, type, target.x, target.y);
-		clientDeltas.get(pid).addOverrideEntity(e);	
+		delta.addOverrideEntity(e);	
 	}
 
 	/**Give a player object, check what chunk theyre in and send clientDeltas if necessary
