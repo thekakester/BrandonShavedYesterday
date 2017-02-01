@@ -1015,7 +1015,7 @@ function updateGame() {
 			for (var key in game.entities) {
 				var e = game.entities[key];
 				if (e.type == 2 && e.x == x && e.y == y) {	//EntityType.Sign is #2
-					game.appendMessage += "&sign=" + e.id;
+					game.appendMessage += "&sign=" + game.player.id + "|" + e.id;
 				}
 			}
 		}

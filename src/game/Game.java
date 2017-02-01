@@ -299,19 +299,20 @@ public class Game extends GameBase {
 			}
 
 			if (key.equalsIgnoreCase("sign")) {
-				//Only arg is eid of the sign
-				int eid = Integer.parseInt(value);
-				Sign sign = signs.get(Integer.parseInt(value));
+				//Arg 1 is player, arg 2 is the sign id.
+				//Player is needed for triggers
+				String[] data = value.split("\\|");
+				int pid = Integer.parseInt(data[0]);
+				int eid = Integer.parseInt(data[1]);
+				Sign sign = signs.get(eid);
 				if(sign == null) { return new Sign(true).getBytes();}	//Default message
 				
 				//Use the trigger if there is one
 				if (sign.triggerEid > 0) {
 					Entity triggered = entities.get(sign.triggerEid);
-					int type = entityManager.definitions.get(triggered.type).onTrigger;
+					int type = EntityManager.definitions.get(triggered.type).onTrigger;
 					Entity e = Entity.create(sign.triggerEid, type, triggered.x, triggered.y);
-					for (ClientDelta d : clientDeltas.values()) {
-						d.addEntity(e);	//TODO only add this to the person who triggered it
-					}
+					clientDeltas.get(pid).addOverrideEntity(e);
 				}
 				return sign.getBytes();
 			}

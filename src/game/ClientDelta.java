@@ -2,6 +2,7 @@ package game;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import entity.Entity;
@@ -24,12 +25,12 @@ public class ClientDelta {
 
 	private ArrayList<String> undeliveredChatMessages = new ArrayList<String>();
 	private HashSet<Entity> changedEntities = new HashSet<Entity>();
+	private HashMap<Integer,Entity> overrideEntities = new HashMap<Integer,Entity>();	//If an entity with the same idea
 	private HashSet<MapDelta> changedMapTiles = new HashSet<MapDelta>();
 	private HashSet<StaleMapDelta> staleMapTiles = new HashSet<StaleMapDelta>();
 	private HashSet<Integer> attackingEntities = new HashSet<Integer>();
 	private HashSet<Integer> deadEntities = new HashSet<Integer>();
 	private HashSet<Sign> notifications = new HashSet<Sign>();
-	private int DEBUG_MAX_RESPONSESIZE = 500;
 	final int pid;
 	final PlayerEntity player;
 
@@ -38,12 +39,14 @@ public class ClientDelta {
 		//Count the size in bytes of our entites
 		int size = 0;
 
+		HashSet<Entity> entities = getChangedEntities();
+		
 		/**************
 		 * STEP 1: Count bytes to prep buffer
 		 ****************/
 		//Add 2 more integers (8 bytes): ResponseType and entites.size();
 		size += 8;
-		for (Entity e : changedEntities) {
+		for (Entity e : entities) {
 			size += e.sizeInBytes();
 		}
 
@@ -82,9 +85,9 @@ public class ClientDelta {
 		 * STEP 2: Fill our buffer with what we need
 		 ****************/ 
 		bb.putInt(ResponseType.ENTITY_UPDATE);
-		bb.putInt(changedEntities.size());
+		bb.putInt(entities.size());
 
-		for (Entity e : changedEntities) {
+		for (Entity e : entities) {
 			for (byte b : e.bytes()) {
 				bb.put(b);
 			}
@@ -140,7 +143,7 @@ public class ClientDelta {
 		}
 		attackingEntities.clear();
 
-		//ADD ATTACKING ENTITIES
+		//ADD DEAD ENTITIES
 		bb.putInt(ResponseType.DEAD_ENTITIES);
 		bb.putInt(deadEntities.size());
 		for (int eid : deadEntities) {
@@ -183,5 +186,33 @@ public class ClientDelta {
 	
 	public void addStaleMapZone(int startRow, int startCol, int endRow, int endCol) {
 		this.staleMapTiles.add(new StaleMapDelta(startRow, startCol, endRow, endCol));
+	}
+	
+	/** This will override an entity with the same ID for this player only.
+	 * For example, if a user unlocks a door, you can mark this door as unlocked
+	 * and this client will always use an unlocked door entity instead of a locked door entity
+	 * 
+	 * @param e The entity to use (that replaces the old one)
+	 */
+	public void addOverrideEntity(Entity e) {
+		overrideEntities.put(e.id, e);
+		this.addEntity(e);
+	}
+	
+	/**Get a set of the entites that the player needs to update.  This takes into account overrides
+	 * 
+	 * @return
+	 */
+	public HashSet<Entity> getChangedEntities() {
+		HashSet<Entity> changed = new HashSet<Entity>();
+		for (Entity e : changedEntities) {
+			Entity override = overrideEntities.get(e.id);
+			if (override != null) {
+				changed.add(override);
+			} else {
+				changed.add(e);
+			}
+		}
+		return changed;
 	}
 }
