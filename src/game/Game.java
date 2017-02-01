@@ -234,8 +234,9 @@ public class Game extends GameBase {
 
 			//DEAD
 			if (key.equalsIgnoreCase("d")) {
-				System.out.println("GOT d " + value);
-				int eid = Integer.parseInt(value);
+				String[] data = value.split("\\|");
+				int pid = Integer.parseInt(data[0]);
+				int eid = Integer.parseInt(data[1]);
 				Entity e = entities.get(eid);
 				if (e.definition.baseHP > 0) {
 					//If its a player, don't ACTUALLY kill them
@@ -250,7 +251,8 @@ public class Game extends GameBase {
 							d.addDeadEntity(eid);
 						}
 						e.isAlive = false;//Mark it as dead so our thread cleans it up
-
+						triggerEntity(pid,e.triggersEid);	//Trigger if there is something
+						
 					}
 				}
 				return null;	//This was missing
@@ -306,14 +308,7 @@ public class Game extends GameBase {
 				int eid = Integer.parseInt(data[1]);
 				Sign sign = signs.get(eid);
 				if(sign == null) { return new Sign(true).getBytes();}	//Default message
-				
-				//Use the trigger if there is one
-				if (sign.triggerEid > 0) {
-					Entity triggered = entities.get(sign.triggerEid);
-					int type = EntityManager.definitions.get(triggered.type).onTrigger;
-					Entity e = Entity.create(sign.triggerEid, type, triggered.x, triggered.y);
-					clientDeltas.get(pid).addOverrideEntity(e);
-				}
+				triggerEntity(pid,sign.triggerEid);	//Trigger if there is something
 				return sign.getBytes();
 			}
 
@@ -333,6 +328,23 @@ public class Game extends GameBase {
 
 		System.err.println("Invalid command: " + key);
 		return ("Unknown or invalid command: " + key).getBytes();
+	}
+
+	/**Trigger an entity if there is something to trigger
+	 * 
+	 * @param pid The player this applies to
+	 * @param triggerEid
+	 */
+	private void triggerEntity(int pid, int triggerEid) {
+		if (triggerEid < 0 ) { return; }
+		Entity target = entities.get(triggerEid);
+		if (target == null) { return; }
+		
+		//What does this turn into?
+		int type = EntityManager.definitions.get(target.type).onTrigger;
+		if (type < 0) { return; }
+		Entity e = Entity.create(triggerEid, type, target.x, target.y);
+		clientDeltas.get(pid).addOverrideEntity(e);	
 	}
 
 	/**Give a player object, check what chunk theyre in and send clientDeltas if necessary

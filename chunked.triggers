@@ -3,3 +3,7 @@
 #Second: eid of the object to trigger
 #(An entity is triggered when their AI on the server says so.  This includes signs, onDeath(for spawners), and onWalk (for triggers)
 203 388 #Sign at spawn triggers first door
+379 385
+381 385
+380 385
+382 385

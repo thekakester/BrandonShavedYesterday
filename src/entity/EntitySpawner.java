@@ -25,21 +25,25 @@ public class EntitySpawner extends Entity{
 	 */
 	private Entity createEntity(Game g) {
 		int id = g.getNewEntityId();
-
+		Entity e = null;
+		
 		if (type == EntityType.MUSHROOM_SPAWN) {
-			return new MushroomEntity(id,this.x,this.y);
+			e = new MushroomEntity(id,this.x,this.y);
+		} else if (type == EntityType.CHICK_SPAWN) {
+			e = new ChickEntity(id,this.x,this.y);
+		} else if (type == EntityType.ROBOT_SPAWN) {
+			e = new RobotEntity(id,this.x,this.y);
+		} else if (type == EntityType.ZOMBIE_SPAWN) {
+			e = new ZombieEntity(id,this.x,this.y);
 		}
-		if (type == EntityType.CHICK_SPAWN) {
-			return new ChickEntity(id,this.x,this.y);
+		
+		if (e == null) {
+			throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
 		}
-		if (type == EntityType.ROBOT_SPAWN) {
-			return new RobotEntity(id,this.x,this.y);
-		}
-		if (type == EntityType.ZOMBIE_SPAWN) {
-			return new ZombieEntity(id,this.x,this.y);
-		}
-
-		throw new RuntimeException("Error: Cant spawn an entity from this spawner because no rules are defined of what to spawn");
+		
+		e.triggersEid = this.triggersEid;	//Apply the on same death trigger
+		
+		return e;
 	}
 
 	@Override

@@ -503,6 +503,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[2], grid[0] + cell[1], width, height, normal,"Wall Norm Overlay"));
 		last().isOverlay = true;
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[0]+cell[8], grid[0] + cell[2], width, height, normal,"Gate Closed"));
+		last().onTrigger=typeID;	//Turns into the next entity when triggered
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[9], grid[0] + cell[2], width, height, normal,"Gate Open"));
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[9]+cell[6], grid[1] + cell[1], width, height, normal,"Castle Door Locked"));
 		last().onTrigger=typeID;	//Turn into the next entitiy

@@ -1043,7 +1043,7 @@ function updateGame() {
 				if (game.killableEntities[e.type] && Math.abs(e.tweenX-attackX) < 1 && Math.abs(e.tweenY-attackY) < 1) {
 					//He ded
 					e.dead = true;	//Temporarily doesn't draw.  If player, server will re-aliveafy
-					game.appendMessage="&d=" + eid;	//Tell server
+					game.appendMessage="&d=" + game.player.id + "|" + eid;	//Tell server
 				}
 			}
 		}
