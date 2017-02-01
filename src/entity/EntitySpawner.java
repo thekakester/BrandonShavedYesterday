@@ -57,7 +57,7 @@ public class EntitySpawner extends Entity{
 				cooldownStart = 0;
 				child = createEntity(g);
 				if  (child != null) {
-					System.out.println("Spawned entity");
+					System.out.println("Spawner " + id + " spawned entity " + child.id + " (type: " + child.type + ")");
 					//Add this to the game class
 					g.addEntity(child);
 				}

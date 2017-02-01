@@ -1190,6 +1190,20 @@ function updateGame() {
 			game.debug.row+=2;
 			game.debug.row %= 4;
 		}
+		if (engine.isKeyPressed("Digit4")) {
+			//Get tile in front of player
+			var x = game.player.x; var y = game.player.y;
+			if (game.player.direction == 0) {y--;}
+			else if (game.player.direction == 1) { y++; }
+			else if (game.player.direction == 2) { x--; }
+			else {x++;}
+			for (var eid in game.entities) {
+				var e = game.entities[eid];
+				if (e.x == x && e.y == y) {
+					console.log("Entity id:" + eid + " type:" + e.type + " x/y:" + e.x + "/" + e.y);
+				}
+			}
+		}
 		if (engine.isKeyPressed("Digit7")) {
 			game.debug.speedBoost-=2;
 			if (game.debug.speedBoost < 0) { game.debug.speedBoost = 0;}
@@ -1608,6 +1622,7 @@ function paintGame() {
 			engine.__context.fillText("E: Create object / Set tile",10,y); y+=20
 			engine.__context.fillText("1: Toggle grid view",10,y); y+=20
 			engine.__context.fillText("2/3: Show Tile/Entity Collision boxes",10,y); y+=20
+			engine.__context.fillText("4: List entity id's and types in console (tile in front of player)",10,y); y+=20
 			engine.__context.fillText("7/8: Fly slower/faster",10,y); y+=20
 			engine.__context.fillText("+/-: Increase/Decrease edit size (tiles only)",10,y); y+=20
 			engine.__context.fillText("9: Toggle between circle and square select zone (tiles only)",10,y); y+=20

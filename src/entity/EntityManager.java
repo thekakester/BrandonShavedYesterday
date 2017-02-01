@@ -342,6 +342,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[0],width,height,normal,"House Wall"));
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[8]+cell[1], grid[0]+cell[0],width,height,normal,"House Door"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[0],width,height,normal,"House Door Shut"));
+		last().onTrigger = typeID-2;	//Turns to open door when triggered
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[0],width,height,normal,"House Window"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[0],width,height,normal,"House Window Shut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[5], grid[0]+cell[0],width,height,normal,"House Left Strut"));
