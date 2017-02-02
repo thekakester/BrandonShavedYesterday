@@ -37,11 +37,12 @@ game.debug.selectedY = 0;
 game.debug.speedBoost = 0;
 game.debug.row = 0;	//Row 0 is tiles, 1 is entities
 game.debug.brushSize = 1;
-game.debug.circleFill = false;
+game.debug.tileFillType = 0;	//0 = square, 1 = circle, 2 = random
 game.debug.lastFPSPrint = 0;
 game.debug.frameCount = 0;
 game.debug.lastFPS = 0;
 playerPath = null;
+game.debug.randomTiles = [];	//Used for randomly scattering tiles
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -1179,11 +1180,13 @@ function updateGame() {
 		if (engine.isKeyPressed("Minus")) {
 			if (game.debug.brushSize > 0) {
 				game.debug.brushSize--;
+				game.debug.randomTiles = [];	//Recalculate random tiles
 			}
 		}
 		if (engine.isKeyPressed("Equal")) {
 			if (game.debug.brushSize < 10) {
 				game.debug.brushSize++;
+				game.debug.randomTiles = [];	//Recalculate random tiles
 			}
 		}
 		if (engine.isKeyPressed("Digit1")) {
@@ -1213,7 +1216,8 @@ function updateGame() {
 			if (game.debug.speedBoost > 24) { game.debug.speedBoost = 24;}
 		}
 		if (engine.isKeyPressed("Digit9")) {
-			game.debug.circleFill = !game.debug.circleFill;
+			game.debug.tileFillType++;
+			game.debug.tileFillType%=3;
 		}
 		
 		//This is the index to use for grid view (ignored for other things)
@@ -1296,10 +1300,22 @@ function updateGame() {
 						var distSqrd = (xOffset*xOffset)+(yOffset*yOffset);
 						var radSqrd = game.debug.brushSize * game.debug.brushSize;
 						if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
-						if (!game.debug.circleFill || distSqrd <= radSqrd) {
+						if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(xOffset,yOffset))) {
 							game.map.tile[row][col] = selectedID;
 							game.map.delta[row + "|" + col + "|" + selectedID] = true;
 						}
+					}
+				}
+			}
+		}
+		
+		//Calculate random tiles if our list is empty
+		if (game.debug.randomTiles.length == 0) {
+			for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
+				game.debug.randomTiles[xOffset] = [];
+				for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
+					if (Math.random() < 0.25) {
+						game.debug.randomTiles[xOffset][yOffset] = true;
 					}
 				}
 			}
@@ -1585,7 +1601,7 @@ function paintGame() {
 					var distSqrd = (colOffset*colOffset)+(rowOffset*rowOffset);
 					var radSqrd = game.debug.brushSize * game.debug.brushSize;
 					if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
-					if (!game.debug.circleFill || distSqrd <= radSqrd) {
+					if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(colOffset,rowOffset))) {
 						engine.__context.fillRect(x,y,32,32);
 					}
 				}
@@ -1699,6 +1715,13 @@ function move(xMovement, yMovement){
 		//game.player.set("x",playerX);
 		//game.player.set("y",playerY);
 	}
+}
+
+function randomAt(x,y) {
+	if (!game.debug.randomTiles[x]) {
+		return false;
+	}
+	return game.debug.randomTiles[x][y]==true;
 }
 
 /**Start the attack animation for this entitt*/
