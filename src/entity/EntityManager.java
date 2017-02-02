@@ -349,10 +349,12 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[0],width,height,normal,"House Right Strut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[1],width,height,normal,"Billy Bashful the Badass Barrel"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[1],width,height,normal,"Chest"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[1],width,height*2,normal,"Well"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[6],width,height*2,normal,"Well"));
+		last().setOffset(0, 32);
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Zombie Spawn"));												
 		last().isSpawner = true;
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[1],width,height*2,normal,"Tree2"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[1], grid[0]+cell[6],width,height*2,normal,"Tree2"));
+		last().setOffset(0, 32);
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", 288-32, 0, width, height, normal,"warp"));
 		last().isTrigger = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[1],width,height,normal,"Basic Bush"));
@@ -373,11 +375,13 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[3],width,height,normal,"Snow House Window Shut"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[4],width,height,normal,"Billy Bashfuls Badass Barrel Buddy "));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[4],width,height,normal,"Snow Chest"));
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[4],width,height*2,normal,"SnOhWell"));
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[2], grid[0]+cell[6],width,height*2,normal,"SnOhWell"));
+		last().setOffset(0, 32);
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", 288-64, 0, width, height, normal,"AI Blocker"));
 		last().isTrigger = true;
-		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[6], grid[0]+cell[4],width,height*2,normal,"Snow Tree"));
-		add(new EntityDefinition(typeID++, nocollide, nosave, "objects", 288, 0, width, height, normal,"null3"));													//<----NULL
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[6],width,height*2,normal,"Snow Tree"));
+		last().setOffset(0, 32);
+		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[4], grid[0]+cell[1], width, height, normal,"House Roof Middle"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[8], grid[0]+cell[4],width,height,normal,"Snow Basic Bush"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[9], grid[0]+cell[4],width,height,normal,"Puddle"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[5],width,height,normal,"Snow House Left Angled Small Left"));
@@ -509,6 +513,8 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save,  "everything", grid[9]+cell[6], grid[1] + cell[1], width, height, normal,"Castle Door Locked"));
 		last().onTrigger=typeID;	//Turn into the next entitiy
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[9]+cell[6], grid[1] + cell[5], width, height, normal,"Castle Door"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[4], grid[0] + cell[5], width, height, normal,"Ladder Hole"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[5], grid[0] + cell[5], width, height, normal,"Ladder"));
 		//add(new EntityDefinition(typeID++, collide, save,  "everything", grid[4]+cell[i], grid[4]+cell[j], width, height, normal,"Blue Building"));
 
 
