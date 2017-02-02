@@ -43,6 +43,7 @@ game.debug.frameCount = 0;
 game.debug.lastFPS = 0;
 playerPath = null;
 game.debug.randomTiles = [];	//Used for randomly scattering tiles
+game.debug.randomAmount = 0.2;	//Used for randomly scattering tiles
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -1189,6 +1190,17 @@ function updateGame() {
 				game.debug.randomTiles = [];	//Recalculate random tiles
 			}
 		}
+		if (engine.isKeyPressed("BracketLeft")) {
+			game.debug.randomAmount*=0.6;
+			if (game.debug.randomAmount < 0.02) { game.debug.randomAmount = 0.02; }
+			game.debug.randomTiles = [];	//Recalculate random tiles
+		}
+		if (engine.isKeyPressed("BracketRight")) {
+			game.debug.randomAmount*=1.6;
+			if (game.debug.randomAmount > 0.9) { game.debug.randomAmount = 0.9; }
+			game.debug.randomTiles = [];	//Recalculate random tiles
+		}
+		
 		if (engine.isKeyPressed("Digit1")) {
 			game.debug.row+=2;
 			game.debug.row %= 4;
@@ -1219,6 +1231,7 @@ function updateGame() {
 			game.debug.tileFillType++;
 			game.debug.tileFillType%=3;
 		}
+		
 		
 		//This is the index to use for grid view (ignored for other things)
 		var index = game.debug.row == 2 ? game.debug.tiles : game.debug.entities;
@@ -1314,7 +1327,7 @@ function updateGame() {
 			for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
 				game.debug.randomTiles[xOffset] = [];
 				for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
-					if (Math.random() < 0.25) {
+					if (Math.random() < game.debug.randomAmount) {
 						game.debug.randomTiles[xOffset][yOffset] = true;
 					}
 				}
