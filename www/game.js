@@ -44,7 +44,7 @@ game.debug.lastFPS = 0;
 playerPath = null;
 game.debug.randomTiles = [];	//Used for randomly scattering tiles
 game.debug.randomAmount = 0.2;	//Used for randomly scattering tiles
-game.debug.prefab = {making: false, x:0,y:0};//Used for recording prefabs
+game.debug.prefab = {making: false, x:0,y:0, saved:[]};//Used for recording prefabs
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -1227,10 +1227,34 @@ function updateGame() {
 			if (game.debug.prefab.making == false) {
 				game.debug.prefab.x = game.player.x;
 				game.debug.prefab.y = game.player.y;
+			} else {
+				//Copy all entities in this range and adjust their position based on the offset
+				game.debug.prefab.saved = [];
+				for (var eid in game.entities) {
+					var e = game.entities[eid];
+					if (e.id != game.player.id && e.x >= game.debug.prefab.x && e.x <= game.player.x
+						&& e.y >= game.debug.prefab.y && e.y <= game.player.y) {
+						game.debug.prefab.saved.push({
+							x:e.x-game.debug.prefab.x,
+							y:e.y-game.debug.prefab.y,
+							type: e.type,
+						})
+					}
+				}
 			}
 			
 			game.debug.prefab.making = !game.debug.prefab.making;
 		}
+		
+		if (engine.isKeyPressed("Digit6")) {
+			for (var index in game.debug.prefab.saved) {
+				var definition = game.debug.prefab.saved[index];
+				var x = definition.x + game.player.x;
+				var y = definition.y + game.player.y;
+				game.appendMessage += "&createEntity=" + definition.type + "|" + x + "|" + y;
+			}
+		}
+		
 		if (engine.isKeyPressed("Digit7")) {
 			game.debug.speedBoost-=2;
 			if (game.debug.speedBoost < 0) { game.debug.speedBoost = 0;}
