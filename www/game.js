@@ -1069,13 +1069,16 @@ function updateGame() {
 			
 			var e = game.entities[eid];
 			if(!e.hostile){continue;} //carry on sir.
-			var x = e.x;
-			var y = e.y;
+			var x = e.tweenX;
+			var y = e.tweenY;
 			if(e.direction == 0){y--;}
 			else if(e.direction == 1){y++;}
 			else if(e.direction == 2){x--;}
 			else if(e.direction == 3){x++;}
-			if(x == game.player.x && y == game.player.y){
+			//If the player is less than 1 tile from this spot, they dead
+			var dx = game.player.tweenX - x;
+			var dy = game.player.tweenY - y;
+			if ((dx*dx)+(dy*dy) < 1) {
 				game.appendMessage+="&d="+e.id + "|" + game.player.id;
 				game.waitingForServerResponse = true;
 				break;
