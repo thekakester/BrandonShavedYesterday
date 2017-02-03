@@ -1654,6 +1654,7 @@ function paintGame() {
 			engine.__context.fillText("4: List entity id's and types in console (tile in front of player)",10,y); y+=20
 			engine.__context.fillText("7/8: Fly slower/faster",10,y); y+=20
 			engine.__context.fillText("+/-: Increase/Decrease edit size (tiles only)",10,y); y+=20
+			engine.__context.fillText("[ / ]: Decrease/Increase the randomness of debug tile placement",10,y); y+=20
 			engine.__context.fillText("9: Toggle between circle and square select zone (tiles only)",10,y); y+=20
 			engine.__context.fillText("Left Shift (in grid mode): Move 5 tiles at a time",10,y); y+=20
 			engine.__context.fillText("Right Shift (in grid mode): Zoom out",10,y); y+=20
