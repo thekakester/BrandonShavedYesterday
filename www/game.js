@@ -1475,6 +1475,11 @@ function paintGame() {
 			engine.__context.fillRect(x,y,32,32);
 		}
 		
+		//Draw the message they said last
+		engine.__context.fillStyle = "#fff";
+		var textX = x - engine.__context.measureText(e.message).width/2 + 16;
+		engine.__context.fillText(e.message,textX,y);
+		
 		if (e.direction == 0) {y-=32;}
 		else if (e.direction == 1) { y += 32; }
 		else if (e.direction == 2) { x -= 32; }
@@ -1482,10 +1487,6 @@ function paintGame() {
 		
 		//Draws the attack sprite if it exists
 		engine.drawSprite("inst_att_" + e.id,x,y);
-		
-		//Draw the message they said last
-		engine.__context.fillStyle = "#fff";
-		engine.__context.fillText(e.message,x,y);
 	}
 	
 	engine.recordKeyboard(true);
