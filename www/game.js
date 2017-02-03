@@ -1171,6 +1171,12 @@ function updateGame() {
 		//Update the lastUpdated time
 		e.lastUpdate += mostRecentTile * millisecondsPerTile;
 		
+		
+		//Update message and make it disappear after 5 seconds
+		if (new Date().getTime() - e.messageStart > 5000) {
+			e.message = "";
+		}
+		
 	}
 	
 	////////////////
