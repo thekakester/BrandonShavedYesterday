@@ -1697,6 +1697,8 @@ function paintGame() {
 			engine.__context.fillText("1: Toggle grid view",10,y); y+=20
 			engine.__context.fillText("2/3: Show Tile/Entity Collision boxes",10,y); y+=20
 			engine.__context.fillText("4: List entity id's and types in console (tile in front of player)",10,y); y+=20
+			engine.__context.fillText("5: Start/Stop the copy feature",10,y); y+=20
+			engine.__context.fillText("6: Paste whatever we have copied",10,y); y+=20
 			engine.__context.fillText("7/8: Fly slower/faster",10,y); y+=20
 			engine.__context.fillText("+/-: Increase/Decrease edit size (tiles only)",10,y); y+=20
 			engine.__context.fillText("[ / ]: Decrease/Increase the randomness of debug tile placement",10,y); y+=20
