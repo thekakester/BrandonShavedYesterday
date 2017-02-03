@@ -44,6 +44,7 @@ game.debug.lastFPS = 0;
 playerPath = null;
 game.debug.randomTiles = [];	//Used for randomly scattering tiles
 game.debug.randomAmount = 0.2;	//Used for randomly scattering tiles
+game.debug.prefab = {making: false, x:0,y:0};//Used for recording prefabs
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -1222,6 +1223,14 @@ function updateGame() {
 				}
 			}
 		}
+		if (engine.isKeyPressed("Digit5")) {
+			if (game.debug.prefab.making == false) {
+				game.debug.prefab.x = game.player.x;
+				game.debug.prefab.y = game.player.y;
+			}
+			
+			game.debug.prefab.making = !game.debug.prefab.making;
+		}
 		if (engine.isKeyPressed("Digit7")) {
 			game.debug.speedBoost-=2;
 			if (game.debug.speedBoost < 0) { game.debug.speedBoost = 0;}
@@ -1623,6 +1632,15 @@ function paintGame() {
 				}
 			}
 			
+			if (game.debug.prefab.making) {
+				//Draw a rectangle from start to player position
+				var x = game.debug.prefab.x;
+				var y = game.debug.prefab.y;
+				var width = game.player.x-x+1;
+				var height = game.player.y-y+1;
+				engine.__context.fillStyle = "rgba(0,0,255,0.2)";
+				engine.__context.fillRect(x*32-offsetX,y*32-offsetY,width*32,height*32);
+			}
 			
 			//ENTITY STUFF
 			//Draw tiles at the top for level editor
@@ -1665,6 +1683,11 @@ function paintGame() {
 	}
 }
 
+function tp(eid) {
+	var e = game.entities[eid];
+	game.player.x = e.x;
+	game.player.y = e.y;
+}
 
 function move(xMovement, yMovement){
 	//Don't let the player move if we haven't spawned yet
