@@ -23,7 +23,7 @@ public class ClientDelta {
 		this.changedEntities.add(e);
 	}
 
-	private ArrayList<String> undeliveredChatMessages = new ArrayList<String>();
+	private ArrayList<Message> undeliveredChatMessages = new ArrayList<Message>();
 	private HashSet<Entity> changedEntities = new HashSet<Entity>();
 	private HashMap<Integer,Entity> overrideEntities = new HashMap<Integer,Entity>();	//If an entity with the same idea
 	private HashSet<MapDelta> changedMapTiles = new HashSet<MapDelta>();
@@ -61,9 +61,9 @@ public class ClientDelta {
 
 		//This is chat
 		size += 8; //add 2 integers (8bytes): ResponseType and messages.length
-		size += undeliveredChatMessages.size()*4; //Add Length Int for every message
-		for(String s : undeliveredChatMessages ){
-			size+= s.length()*2;
+		for(Message m : undeliveredChatMessages ){
+			size += 8;		//For each message, add message length AND who said it (pid int)
+			size+= m.message.length()*2;
 		}
 
 		//Add entities that are attacking
@@ -126,9 +126,10 @@ public class ClientDelta {
 
 		bb.putInt(ResponseType.CHAT);
 		bb.putInt(undeliveredChatMessages.size());
-		for(String s : undeliveredChatMessages){
-			bb.putInt(s.length()); 
-			for(char c : s.toCharArray()){
+		for(Message m : undeliveredChatMessages){
+			bb.putInt(m.pid);
+			bb.putInt(m.message.length()); 
+			for(char c : m.message.toCharArray()){
 				bb.putChar(c);
 			}
 		}
@@ -166,9 +167,8 @@ public class ClientDelta {
 		changedMapTiles.add(new MapDelta(row, col, type));
 	}
 
-	public void addChat(String value) {
-		// TODO Auto-generated method stub
-		undeliveredChatMessages.add(value);
+	public void addChat(int pid, String value) {
+		undeliveredChatMessages.add(new Message(pid,value));
 	}
 
 	public void addAttackingEntity(int eid) {

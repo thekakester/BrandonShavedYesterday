@@ -713,12 +713,15 @@ game.onServerRespond = function(response) {
 		if (responseType == 3) {
 			var count = buffer.getInt();
 			for (var i = 0; i < count; i++) {
+				var pid = buffer.getInt();
 				var length = buffer.getInt();
 				var message = "";
 				for(var j = 0 ; j < length; j++){
 					message+= buffer.getChar();
 				}
 				appendMessage(message);
+				game.entities[pid].message = message;
+				game.entities[pid].messageStart = new Date().getTime();
 			}
 		}
 		
@@ -1372,7 +1375,7 @@ function updateGame() {
 	}
 	
 	if(engine.isKeyPressed("Enter")){
-		game.appendMessage += "&chat=" + escape(engine.keyboardBuffer);
+		game.appendMessage += "&chat=" + game.player.id + "|" + escape(engine.keyboardBuffer);
 		engine.keyboardBuffer = "";
 	}
 	
@@ -1450,6 +1453,9 @@ function paintGame() {
 	}
 	tmpEntities.sort(entitySortFunc);
 	
+	//Prep the font for displaying messages players say
+	engine.__context.font = "14px Arial";
+	
 	for (var id in tmpEntities) {
 		var e = tmpEntities[id];
 		if (e.dead) { continue; }
@@ -1477,7 +1483,9 @@ function paintGame() {
 		//Draws the attack sprite if it exists
 		engine.drawSprite("inst_att_" + e.id,x,y);
 		
-		
+		//Draw the message they said last
+		engine.__context.fillStyle = "#fff";
+		engine.__context.fillText(e.message,x,y);
 	}
 	
 	engine.recordKeyboard(true);
@@ -1881,6 +1889,8 @@ Entity.prototype = {
 	isOverlay: false,
 	isUnderlay: false,
 	sprite: null,
+	message: "",
+	messageStart: 0,	//The time the message started.  Used to make message disappear after set time
 	set: function(key,value) { this[key] = value; this.delta[key] = value;}
 }
 

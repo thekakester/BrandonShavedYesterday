@@ -295,8 +295,10 @@ public class Game extends GameBase {
 
 			//Chat
 			if(key.equalsIgnoreCase("chat")){
+				String[] data = value.split("\\|");
+				int pid = Integer.parseInt(data[0]);
 				for(ClientDelta d : clientDeltas.values()){
-					d.addChat(value);
+					d.addChat(pid,data[1]);
 				}
 			}
 
