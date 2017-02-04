@@ -1,10 +1,11 @@
 $(document).ready(function(){
-	$("body").append("<div id=\"mrskeltal\"></div>");
-	$.get("test.html",function(data){
-		$("#mrskeltal").html(data,setTimeout(function(){formatChatBox()},100));
-		
-	});
-	
+	setTimeout(function() {
+		$("body").append("<div id=\"mrskeltal\"></div>");
+		$.get("test.html",function(data){
+			$("#mrskeltal").html(data,setTimeout(function(){formatChatBox()},100));
+			
+		});
+	},1000);
 });
 
 function formatChatBox(){
