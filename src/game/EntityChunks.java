@@ -37,11 +37,11 @@ public class EntityChunks {
 	 * @param e
 	 */
 	public void addEntity(Entity e) {
-		if (e.definition.saveable) {
+		if (!e.definition.saveable || e.definition.isSpawner) {
+			this.addDynamicEntity(e);
+		} else {
 			e.update(null);//Forces it to update its chunk position
 			this.addStaticEntity(e);
-		} else {
-			this.addDynamicEntity(e);
 		}
 
 		//Tell all the clients about this
@@ -262,6 +262,12 @@ public class EntityChunks {
 
 	public Collection<PlayerEntity> getPlayers() {
 		return this.players.values();
+	}
+
+	public Collection<Entity> getDynamicEntitiesClone() {
+		HashSet<Entity> cloned = new HashSet<Entity>();
+		cloned.addAll(dynamicEntites.values());
+		return cloned;
 	}
 
 }

@@ -138,7 +138,9 @@ public class Entity {
 			if (direction == 3) { this.x++; }
 		}
 
+		//If our chunk changed, update us in the entityChunker
 		calculateChunks();
+		
 
 		//Update our start time to
 		pathStartTime += (int)(mostRecentTile * millisecondsPerTile);

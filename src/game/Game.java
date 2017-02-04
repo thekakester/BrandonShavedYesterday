@@ -361,6 +361,11 @@ public class Game extends GameBase {
 		}
 
 		entityChunks.removeDeadEntities();
+		
+		//Update all of our dynamic entities.  Note, spawners add to our list, so wee need a copy first
+		for (Entity e : entityChunks.getDynamicEntitiesClone()) {
+			e.update(this);
+		}
 	}
 
 	/**Save the game
