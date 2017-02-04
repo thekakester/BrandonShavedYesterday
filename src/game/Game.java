@@ -290,7 +290,6 @@ public class Game extends GameBase {
 
 		//Add new chunks to the player's delta
 		for (Point point : p.getNewChunks()) {
-			System.out.println("NEW: " + point);
 			//Add these tiles to the client delta
 			MapChunk chunk = map.getChunk(point.y,point.x);
 			for (int row = 0; row < chunk.tiles.length; row++) {
@@ -304,7 +303,6 @@ public class Game extends GameBase {
 
 		//Add stale chunks to the player's delta
 		for (Point point : p.getStaleChunks()) {
-			System.out.println("STALE: " + point);
 			int startRow = point.y * map.chunkRows;
 			int startCol = point.x * map.chunkCols;
 			delta.addStaleMapZone(startRow, startCol, startRow + map.chunkRows, startCol + map.chunkCols);
@@ -312,15 +310,12 @@ public class Game extends GameBase {
 
 		//Add entities that are in the new chunks and delete entities in the stale ones
 		for (Point chunk : p.getNewChunks()) {
-
-			System.out.println("New entity: " + chunk);
 			for (Entity e : entityChunks.getEntitiesInChunk(chunk.x,chunk.y)) {
 					delta.addEntity(e);
 			}
 		}
 		
 		for (Point chunk : p.getStaleChunks()) {
-			System.out.println("Stale entity : " + chunk);
 			for (Entity e : entityChunks.getEntitiesInChunk(chunk.x,chunk.y)) {
 				if (e.id != p.id) {
 					delta.addDeadEntity(e.id);
