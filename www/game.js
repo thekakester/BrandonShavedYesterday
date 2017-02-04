@@ -46,6 +46,8 @@ game.debug.randomTiles = [];	//Used for randomly scattering tiles
 game.debug.randomAmount = 0.2;	//Used for randomly scattering tiles
 game.debug.prefab = {making: false, x:0,y:0, saved:[]};//Used for recording prefabs
 game.debug.zoomOut = false;
+game.debug.bandwidth = 0;
+game.debug.txHistory = [];	//Stores an object {time: 0, size: 0}
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -639,6 +641,8 @@ game.sendMessage = function() {
 game.onServerRespond = function(response) {
 	game.ping = new Date().getTime()-game.pingStart;
 	game.waitingForServerResponse = false;	//Allow another warp request
+	game.debug.txHistory.push({time:new Date().getTime(),size: response.length});
+	calculateBandwidthUsage();
 	var buffer = ByteBuffer.wrap(response);
 	while (true) {
 		var responseType = buffer.getInt();
@@ -792,6 +796,20 @@ game.onServerRespond = function(response) {
 		}
 		
 	}
+}
+
+function calculateBandwidthUsage() {
+	game.debug.bandwidth = 0;
+	var newHist = [];
+	for (var key in game.debug.txHistory) {
+		var entry = game.debug.txHistory[key];
+		if (new Date().getTime() - entry.time < 1000) {
+			newHist.push(entry);
+			game.debug.bandwidth+=entry.size;
+		}
+	}
+	game.debug.bandwidth = (game.debug.bandwidth / 1024).toFixed(2);
+	game.debug.txHistory = newHist;
 }
 
 /*******************************************************************************
@@ -1710,11 +1728,12 @@ function paintGame() {
 			
 			//Draw ping time
 			engine.__context.fillStyle  = "#000";
-			engine.__context.fillRect(0,42*2,300,42);
+			engine.__context.fillRect(0,42*2,600,42);
 			engine.__context.fillStyle  = "#fff";
 			engine.__context.fillText("Ping: "+game.ping + "ms",10,42*3-10);
 			engine.__context.fillText("FPS: " + game.debug.lastFPS, 100,42*3-10);
 			engine.__context.fillText("Pos: (" + game.player.x + "," + game.player.y + ")", 200,42*3-10);
+			engine.__context.fillText("BdWth: " + game.debug.bandwidth + "Kb/s", 350,42*3-10);
 		}
 		
 		engine.__context.fillStyle  = "#000";
