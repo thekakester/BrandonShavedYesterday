@@ -1275,7 +1275,7 @@ function updateGame() {
 		}
 		if (engine.isKeyPressed("Digit9")) {
 			game.debug.tileFillType++;
-			game.debug.tileFillType%=3;
+			game.debug.tileFillType%=4;
 		}
 		
 		
@@ -1353,7 +1353,8 @@ function updateGame() {
 				game.appendMessage += "&createEntity=" + selectedID + "|" + game.player.x + "|" + game.player.y;
 			}
 		} else {	
-			if (engine.isKeyDown("KeyE")) {			
+			if (engine.isKeyDown("KeyE")) {	
+				var tileTypeWereOn = game.map.tile[game.player.y][game.player.x];
 				for (var xOffset = -game.debug.brushSize; xOffset <= game.debug.brushSize; xOffset++) {
 					for (var yOffset = -game.debug.brushSize; yOffset <= game.debug.brushSize; yOffset++) {
 						var row = game.player.y + yOffset;
@@ -1363,7 +1364,7 @@ function updateGame() {
 						var distSqrd = (xOffset*xOffset)+(yOffset*yOffset);
 						var radSqrd = game.debug.brushSize * game.debug.brushSize;
 						if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
-						if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(xOffset,yOffset))) {
+						if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(xOffset,yOffset)) || (game.debug.tileFillType==3 && game.map.tile[row][col]==tileTypeWereOn)) {
 							game.map.tile[row][col] = selectedID;
 							game.map.delta[row + "|" + col + "|" + selectedID] = true;
 						}
@@ -1673,6 +1674,7 @@ function paintGame() {
 			//Draw what we're about to edit
 			//NOTE:  THIS IS JUST DRAWING!  MAY DIFFER FROM ACTUAL
 			engine.__context.fillStyle  = "rgba(255, 0, 0, 0.2)";
+			var tileTypeWereOn = game.map.tile[game.player.y][game.player.x];
 			for (var colOffset = -game.debug.brushSize; colOffset <= game.debug.brushSize; colOffset++) {
 				for (var rowOffset = -game.debug.brushSize; rowOffset <= game.debug.brushSize; rowOffset++) {
 					var row = game.player.y + rowOffset;
@@ -1684,7 +1686,7 @@ function paintGame() {
 					var distSqrd = (colOffset*colOffset)+(rowOffset*rowOffset);
 					var radSqrd = game.debug.brushSize * game.debug.brushSize;
 					if (game.debug.brushSize > 3) { radSqrd -= 0.1; }
-					if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(colOffset,rowOffset))) {
+					if (game.debug.tileFillType==0 || (game.debug.tileFillType==1&&distSqrd <= radSqrd) || (game.debug.tileFillType==2&&randomAt(colOffset,rowOffset)) || (game.debug.tileFillType==3 && game.map.tile[row][col]==tileTypeWereOn)) {
 						engine.__context.fillRect(x,y,32,32);
 					}
 				}
