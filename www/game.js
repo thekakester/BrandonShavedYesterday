@@ -45,6 +45,7 @@ playerPath = null;
 game.debug.randomTiles = [];	//Used for randomly scattering tiles
 game.debug.randomAmount = 0.2;	//Used for randomly scattering tiles
 game.debug.prefab = {making: false, x:0,y:0, saved:[]};//Used for recording prefabs
+game.debug.zoomOut = false;
 
 /*******************************************************************************
 * INITIALIZATION                                                               *
@@ -1278,6 +1279,10 @@ function updateGame() {
 		}
 		
 		
+		if (engine.isKeyPressed("KeyO")) {
+			game.debug.zoomOut = !game.debug.zoomOut;
+		}
+		
 		//This is the index to use for grid view (ignored for other things)
 		var index = game.debug.row == 2 ? game.debug.tiles : game.debug.entities;
 		
@@ -1422,6 +1427,20 @@ function paintGame() {
 	var endRow = offsetYTile + 20;
 	var startCol = offsetXTile - 1;
 	var endCol = offsetXTile + 26;
+	
+	//If debug zoomout
+	if (game.debug.zoomOut) {
+		offsetXTile-=30;
+		offsetX-=30*32;
+		offsetYTile-=20;
+		offsetY-=20*32;
+		startRow = offsetYTile - 300;
+		endRow = offsetYTile + 300;
+		startCol = offsetXTile - 300;
+		endCol = offsetXTile + 300;
+		engine.__context.save();
+		engine.__context.scale(0.3,0.3);
+	}
 	
 	for (var r = startRow; r <= endRow; r++) {
 		for (var c = startCol; c <= endCol; c++) {
@@ -1721,6 +1740,13 @@ function paintGame() {
 			engine.__context.fillText("Left Shift (in grid mode): Move 5 tiles at a time",10,y); y+=20
 			engine.__context.fillText("Right Shift (in grid mode): Zoom out",10,y); y+=20
 		}
+	}
+	
+	
+	
+	//Restore the zoomout
+	if (game.debug.zoomOut) {
+		engine.__context.restore();
 	}
 }
 
