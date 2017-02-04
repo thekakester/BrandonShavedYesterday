@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 import game.Game;
+import game.Map;
 
 /**This is a BASE class.  If an entity is static, use this.
  * if it needs special params, override this class.
@@ -107,7 +108,7 @@ public class Entity {
 	}
 
 	public void update(Game g) {
-		if (!calculatedChunks) { calculateChunks(g); }	//Everythign must do this at least once
+		if (!calculatedChunks) { calculateChunks(); }	//Everythign must do this at least once
 		if (path.isEmpty()) { return; }
 
 		//Update x and y based on our path
@@ -137,19 +138,19 @@ public class Entity {
 			if (direction == 3) { this.x++; }
 		}
 
-		calculateChunks(g);
+		calculateChunks();
 
 		//Update our start time to
 		pathStartTime += (int)(mostRecentTile * millisecondsPerTile);
 	}
 
-	private void calculateChunks(Game g) {
+	private void calculateChunks() {
 		calculatedChunks = true;	//So we don't run this if we don't ahve to
 		
 		//Get our chunk
-		chunkX = x / g.map.chunkCols;
+		chunkX = x / Map.chunkCols;
 		if (x < 0) { chunkX--; }
-		chunkY = y / g.map.chunkCols;
+		chunkY = y / Map.chunkCols;
 		if (y < 0) { chunkY--; }	
 	}
 
@@ -185,5 +186,18 @@ public class Entity {
 				if (b == 3) { this.x++; }
 			}
 		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.id;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Entity) {
+			return ((Entity)o).id == this.id;
+		}
+		return false;
 	}
 }

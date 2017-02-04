@@ -19,7 +19,7 @@ public class Map {
 	private HashSet<Integer> unpassableTiles = new HashSet<Integer>();
 	private Game game;
 	private int defaultTileForNewChunks = 5;//Water
-	public int spawnRow,spawnCol,chunkRows,chunkCols;
+	public static int spawnRow,spawnCol,chunkRows,chunkCols;
 
 	//Indexed as row, col.  Eg chunks.get(row).get(col)
 	private HashMap<Integer,HashMap<Integer,MapChunk>> chunks = new HashMap<Integer,HashMap<Integer,MapChunk>>();

@@ -62,7 +62,7 @@ public class EntityWithBehavior extends Entity {
 		//Did we find a path
 		if (path.size() > 0) {
 			this.setPath(path);
-			g.updateEntity(id);
+			g.updateEntity(this);
 			waitStartedTime = 0;	//Reset wait timer
 			return true;	//Tell parent we can stop
 		}
@@ -85,7 +85,7 @@ public class EntityWithBehavior extends Entity {
 		if (p!= null) {
 			//Get a path to them
 			this.setPath(Pathfinding.findPath(g, x, y, p.x, p.y, maxDistance, true));
-			if (!getPath().isEmpty()) { g.updateEntity(id); }
+			if (!getPath().isEmpty()) { g.updateEntity(this); }
 			return (!this.getPath().isEmpty());
 		}
 		

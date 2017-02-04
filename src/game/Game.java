@@ -30,16 +30,14 @@ public class Game extends GameBase {
 
 	public Map map;
 	public EntityManager entityManager = new EntityManager();
-	private int lastAddedEntityID = 99;	//Next entity should be id: 101
-	private HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
-	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used in AI)
 	private HashMap<Integer,ClientDelta> clientDeltas = new HashMap<Integer,ClientDelta>();
 	private HashMap<Integer,Sign> signs = new HashMap<Integer,Sign>();
 	private HashMap<Integer,Point> warps = new HashMap<Integer,Point>();
+	private final EntityChunks entityChunks;
 
 	public Game() {
 
-
+		entityChunks = new EntityChunks(clientDeltas);
 		load();	//Load the game (from save files)
 	}
 
@@ -49,13 +47,7 @@ public class Game extends GameBase {
 	 * @return
 	 */
 	public int getNewEntityId() {
-		int id = lastAddedEntityID + 1;
-		while (entities.containsKey(id)) {
-			id++;
-		}
-		entities.put(id, null);	//Add something so we don't lose this ID to a race condition
-		lastAddedEntityID = id;
-		return id;
+		return entityChunks.getNewEntityId();
 	}
 
 	/**Add an entity to the game and update all references for subscribers
@@ -63,71 +55,7 @@ public class Game extends GameBase {
 	 * @param e The entity to start tracking
 	 */
 	public void addEntity(Entity e) {
-		entities.put(e.id, e);
-
-		//Quicker way to discern between players
-		if (e.type == EntityType.PLAYER) {
-			players.put(e.id, (PlayerEntity)e);
-		}
-
-		//Add this to all the deltas
-		for (ClientDelta delta : clientDeltas.values()) {
-			delta.addEntity(e);
-		}
-	}
-
-	/**Mark this entity as updated so that clients learn about it
-	 * Example usage: move entity e up:
-	 * 		e.y--;				//Move it
-	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
-	 * 
-	 * @param eid The entity ID to udate
-	 */
-	public void updateEntity(int eid) {
-		updateEntity(eid,false);
-	}
-
-	/**Mark this entity as updated so that clients learn about it
-	 * Example usage: move entity e up:
-	 * 		e.y--;				//Move it
-	 * 		updateEntity(e.id); //Make sure we tell clients that it changed
-	 * 
-	 * @param eid The EID that got updated.
-	 * @param forcePlayerUpdate Default false.  If TRUE, this will force the player to update their own position.  Default false.
-	 */
-	public void updateEntity(int eid, boolean forcePlayerUpdate) {
-		if (entities.containsKey(eid)) {
-			Entity e = entities.get(eid);
-
-			//Create a point for this entity to check its chunk
-			Point chunk = new Point(e.chunkX,e.chunkY);
-
-
-			//Make sure this is added to deltas so we tell our clients
-			for (ClientDelta delta : clientDeltas.values()) {
-				if (delta.pid == eid && !forcePlayerUpdate) { continue; }	//Don't tell player about themself (unless forced)
-				//Skip if in different chunks
-				if (delta.player.getCachedChunks().contains(chunk) || (forcePlayerUpdate&&delta.pid == eid)) {
-					delta.addEntity(e);
-				}
-			}
-		}
-	}
-
-	public void deleteEntity(int eid) {
-		Entity e = entities.get(eid);
-		if (e != null) {
-			e.isAlive = false;				//Make sure the client removes it
-			//Update all the client deltas to reflect this
-			//Add this to all the deltas
-			for (ClientDelta delta : clientDeltas.values()) {
-				delta.addEntity(e);
-			}
-			if (e.type == EntityType.PLAYER) {
-				players.remove(e.id);
-			}
-		}
-		entities.remove(eid);
+		entityChunks.addEntity(e);
 	}
 
 	/**Send a message to a specific player
@@ -184,7 +112,7 @@ public class Game extends GameBase {
 
 				//Add the map stuff
 				updatePlayerChunk(player);
-				updateEntity(player.id,true);//Cause us to actually spawn
+				entityChunks.updateEntity(player,true);//Cause us to actually spawn
 
 				//Response is: pid
 				ByteBuffer bb = ByteBuffer.allocate(4);
@@ -195,7 +123,7 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("entity")) {
 				String[] args = value.split("\\|");
 				int eid = Integer.parseInt(args[0]);
-				Entity e = entities.get(eid);
+				Entity e = entityChunks.getEntity(eid);
 				//Parse the directions from the client
 				for (int i = 1; i < args.length; i++) {
 					int direction = Integer.parseInt(args[i]);
@@ -206,7 +134,7 @@ public class Game extends GameBase {
 				updatePlayerChunk((PlayerEntity)e);
 
 				if (args.length > 1) {
-					updateEntity(eid);
+					entityChunks.updateEntity(e);
 				}
 				return null;	//Nothing to say back
 			}
@@ -227,7 +155,7 @@ public class Game extends GameBase {
 				//Return anything that might have changed
 				int pid = Integer.parseInt(value);
 
-				((PlayerEntity)entities.get(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
+				((PlayerEntity)entityChunks.getEntity(pid)).refresh();	//Reset our countdown timer until the system erases thisplayer
 
 				return getClientDelta(pid);
 			}
@@ -237,13 +165,13 @@ public class Game extends GameBase {
 				String[] data = value.split("\\|");
 				int pid = Integer.parseInt(data[0]);
 				int eid = Integer.parseInt(data[1]);
-				Entity e = entities.get(eid);
+				Entity e = entityChunks.getEntity(eid);
 				if (e.definition.baseHP > 0) {
 					//If its a player, don't ACTUALLY kill them
-					if (players.containsKey(e.id)) {
+					if (entityChunks.containsPlayer(e.id)) {
 						e.x = map.spawnCol;
 						e.y = map.spawnRow;
-						updateEntity(e.id,true);//Force update
+						entityChunks.updateEntity(e,true);//Force update
 						//Tell the dead player that they died
 						addNotification(e.id,new Sign("You died"));
 					} else {
@@ -277,9 +205,9 @@ public class Game extends GameBase {
 					int y = Integer.parseInt(args[2]);
 
 					//Delete everything in this spot
-					for (Entity e : entities.values()) {
-						if (e.definition.saveable &&  e.x == x && e.y == y) {
-							deleteEntity(e.id);	//Gets cleaned up by server
+					for (Entity e : entityChunks.getEntitiesAt(x,y)) {
+						if (e.definition.saveable) {
+							entityChunks.deleteEntity(e.id);	//Tells clients then gets cleaned by server
 						}
 					}
 
@@ -318,10 +246,10 @@ public class Game extends GameBase {
 				String[] args = value.split("\\|"); // targetEID|warpEID
 				Point p = warps.get(Integer.parseInt(args[1]));
 				if(p == null) { System.out.println("No warp here, sorry"); return null; }	//Do nothing
-				Entity e = entities.get(Integer.parseInt(args[0]));
+				Entity e = entityChunks.getEntity(Integer.parseInt(args[0]));
 				e.x = p.x;
 				e.y = p.y;
-				updateEntity(e.id,true);	//Force update
+				entityChunks.updateEntity(e,true);	//Force update
 				return null;
 			}
 		} catch (Exception e) {
@@ -339,7 +267,7 @@ public class Game extends GameBase {
 	 */
 	private void triggerEntity(int pid, int triggerEid) {
 		if (triggerEid < 0 ) { return; }
-		Entity target = entities.get(triggerEid);
+		Entity target = entityChunks.getEntity(triggerEid);
 		if (target == null) { return; }
 		ClientDelta delta = clientDeltas.get(pid);
 		if (delta == null) { return; }
@@ -383,12 +311,17 @@ public class Game extends GameBase {
 		}
 
 		//Add entities that are in the new chunks and delete entities in the stale ones
-		for (Entity e : entities.values()) {
-			Point point = new Point(e.chunkX,e.chunkY);
-			if (p.getNewChunks().contains(point)) {
-				delta.addEntity(e);
+		for (Point chunk : p.getNewChunks()) {
+
+			System.out.println("New entity: " + chunk);
+			for (Entity e : entityChunks.getEntitiesInChunk(chunk.x,chunk.y)) {
+					delta.addEntity(e);
 			}
-			if (p.getStaleChunks().contains(point)) {
+		}
+		
+		for (Point chunk : p.getStaleChunks()) {
+			System.out.println("Stale entity : " + chunk);
+			for (Entity e : entityChunks.getEntitiesInChunk(chunk.x,chunk.y)) {
 				if (e.id != p.id) {
 					delta.addDeadEntity(e.id);
 				}
@@ -432,22 +365,7 @@ public class Game extends GameBase {
 			lastSave = System.currentTimeMillis();
 		}
 
-		//Get a set of all entity ids
-		//Avoid a concurrent modification exception
-		Integer[] eids = new Integer[entities.size()];
-		eids = entities.keySet().toArray(eids);
-
-		for (int eid : eids) {
-			Entity e = entities.get(eid);
-
-			//Ignore null entities
-			if (e==null) { entities.remove(eid); continue;}
-
-			e.update(this);
-			if (e.isAlive == false) {
-				deleteEntity(e.id);
-			}
-		}
+		entityChunks.removeDeadEntities();
 	}
 
 	/**Save the game
@@ -461,7 +379,8 @@ public class Game extends GameBase {
 		try {
 			PrintWriter pw = new PrintWriter(Game.MAP + ".entities");
 			pw.println("#Autogenerated");
-			for (Entity e : entities.values()) {
+			for (int eid : entityChunks.getEntityIds()) {
+				Entity e = entityChunks.getEntity(eid);
 				//If it is an UNCHANGING entity, save it
 				//This includes static objects and non-moving things
 				//EG: PLAYER IS NOT STATIC, Nor ar enemies (but spawners are)
@@ -497,10 +416,11 @@ public class Game extends GameBase {
 					//Get a new entity ID
 					int eid = Integer.parseInt(data[0]);//getNewEntityId();
 					Entity e = Entity.create(eid, Integer.parseInt(data[1]),Integer.parseInt(data[3]),Integer.parseInt(data[2]));
-					entities.put(eid, e);
-					System.out.println("Loaded entity: " + e);
+					entityChunks.addEntity(e);
+					//System.out.println("Loaded entity: " + e);
 				} catch (Exception e) {
 					System.out.println("Failed to load line " + lineNum + " of entites: " + line);
+					e.printStackTrace();
 				}
 			}
 		} catch (Exception e) {
@@ -595,17 +515,17 @@ public class Game extends GameBase {
 		filename = Game.MAP + ".triggers";
 		System.out.println("Loading triggers from " + filename);
 		try {
-			File warpFile = new File(filename);
-			if (!warpFile.exists()) {
-				warpFile.createNewFile(); 
-				PrintWriter pw = new PrintWriter(warpFile);
+			File triggerFile = new File(filename);
+			if (!triggerFile.exists()) {
+				triggerFile.createNewFile(); 
+				PrintWriter pw = new PrintWriter(triggerFile);
 				pw.println("#Space Delimited");
 				pw.println("#First: eid of the triggerable object");
 				pw.println("#Second: eid of the object to trigger");
 				pw.println("#(An entity is triggered when their AI on the server says so.  This includes signs, onDeath(for spawners), and onWalk (for triggers)");
 				pw.close();
 			}
-			Scanner scanner = new Scanner(warpFile);
+			Scanner scanner = new Scanner(triggerFile);
 			int lineNum = 0;
 
 			while (scanner.hasNextLine()) {
@@ -619,7 +539,7 @@ public class Game extends GameBase {
 					int target = Integer.parseInt(data[1]);
 
 					//Store this sign
-					entities.get(eid).triggersEid = target;
+					entityChunks.getEntity(eid).triggersEid = target;
 					if (signs.containsKey(eid)) {signs.get(eid).triggerEid = target;}
 					System.out.println("Loaded trigger for eid: " + eid + " triggers->" + target);
 				} catch (Exception e) {
@@ -634,23 +554,23 @@ public class Game extends GameBase {
 	}
 
 	public Collection<PlayerEntity> getPlayers() {
-		return players.values();
+		return entityChunks.getPlayers();
 	}
 
 	@Override
 	public boolean debugShowCommunication() {
-		return this.players.size() < 2;	//2 or more players stop debug communication
+		return getPlayers().size() < 2;	//2 or more players stop debug communication
 	}
 
-	//TODO update this for chunks
+	public void updateEntity(Entity e) {
+		entityChunks.updateEntity(e);
+	}
+
+	public void deleteEntity(int eid) {
+		entityChunks.deleteEntity(eid);
+	}
+
 	public HashSet<Entity> getEntitiesAt(int x, int y) {
-		HashSet<Entity> set = new HashSet<Entity>();
-		for (Entity e : entities.values()) {
-			if (e.x == x && e.y == y) {
-				set.add(e);
-			}
-		}
-		return set;
+		return entityChunks.getEntitiesAt(x, y);
 	}
-
 }
