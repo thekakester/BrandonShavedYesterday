@@ -427,7 +427,7 @@ public class Game extends GameBase {
 	public void run() {
 
 		//Save the game every 10 seconds
-		if (System.currentTimeMillis() - 10000 > lastSave) {
+		if (System.currentTimeMillis() - 100000 > lastSave) {
 			save();
 			lastSave = System.currentTimeMillis();
 		}
