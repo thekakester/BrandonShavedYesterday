@@ -27,7 +27,8 @@ public class PlayerEntity extends Entity{
 			g.deleteEntity(id);
 			
 			//Add a zombie in its place
-			Entity zombie = Entity.create(g.getNewEntityId(), EntityType.ZOMBIE_ENEMY,x,y);
+			ZombieEntity zombie = (ZombieEntity)Entity.create(g.getNewEntityId(), EntityType.ZOMBIE_ENEMY,x,y);
+			zombie.deathTime = System.currentTimeMillis() + 150000;	//Stay alive for 2.5 mins
 			g.addEntity(zombie);
 		}
 	}
