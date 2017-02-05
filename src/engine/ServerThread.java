@@ -46,6 +46,7 @@ public class ServerThread extends Thread {
 			//Specifically the second part (after "GET")
 			//Example:  GET /index.html?someKey=someValue
 			String request = scanner.nextLine().split(" ")[1];
+			if (request.length() == 1) { request = "/game.html"; }
 
 			//Split our request in half to get:
 			//   1) The web page being requested  Eg: "index.html"
