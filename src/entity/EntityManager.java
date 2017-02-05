@@ -147,7 +147,7 @@ public class EntityManager {
 		last().addFrame(224+32, 192);
 		last().addFrame(224+64, 192);
 		last().addFrame(224+32, 192);
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 64, 288, width, height, normal,"Robot Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[4], grid[0] + cell[9], width, height, normal,"Robot Spawn"));
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "characters", 384, 0, width*2, height*2,fast,"Robot Entity"));
 		last().baseHP = 1;
@@ -351,7 +351,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[3], grid[0]+cell[1],width,height,normal,"Chest"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[0], grid[0]+cell[6],width,height*2,normal,"Well"));
 		last().setOffset(0, 32);
-		add(new EntityDefinition(typeID++, nocollide, save,  "everything", 32, 288, width, height, normal,"Zombie Spawn"));												
+		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[3], grid[0]+cell[9], width, height, normal,"Zombie Spawn"));												
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[8]+cell[1], grid[0]+cell[6],width,height*2,normal,"Tree2"));
 		last().setOffset(0, 32);
@@ -609,6 +609,31 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Left"));
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Middle"));
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Right"));
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[1], grid[7]+cell[4], width, height, fast, "Bat Entity"));
+		last().useWalkingAnimation(grid[7]+cell[1], grid[7]+cell[4]);
+		last().baseHP = 1;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[2], grid[0]+cell[9], width, height, fast, "Bat Spawn"));
+		last().isSpawner = true;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[4], grid[7]+cell[4], width, height, fast, "Ghost Entity"));
+		last().useWalkingAnimation(grid[7]+cell[4], grid[7]+cell[4]);
+		last().baseHP = 1;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[5], grid[0]+cell[9], width, height, fast, "Ghost Spawn"));
+		last().isSpawner = true;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[7], grid[7]+cell[0], width, height, fast, "Skeleton Entity"));
+		last().useWalkingAnimation(grid[7]+cell[7], grid[7]+cell[0]);
+		last().baseHP = 1;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[6], grid[0]+cell[9], width, height, fast, "Skeleton Spawn"));
+		last().isSpawner = true;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[7], grid[7]+cell[4], width, height, fast, "Spider Entity"));
+		last().useWalkingAnimation(grid[7]+cell[7], grid[7]+cell[4]);
+		last().baseHP = 1;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[7], grid[0]+cell[9], width, height, fast, "Spider Spawn"));
+		last().isSpawner = true;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[6]+cell[8], grid[7]+cell[4], width, height, fast, "Slime Entity"));
+		last().useWalkingAnimation(grid[6]+cell[8], grid[7]+cell[4]);
+		last().baseHP = 1;
+		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[8], grid[0]+cell[9], width, height, fast, "Slime Spawn"));
+		last().isSpawner = true;
 	}
 	
 	//-------------------------------DO NOT MODIFY BELOW------------------------------
