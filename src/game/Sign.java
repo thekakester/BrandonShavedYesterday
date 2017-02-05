@@ -68,7 +68,7 @@ public class Sign {
 		ByteBuffer bb = ByteBuffer.allocate(getSizeInBytes());
 
 		bb.putInt(ResponseType.NOTIFICATION);
-		bb.putInt(lines.length);
+		bb.putInt(lines.length);	//Number of pages
 
 		for (int page = 0; page < lines.length; page++) {
 			for (int i = 0; i < lines[page].length; i++) {

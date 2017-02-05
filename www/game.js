@@ -20,7 +20,7 @@ game.waitingForServerResponse = false;				//When true, disables warps until serv
 game.movementQueue = new Queue();	//Where the player has moved since we last told the server
 game.type = "menu";
 game.ping = 0;
-game.message = [];			//If game.message.length() > 0, this will display a message to the user
+game.message = new Queue();			//If game.message.length() > 0, this will display a message to the user
 game.appendMessage = "";	//DEBUG ONLY: Append this to the end of the message sent to the server
 game.debug = {};
 game.debug.enabled = false;
@@ -757,15 +757,18 @@ game.onServerRespond = function(response) {
 		//Response 7: Notification
 		if (responseType == 7) {
 			var pages = buffer.getInt();
-			for (var page = 0; page < pages; page++) {
+			game.message = new Queue();
+			for (var pageNum = 0; pageNum < pages; pageNum++) {
+				var page = [];
 				for (var line = 0; line < 4; line++) {
-					game.message[line] = "";
+					page[line] = "";
 					var length = buffer.getInt();
 					for (var c = 0; c < length; c++) {
-						game.message[line] += buffer.getChar();
+						page[line] += buffer.getChar();
 					}
-					game.message[line] = unescape(game.message[line]);
+					page[line] = unescape(page[line]);
 				}
+				game.message.enqueue(page);
 			}
 		}
 		
@@ -1016,8 +1019,8 @@ function updateGame() {
 	}
 	
 	if (engine.isKeyPressed("Space")) {
-		if(game.message.length > 0) {
-			game.message = [];
+		if(!game.message.isEmpty()){
+			game.message.dequeue();
 		} else {
 			//Get the position we're facing
 			var x = game.player.x;
@@ -1531,7 +1534,7 @@ function paintGame() {
 	engine.__context.fillText(engine.keyboardBuffer,10,engine.height - 30);
 	
 	
-	if (game.message.length > 0) {
+	if (!game.message.isEmpty()) {
 		var yStart = 600-(30*4)-10;
 		engine.__context.fillStyle = "#000";
 		engine.__context.fillRect(10,yStart,780,(30*4));
@@ -1539,8 +1542,9 @@ function paintGame() {
 		//Actually draw the message
 		engine.__context.fillStyle = "#fff";
 		engine.__context.font = "24px celticFont";
-		for (var i = 0; i < game.message.length;i++) {
-			engine.__context.fillText(game.message[i],30,yStart + (28*(i+1)));
+		var page = game.message.peek();
+		for (var i = 0; i < page.length;i++) {
+			engine.__context.fillText(page[i],30,yStart + (28*(i+1)));
 		}
 	}
 	
@@ -1772,7 +1776,7 @@ function tp(eid) {
 
 function move(xMovement, yMovement){
 	//Don't let the player move if we haven't spawned yet
-	if (game.message.length > 0) { return; }//No doing stuff while there's a message
+	if (!game.message.isEmpty()) { return; }//No doing stuff while there's a message
 	
 	var moved = false;
 	
