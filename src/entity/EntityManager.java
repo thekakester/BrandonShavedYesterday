@@ -408,7 +408,7 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[0], grid[1]+cell[0],width,height,normal,"No Fire"));
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[1], grid[1]+cell[0],width,height,fast,"Lit Fire"));
 		last().addFrame(grid[2]+cell[1],grid[1]+cell[1]);
-		last().addFrame(grid[2]+cell[1],grid[2]+cell[1]);
+		last().addFrame(grid[2]+cell[1],grid[1]+cell[2]);
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[2], grid[1]+cell[0],width,height,normal,"Dead Fire"));
 		last().addFrame(grid[2]+cell[2],grid[1]+cell[1]);
 		add(new EntityDefinition(typeID++, collide, save, "everything", grid[2]+cell[3], grid[1]+cell[0],width,height,normal,"Fur Top"));
@@ -517,7 +517,98 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, save,  "everything", grid[0]+cell[5], grid[0] + cell[5], width, height, normal,"Ladder"));
 		//add(new EntityDefinition(typeID++, collide, save,  "everything", grid[4]+cell[i], grid[4]+cell[j], width, height, normal,"Blue Building"));
 
-
+		String name1 = "";
+		String name2;
+		String name3;
+		String name4;
+		int yOffset = grid[7]+cell[6];
+		for(int i = 0; i < 8; i++){//Sprite: 
+			//0 - Green, 1 - Green Inner, 2 - Sand, 3 - Sand Inner, 4 - Snow, 5 - Snow Inner, 6 - Ice, 7 -Ice Inner
+			switch (i){
+			case 0:
+				name1 = "Green ";
+				break;
+			case 1:
+				name1 = "Green Inner ";
+				break;
+			case 2:
+				name1 = "Sand ";
+				break;
+			case 3:
+				name1 = "Sand Inner ";
+				break;
+			case 4:
+				name1 = "Snow ";
+				break;
+			case 5:
+				name1 = "Snow Inner ";
+				break;
+			case 6:
+				name1 = "Ice ";
+				break;
+			case 7:
+				name1 = "Ice Inner ";
+				break;
+			}
+			for(int j = 0; j < 2; j++){//0 - Dark, 1 - Light
+				if(j == 0)name2 = "Dark ";
+				else name2 = "Light ";
+				for(int k = 0; k < 3;k++){ //0 - Upper, 1 - Center, 2 - Lower
+					if(k == 0)name3 = "Upper ";
+					else if (k ==1)name3 = "Center ";
+					else name3 = "Lower ";
+					for(int l = 0; l < 3; l++){ //0 - Left, 1 - Center, 3 - Right
+						if(l == 0)name4 = "Left Shore";
+						else if (l ==1)name4 = "Center Shore";
+						else name4 = "Right Shore";
+						boolean col = collide;
+						if(l == 1 && k == 1)col = nocollide;
+						add(new EntityDefinition(typeID++, col, save, "everything", 0+288*j+l*32,yOffset+i*96+k*32,width,height,fast,name1+name2+name3+name4));
+						last().addFrame(96+288*j+l*32,yOffset+i*96+k*32);
+						last().addFrame(192+288*j+l*32,yOffset+i*96+k*32);
+					}
+				}
+			}
+		}
+		int xOffset = grid[3]+cell[0];
+		yOffset = grid[8]+cell[8];
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset,width,height,fast,"Snow Edge Upper Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset,width,height,fast,"Snow Edge Upper Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset,width,height,fast,"Snow Edge Upper Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[1],width,height,fast,"Snow Edge Middle Left"));	
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[1],width,height,fast,"Snow Edge Middle Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[2],width,height,fast,"Snow Edge Lower Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[2],width,height,fast,"Snow Edge Lower Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[2],width,height,fast,"Snow Edge Lower Right"));
+		
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Left"));	
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Right"));
+		
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[6],width,height,fast,"Ice Edge Upper Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[6],width,height,fast,"Ice Edge Upper Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[6],width,height,fast,"Ice Edge Upper Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[7],width,height,fast,"Ice Edge Middle Left"));	
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[7],width,height,fast,"Ice Edge Middle Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[8],width,height,fast,"Ice Edge Lower Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[8],width,height,fast,"Ice Edge Lower Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[8],width,height,fast,"Ice Edge Lower Right"));
+		
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Left"));	
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Right"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Left"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Middle"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Right"));
 	}
 	
 	//-------------------------------DO NOT MODIFY BELOW------------------------------
