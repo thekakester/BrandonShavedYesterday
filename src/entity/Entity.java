@@ -109,7 +109,11 @@ public class Entity {
 	}
 
 	public void update(Game g) {
-		if (!calculatedChunks) { calculateChunks(); }	//Everythign must do this at least once
+		if (!calculatedChunks) {
+			if (calculateChunks() && g!=null){	//G is null when creating static objects
+				g.reindex(this);
+			}
+		}	//Everythign must do this at least once
 		if (path.isEmpty()) { return; }
 
 		//Update x and y based on our path

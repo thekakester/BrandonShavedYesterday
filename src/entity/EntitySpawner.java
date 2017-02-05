@@ -58,6 +58,7 @@ public class EntitySpawner extends Entity{
 
 	@Override
 	public void update(Game g) {
+		super.update(g);
 		if (child == null || !child.isAlive) {
 			if (cooldownStart == 0) {
 				cooldownStart = System.currentTimeMillis();
