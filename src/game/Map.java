@@ -38,8 +38,16 @@ public class Map {
 		unpassableTiles.add(5);//water
 		unpassableTiles.add(9);//lava
 		unpassableTiles.add(15);//Dark Water
-		unpassableTiles.add(19);//Maisma
-		unpassableTiles.add(20);//Black Tile
+		unpassableTiles.add(19);//Miasma
+		for(int i = 59; i < 79; i++){
+			unpassableTiles.add(i);//Water Tiles 59 - 78 
+		}
+		for(int i = 0; i < 108; i++){
+			if(i % 9 == 4 && i % 36 >= 18 )continue; //land tile
+			unpassableTiles.add(i+90);//Water Tiles 90 - 197
+		}
+	
+	
 		load();
 	}
 

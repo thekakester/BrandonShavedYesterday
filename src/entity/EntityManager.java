@@ -566,6 +566,7 @@ public class EntityManager {
 						add(new EntityDefinition(typeID++, col, save, "everything", 0+288*j+l*32,yOffset+i*96+k*32,width,height,fast,name1+name2+name3+name4));
 						last().addFrame(96+288*j+l*32,yOffset+i*96+k*32);
 						last().addFrame(192+288*j+l*32,yOffset+i*96+k*32);
+						last().isUnderlay = true;
 					}
 				}
 			}
@@ -573,42 +574,76 @@ public class EntityManager {
 		int xOffset = grid[3]+cell[0];
 		yOffset = grid[8]+cell[8];
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset,width,height,fast,"Snow Edge Upper Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset,width,height,fast,"Snow Edge Upper Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset,width,height,fast,"Snow Edge Upper Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[1],width,height,fast,"Snow Edge Middle Left"));	
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[1],width,height,fast,"Snow Edge Middle Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[2],width,height,fast,"Snow Edge Lower Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[2],width,height,fast,"Snow Edge Lower Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[2],width,height,fast,"Snow Edge Lower Right"));
+		last().isUnderlay = true;
 		
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[3],width,height,fast,"Snow Edge Inner Upper Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Left"));	
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[4],width,height,fast,"Snow Edge Inner Middle Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[5],width,height,fast,"Snow Edge Inner Lower Right"));
+		last().isUnderlay = true;
 		
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[6],width,height,fast,"Ice Edge Upper Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[6],width,height,fast,"Ice Edge Upper Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[6],width,height,fast,"Ice Edge Upper Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[7],width,height,fast,"Ice Edge Middle Left"));	
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[7],width,height,fast,"Ice Edge Middle Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[8],width,height,fast,"Ice Edge Lower Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[8],width,height,fast,"Ice Edge Lower Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[8],width,height,fast,"Ice Edge Lower Right"));
+		last().isUnderlay = true;
 		
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+cell[9],width,height,fast,"Ice Edge Inner Upper Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Left"));	
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+grid[1],width,height,fast,"Ice Edge Inner Middle Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[0],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Left"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[1],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Middle"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", xOffset+cell[2],yOffset+grid[1]+cell[1],width,height,fast,"Ice Edge Inner Lower Right"));
+		last().isUnderlay = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[1], grid[7]+cell[4], width, height, fast, "Bat Entity"));
 		last().useWalkingAnimation(grid[7]+cell[1], grid[7]+cell[4]);
 		last().baseHP = 1;
