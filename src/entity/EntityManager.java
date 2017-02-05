@@ -669,6 +669,8 @@ public class EntityManager {
 		last().baseHP = 1;
 		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[8], grid[0]+cell[9], width, height, fast, "Slime Spawn"));
 		last().isSpawner = true;
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[6], grid[0]+cell[0], width, height, fast, "AI Despawner"));
+		last().isTrigger = true;
 	}
 	
 	//-------------------------------DO NOT MODIFY BELOW------------------------------

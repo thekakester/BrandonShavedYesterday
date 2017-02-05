@@ -142,6 +142,16 @@ public class Entity {
 			if (direction == 2) { this.x--;}
 			if (direction == 3) { this.x++; }
 		}
+		
+		//Are we standing on a despawner?
+		for (Entity e : g.getEntitiesAt(x, y)) {
+			if (e.type == EntityType.AI_DESPAWNER) {
+				if (this.isHostile) {
+					g.deleteEntity(this.id);
+					break;
+				}
+			}
+		}
 
 		//If our chunk changed, update us in the entityChunker
 		if (calculateChunks()) {
