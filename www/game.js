@@ -943,6 +943,7 @@ function execute(command) {
 	
 	if (command == "settile") {
 		//Get the tile at eid's position
+		return;
 		var eid = args[1];
 		if (game.entities[eid]) {
 			if (args[2] && Number.isInteger(args[2])) {
