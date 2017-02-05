@@ -452,12 +452,16 @@ public class Game extends GameBase {
 					//Get the entity ID this ties to
 					int eid = Integer.parseInt(data[0]);
 
-					//Get the remainder of the lines (up to 4)
-					Sign sign = new Sign();
-					for (int i = 0; i < 4; i++) {
-						if (i+1 >= data.length) { break; }
-						sign.addLine(data[i+1]);
+					//Get the sign if it exists
+					Sign sign = signs.get(eid);
+					if (sign == null) {
+						sign = new Sign();
 					}
+					String[] page = new String[4];
+					for (int i = 0; i+1 < data.length; i++) {
+						page[i] = data[i+1];
+					}
+					sign.addPage(page);
 
 					//Store this sign
 					signs.put(eid, sign);

@@ -730,18 +730,7 @@ game.onServerRespond = function(response) {
 			}
 		}
 		
-		//Response 4: Sign
-		if (responseType == 4) {
-			var lines = buffer.getInt();
-			for (var i = 0; i < lines; i++) {
-				var length = buffer.getInt();
-				var message = "";
-				for(var j = 0 ; j < length; j++){
-					message+= buffer.getChar();
-				}
-				appendMessage(unescape(message));
-			}
-		}
+		//Response 4: Sign (DEPRECATED, use notification now)
 		
 		//Response 5: Attacking entities
 		if (responseType == 5) {
@@ -765,14 +754,16 @@ game.onServerRespond = function(response) {
 		
 		//Response 7: Notification
 		if (responseType == 7) {
-			var lines = buffer.getInt();
-			for (var line = 0; line < lines; line++) {
-				game.message[line] = "";
-				var length = buffer.getInt();
-				for (var c = 0; c < length; c++) {
-					game.message[line] += buffer.getChar();
+			var pages = buffer.getInt();
+			for (var page = 0; page < pages; page++) {
+				for (var line = 0; line < 4; line++) {
+					game.message[line] = "";
+					var length = buffer.getInt();
+					for (var c = 0; c < length; c++) {
+						game.message[line] += buffer.getChar();
+					}
+					game.message[line] = unescape(game.message[line]);
 				}
-				game.message[line] = unescape(game.message[line]);
 			}
 		}
 		
