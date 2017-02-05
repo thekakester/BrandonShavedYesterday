@@ -612,27 +612,27 @@ public class EntityManager {
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[1], grid[7]+cell[4], width, height, fast, "Bat Entity"));
 		last().useWalkingAnimation(grid[7]+cell[1], grid[7]+cell[4]);
 		last().baseHP = 1;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[2], grid[0]+cell[9], width, height, fast, "Bat Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[2], grid[0]+cell[9], width, height, fast, "Bat Spawn"));
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[4], grid[7]+cell[4], width, height, fast, "Ghost Entity"));
 		last().useWalkingAnimation(grid[7]+cell[4], grid[7]+cell[4]);
 		last().baseHP = 1;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[5], grid[0]+cell[9], width, height, fast, "Ghost Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[5], grid[0]+cell[9], width, height, fast, "Ghost Spawn"));
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[7], grid[7]+cell[0], width, height, fast, "Skeleton Entity"));
 		last().useWalkingAnimation(grid[7]+cell[7], grid[7]+cell[0]);
 		last().baseHP = 1;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[6], grid[0]+cell[9], width, height, fast, "Skeleton Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[6], grid[0]+cell[9], width, height, fast, "Skeleton Spawn"));
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[7]+cell[7], grid[7]+cell[4], width, height, fast, "Spider Entity"));
 		last().useWalkingAnimation(grid[7]+cell[7], grid[7]+cell[4]);
 		last().baseHP = 1;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[7], grid[0]+cell[9], width, height, fast, "Spider Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[7], grid[0]+cell[9], width, height, fast, "Spider Spawn"));
 		last().isSpawner = true;
 		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[6]+cell[8], grid[7]+cell[4], width, height, fast, "Slime Entity"));
 		last().useWalkingAnimation(grid[6]+cell[8], grid[7]+cell[4]);
 		last().baseHP = 1;
-		add(new EntityDefinition(typeID++, nocollide, nosave, "everything", grid[0]+cell[8], grid[0]+cell[9], width, height, fast, "Slime Spawn"));
+		add(new EntityDefinition(typeID++, nocollide, save, "everything", grid[0]+cell[8], grid[0]+cell[9], width, height, fast, "Slime Spawn"));
 		last().isSpawner = true;
 	}
 	
