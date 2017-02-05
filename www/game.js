@@ -1088,6 +1088,7 @@ function updateGame() {
 			
 			var e = game.entities[eid];
 			if(!e.hostile){continue;} //carry on sir.
+			if(e.dead) { continue; }	//Server hasn't said they ded yet, but we'll ignore for now
 			var x = e.tweenX;
 			var y = e.tweenY;
 			if(e.direction == 0){y--;}
