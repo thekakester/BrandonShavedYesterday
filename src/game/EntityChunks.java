@@ -189,11 +189,8 @@ public class EntityChunks {
 	 */
 	public HashSet<Entity> getEntitiesAt(int x, int y) {
 		Point[] coords = EntityChunks.convertToChunkCoords(x, y);
-		x = coords[1].x;
-		y = coords[1].y;
-
+		
 		HashSet<Entity> entities = getEntitiesInChunk(coords[0].x, coords[0].y);
-
 		//Get the entities that are on the position we are looking for
 		HashSet<Entity> onPoint = new HashSet<>();
 		for (Entity e : entities) {
@@ -277,5 +274,4 @@ public class EntityChunks {
 		getEntitiesInChunk(entity.oldChunkX, entity.oldChunkY).remove(entity);
 		this.addEntityToChunk(entity);
 	}
-
 }
