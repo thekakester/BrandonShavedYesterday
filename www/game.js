@@ -418,6 +418,8 @@ function begin_loadSprites() {
 		}
 	}
 	
+	var tmp = engine.createSprite("tile" + game.uniqueTileIDs++,"everything",32,32);	//Sprite: Snow Ice Tile
+	tmp.addFrame(grid[3]+cell[1],grid[9]+cell[8],10);
 	
 	//This is a bad hacky way to populate our debug menu
 	for (var spriteTag in engine.__sprites) {
