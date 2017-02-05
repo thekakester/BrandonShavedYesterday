@@ -137,6 +137,10 @@ public class EntityChunks {
 			if (delta.pid == e.id && !forcePlayerUpdate) { continue; }	//Don't tell player about themself (unless forced)
 			//Skip if in different chunks
 			if (delta.player.getCachedChunks().contains(chunk) || (forcePlayerUpdate&&delta.pid == e.id)) {
+				//If forced, then we will clear the path
+				if (forcePlayerUpdate) {
+					e.clearPath();
+				}
 				delta.addEntity(e);
 			}
 		}

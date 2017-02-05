@@ -224,4 +224,8 @@ public class Entity {
 		}
 		return false;
 	}
+
+	public void clearPath() {
+		this.path.clear();
+	}
 }
