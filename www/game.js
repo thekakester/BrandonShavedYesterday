@@ -1011,7 +1011,7 @@ function updateGame() {
 	if (engine.isKeyDown("ArrowRight")) {dX++;}
 	move(dX,dY);
 	
-	if (engine.isKeyPressed("Escape")) {
+	if (engine.isKeyPressed("Escape") && !window.location.href.includes("mitch")) {
 		game.debug.enabled = !game.debug.enabled;
 		game.debug.selected = 0;
 		game.debug.row = 0;
