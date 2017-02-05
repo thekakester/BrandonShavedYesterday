@@ -573,4 +573,8 @@ public class Game extends GameBase {
 	public HashSet<Entity> getEntitiesAt(int x, int y) {
 		return entityChunks.getEntitiesAt(x, y);
 	}
+
+	public void reindex(Entity entity) {
+		entityChunks.reindex(entity);
+	}
 }

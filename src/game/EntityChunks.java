@@ -26,8 +26,8 @@ public class EntityChunks {
 	private final HashMap<Integer,ClientDelta> clientDeltas;
 	private HashMap<Integer,PlayerEntity> players = new HashMap<Integer,PlayerEntity>();	//Shortcut for getting player objects. (used moslty in AI)
 	private HashSet<Integer> deadEids = new HashSet<Integer>();	//IDs that need to be cleaned up when we're not in a loop
-	
-	
+
+
 	public EntityChunks(HashMap<Integer,ClientDelta> clientDeltas) {
 		this.clientDeltas = clientDeltas;
 	}
@@ -51,7 +51,7 @@ public class EntityChunks {
 		if (e.type == EntityType.PLAYER) {
 			players.put(e.id, (PlayerEntity)e);
 		}
-		
+
 		this.entityIDs.add(e.id);
 	}
 
@@ -152,7 +152,7 @@ public class EntityChunks {
 		//Tell the client this is kill
 		e.isAlive = false;
 		updateEntity(eid);
-		
+
 		//Mark this for deletion
 		this.deadEids.add(eid);
 
@@ -173,7 +173,7 @@ public class EntityChunks {
 		if (e == null) {
 			e = staticEntites.get(eid);
 		}
-		
+
 		return e;
 	}
 
@@ -240,7 +240,7 @@ public class EntityChunks {
 	 */
 	public void removeDeadEntities() {
 		HashSet<Entity> deadEntities = new HashSet<Entity>();
-		
+
 		//Clear them out!
 		for (int eid : deadEids) {
 			//One of the below will add null.  Beware of this!
@@ -248,11 +248,13 @@ public class EntityChunks {
 			deadEntities.add(dynamicEntites.remove(eid));
 			entityIDs.remove(eid);
 		}
-		
+
 		//Now remove these entities from our chunk index
 		for (Entity e : deadEntities) {
-			Point[] coords = convertToChunkCoords(e.x, e.y);
-			getEntitiesInChunk(coords[0].x,coords[0].y).remove(e);
+			if (e != null) {
+				Point[] coords = convertToChunkCoords(e.x, e.y);
+				getEntitiesInChunk(coords[0].x,coords[0].y).remove(e);
+			}
 		}
 	}
 
@@ -268,6 +270,12 @@ public class EntityChunks {
 		HashSet<Entity> cloned = new HashSet<Entity>();
 		cloned.addAll(dynamicEntites.values());
 		return cloned;
+	}
+
+	public void reindex(Entity entity) {
+		//Remove it from the old place
+		getEntitiesInChunk(entity.oldChunkX, entity.oldChunkY).remove(entity);
+		this.addEntityToChunk(entity);
 	}
 
 }

@@ -18,6 +18,7 @@ public class Entity {
 	public final int type;
 	public int x,y;
 	public int chunkX, chunkY;
+	public int oldChunkX, oldChunkY;		//Used for reindexing.  Remove from old, add to new
 	private long pathStartTime = 0;			//When was the path created
 	private LinkedList<Byte> path = new LinkedList<Byte>();
 	public final EntityDefinition definition;
@@ -139,21 +140,28 @@ public class Entity {
 		}
 
 		//If our chunk changed, update us in the entityChunker
-		calculateChunks();
+		if (calculateChunks()) {
+			//We need to re-index this entity
+			g.reindex(this);
+		}
 		
 
 		//Update our start time to
 		pathStartTime += (int)(mostRecentTile * millisecondsPerTile);
 	}
 
-	private void calculateChunks() {
+	private boolean calculateChunks() {
 		calculatedChunks = true;	//So we don't run this if we don't ahve to
 		
+		oldChunkX = chunkX;
+		oldChunkY = chunkY;
 		//Get our chunk
 		chunkX = x / Map.chunkCols;
 		if (x < 0) { chunkX--; }
 		chunkY = y / Map.chunkCols;
-		if (y < 0) { chunkY--; }	
+		if (y < 0) { chunkY--; }
+		
+		return oldChunkX != chunkX || oldChunkY != chunkY;
 	}
 
 	protected void setPath(LinkedList<Byte> path) {
