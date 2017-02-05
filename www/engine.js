@@ -25,7 +25,7 @@ engine.width = 800;
 engine.height = 600;
 
 //How often to comminicate with the server (time in ms)
-engine.serverMessageDelay = 100;
+engine.serverMessageDelay = 150;
 
 /***************************
 * ENGINE API FUNCTIONS     *

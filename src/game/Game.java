@@ -347,7 +347,7 @@ public class Game extends GameBase {
 
 	@Override
 	public long delayBetweenRuns() {
-		return 50;
+		return 150;
 	}
 
 	long lastSave = 0;	
@@ -355,9 +355,10 @@ public class Game extends GameBase {
 	public void run() {
 
 		//Save the game every 10 seconds
-		if (System.currentTimeMillis() - 100000 > lastSave) {
+		if (System.currentTimeMillis() - 50000 > lastSave) {
 			save();
 			lastSave = System.currentTimeMillis();
+			System.out.println(entityChunks.getPlayers().size() + " players online");
 		}
 
 		entityChunks.removeDeadEntities();
