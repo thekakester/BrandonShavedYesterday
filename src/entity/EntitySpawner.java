@@ -37,6 +37,14 @@ public class EntitySpawner extends Entity{
 			e = new ZombieEntity(id,this.x,this.y);
 		} else if (type == EntityType.BAT_SPAWN) {
 			e = new BatEntity(id,this.x,this.y);
+		} else if (type == EntityType.GHOST_SPAWN) {
+			e = new GhostEntity(id,this.x,this.y);
+		} else if (type == EntityType.SKELETON_SPAWN) {
+			e = new SkeletonEntity(id,this.x,this.y);
+		} else if (type == EntityType.SPIDER_SPAWN) {
+			e = new SpiderEntity(id,this.x,this.y);
+		} else if (type == EntityType.SLIME_SPAWN) {
+			e = new SlimeEntity(id,this.x,this.y);
 		}
 		
 		if (e == null) {
