@@ -35,6 +35,8 @@ public class EntitySpawner extends Entity{
 			e = new RobotEntity(id,this.x,this.y);
 		} else if (type == EntityType.ZOMBIE_SPAWN) {
 			e = new ZombieEntity(id,this.x,this.y);
+		} else if (type == EntityType.BAT_SPAWN) {
+			e = new BatEntity(id,this.x,this.y);
 		}
 		
 		if (e == null) {
