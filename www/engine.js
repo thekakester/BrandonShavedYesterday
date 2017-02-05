@@ -187,7 +187,7 @@ window.onload = function() {
 	engine.canvas = document.createElement("canvas");
 	engine.canvas.setAttribute("width",engine.width + "px");
 	engine.canvas.setAttribute("height",engine.height + "px");
-	document.body.appendChild(engine.canvas);
+	document.getElementById("gamespan").appendChild(engine.canvas);
 	engine.__context = engine.canvas.getContext('2d');
 	
 	game.init();

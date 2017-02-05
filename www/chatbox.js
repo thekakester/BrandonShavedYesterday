@@ -1,11 +1,11 @@
 $(document).ready(function(){
 	setTimeout(function() {
-		$("body").append("<div id=\"mrskeltal\"></div>");
+		$("#scrollspan").append("<div id=\"mrskeltal\"></div>");
 		$.get("test.html",function(data){
 			$("#mrskeltal").html(data,setTimeout(function(){formatChatBox()},100));
 			
 		});
-	},1000);
+	},100);
 });
 
 function formatChatBox(){

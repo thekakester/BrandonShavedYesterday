@@ -842,7 +842,7 @@ function updateMenu() {
 		selected=(selected+1)%2;
 	}
 	
-	if (engine.isKeyPressed("Enter")) {
+	if (engine.isKeyPressed("Enter") || engine.isKeyPressed("Space")) {
 		game.type = selected==0 ? "virtual" : "terminal";
 	}
 }
