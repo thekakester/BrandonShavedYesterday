@@ -39,6 +39,7 @@ public class Map {
 		unpassableTiles.add(9);//lava
 		unpassableTiles.add(15);//Dark Water
 		unpassableTiles.add(19);//Miasma
+		unpassableTiles.add(20);//Black tile
 		for(int i = 59; i < 79; i++){
 			unpassableTiles.add(i);//Water Tiles 59 - 78 
 		}
