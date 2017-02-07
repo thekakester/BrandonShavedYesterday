@@ -23,7 +23,7 @@ public class PlayerEntity extends Entity{
 		
 		//Kill if idle for 5 seconds
 		if (System.currentTimeMillis() - lastUpdate > 5000) {
-			System.out.println("Player " + id + " disconnected.");
+			g.log("Player " + id + " disconnected.");
 			g.deleteEntity(id);
 			
 			//Add a zombie in its place

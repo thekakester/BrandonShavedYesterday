@@ -2,9 +2,13 @@ package game;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -34,9 +38,10 @@ public class Game extends GameBase {
 	private HashMap<Integer,Sign> signs = new HashMap<Integer,Sign>();
 	private HashMap<Integer,Point> warps = new HashMap<Integer,Point>();
 	private final EntityChunks entityChunks;
+	private ArrayList<String> serverLog = new ArrayList<String>();
 
 	public Game() {
-
+		log("Server started");
 		entityChunks = new EntityChunks(clientDeltas);
 		load();	//Load the game (from save files)
 	}
@@ -101,6 +106,7 @@ public class Game extends GameBase {
 			if (key.equalsIgnoreCase("init")) {
 				//Return the PID and the original map state
 				int pid = getNewEntityId();
+				log("Player " + pid + " joined");
 
 				//Add the entity for our player
 				PlayerEntity player = (PlayerEntity)Entity.create(pid,EntityType.PLAYER,map.spawnCol,map.spawnRow);
@@ -225,6 +231,7 @@ public class Game extends GameBase {
 			if(key.equalsIgnoreCase("chat")){
 				String[] data = value.split("\\|");
 				int pid = Integer.parseInt(data[0]);
+				log("Chat: " + value);
 				for(ClientDelta d : clientDeltas.values()){
 					d.addChat(pid,data[1]);
 				}
@@ -358,7 +365,7 @@ public class Game extends GameBase {
 		if (System.currentTimeMillis() - 50000 > lastSave) {
 			save();
 			lastSave = System.currentTimeMillis();
-			System.out.println(entityChunks.getPlayers().size() + " players online");
+			log(entityChunks.getPlayers().size() + " players online");
 		}
 
 		entityChunks.removeDeadEntities();
@@ -369,10 +376,17 @@ public class Game extends GameBase {
 		}
 	}
 
+	public void log(String s) {
+		String logString = new SimpleDateFormat("[yyyy.MM.dd.HH.mm.ss]").format(new Date()) + " " + s;
+		serverLog.add(logString);
+		System.out.println(logString);
+	}
+	
 	/**Save the game
 	 * 
 	 */
 	public void save() {
+		log("Saving game");
 		map.save();	//Save the map
 
 		//Save entities
@@ -393,6 +407,18 @@ public class Game extends GameBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		try {
+			FileWriter logWriter = new FileWriter(Game.MAP + ".serverlog");
+			for (String s : this.serverLog) {
+				logWriter.append(s + "\n");
+			}
+			this.serverLog.clear();
+			logWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void load() {
