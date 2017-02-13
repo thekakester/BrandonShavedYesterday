@@ -18,3 +18,5 @@
   - Do you have something running on port 80? [Here's](http://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) how to tell
 5. Play with others!
   - The game is hosted by your computer.  Share your local or public IP with friends so they can play too!
+
+Test server will occasionally be available at www.MitchsGa.me
