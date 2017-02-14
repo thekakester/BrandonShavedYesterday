@@ -22,3 +22,4 @@
   - The game is hosted by your computer.  Share your local or public IP with friends so they can play too!
 
 Test server will occasionally be available at www.MitchsGa.me
+Currently pending google review for adsense.
